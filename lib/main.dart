@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'screens/welcome_screen.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+  runApp(const NoglerApp());
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NoglerApp extends StatelessWidget {
+  const NoglerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'Nogler',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Nogler')),
-        body: const Center(child: Text('Hola mundo')),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        fontFamily: 'PixelifySans',
       ),
+      home: const WelcomeScreen(),
     );
   }
 }
+
