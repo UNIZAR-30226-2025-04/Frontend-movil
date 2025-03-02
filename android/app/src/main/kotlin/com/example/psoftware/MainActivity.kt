@@ -1,4 +1,4 @@
-package com.example.psoftware
+package com.example.nogler
 
 import io.flutter.embedding.android.FlutterActivity
 

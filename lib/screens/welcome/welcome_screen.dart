@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nogler/screens/home/home_screen.dart';
+import 'package:nogler/screens/login/login_screen.dart';
 import 'package:nogler/screens/info/info_screen.dart';
 import 'package:nogler/utils/app_styles.dart';
 import 'package:nogler/widgets/background_widget.dart';
@@ -39,7 +39,7 @@ class WelcomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
+                          builder: (context) => const LoginScreen(),
                         ),
                       );
                     },

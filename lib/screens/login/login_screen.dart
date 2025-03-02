@@ -1,0 +1,145 @@
+import 'package:flutter/material.dart';
+import 'package:nogler/screens/home/home_screen.dart';
+import 'package:nogler/utils/app_styles.dart';
+import 'package:nogler/widgets/background_widget.dart';
+import 'package:nogler/widgets/input_field_widget.dart';
+
+// Screen for the login
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  // Create the mutable state for this widget
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+// The state of the login screen
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController(); // Controller for the email input
+  final _passwordController = TextEditingController(); // Controller for the password input
+  String? _errorMessage; // Error message to show if the login fails
+
+  // Method to login the user
+  void _login() {
+    // Check if the email and password are correct
+    if (_emailController.text == 'jorge@gmail.com' && _passwordController.text == 'password') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      // Show an error message if the login fails
+      setState(() {
+        _errorMessage = 'Incorrect password or username';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width; // Get the screen width
+    double screenHeight = MediaQuery.of(context).size.height; // Get the screen height
+    return Scaffold(
+      resizeToAvoidBottomInset: true, // Allow the screen to resize when the keyboard appears
+      body: GestureDetector( // GestureDetector to handle gestures
+        onTap: () {
+          FocusScope.of(context).unfocus(); // Unfocus the text fields when the user taps outside
+        },
+        child: BackgroundWidget( // Background image for the screen
+          child: SafeArea( // SafeArea widget to avoid overlapping with the system status bar
+            child: Padding( // Padding widget to add padding around the content
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20), //
+              child: Center( // Centers all elements horizontally and vertically
+                child: ConstrainedBox( // ConstrainedBox to limit the size of the login box
+                  constraints: BoxConstraints( // BoxConstraints to limit the size of the login box
+                    maxWidth: screenWidth * 0.8, // Ensures login box doesn't exceed 80% of screen width
+                    maxHeight: screenHeight, // Adjusts height dynamically
+                  ),
+                  
+                  child: SingleChildScrollView( // Wrap the Stack with a SingleChildScrollView to make it scrollable when keyboard appears
+                    child: Stack( // Stack widget to stack elements on top of each other
+                      children: [
+                        const SizedBox(height: 20),
+                        // Displays the logo image
+                        Center(child: Image.asset('images/nogler.png', width: 250)), // Displays the logo image
+                        
+                        // Login box
+                        Center(
+                          child: Container( // Container for the login box
+                            width: 380, // Increased width from 320 to 380
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15), // Reduced vertical padding
+                            decoration: BoxDecoration( // BoxDecoration widget to add decoration to the container
+                              // ignore: deprecated_member_use
+                              color: Colors.grey.withOpacity(0.5), // Fixed withValues() to withOpacity()
+                              borderRadius: BorderRadius.circular(12), 
+                              border: Border.all(color: Colors.black), 
+                            ),
+                            child: Column( // Column widget to organize the elements vertically
+                              mainAxisSize: MainAxisSize.min,  // Minimize the size of the column
+                              //
+                              children: [
+                                const Text( // Text widget to display text
+                                  'Login',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 10), // Reduced height from 16 to 10
+                                
+                                if (_errorMessage != null) // Show the error message if it exists
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 4), // Reduced padding from 8 to 4
+                                    child: Text(
+                                      _errorMessage!, // Show the error message
+                                      style: const TextStyle(color: AppStyles.errorColor, fontSize: 12),
+                                    ),
+                                  ),
+                                
+                                // Input fields for the email and password
+                                InputFieldWidget(label: 'Email', controller: _emailController, isPassword: false),
+                                const SizedBox(height: 8),
+                                InputFieldWidget(label: 'Password', controller: _passwordController, isPassword: true),
+                          
+                                const SizedBox(height: 12),
+                                
+                                Row( // Row widget to organize the elements horizontally
+                                  mainAxisAlignment: MainAxisAlignment.center, // Center the elements horizontally
+                                  children: [
+                                    
+                                    TextButton( // TextButton widget to create a button with text
+                                      onPressed: () {}, // Calls the provided function when pressed
+                                      child: const Text(
+                                        'Sign up',
+                                        style: TextStyle(
+                                          color: AppStyles.primaryColor,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 40),
+                                    // Button to login
+                                    ElevatedButton( // ElevatedButton widget to create a button with elevation
+                                      style: AppStyles.acceptButtonStyle,
+                                      onPressed: _login,
+                                      child: const Text('Accept'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        )],
+
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
