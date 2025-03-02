@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/screens/home/home_screen.dart';
+import 'package:nogler/screens/register/register_screen.dart';
 import 'package:nogler/utils/app_styles.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/input_field_widget.dart';
@@ -55,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     maxWidth: screenWidth * 0.8, // Ensures login box doesn't exceed 80% of screen width
                     maxHeight: screenHeight, // Adjusts height dynamically
                   ),
-                  
+      
                   child: SingleChildScrollView( // Wrap the Stack with a SingleChildScrollView to make it scrollable when keyboard appears
                     child: Stack( // Stack widget to stack elements on top of each other
                       children: [
@@ -93,14 +94,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     padding: const EdgeInsets.only(bottom: 4), // Reduced padding from 8 to 4
                                     child: Text(
                                       _errorMessage!, // Show the error message
-                                      style: const TextStyle(color: AppStyles.errorColor, fontSize: 12),
+                                      style: const TextStyle(color: AppStyles.errorColor, fontSize: 14),
                                     ),
                                   ),
                                 
                                 // Input fields for the email and password
-                                InputFieldWidget(label: 'Email', controller: _emailController, isPassword: false),
+                                InputFieldWidget(label: 'Email', controller: _emailController, isPassword: false, size: 80),
                                 const SizedBox(height: 8),
-                                InputFieldWidget(label: 'Password', controller: _passwordController, isPassword: true),
+                                InputFieldWidget(label: 'Password', controller: _passwordController, isPassword: true, size: 80),
                           
                                 const SizedBox(height: 12),
                                 
@@ -109,7 +110,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   children: [
                                     
                                     TextButton( // TextButton widget to create a button with text
-                                      onPressed: () {}, // Calls the provided function when pressed
+                                      onPressed: () {
+                                        // Navigates to RegisterScreen when the button is pressed
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const RegisterScreen(),
+                                          ),
+                                        );
+                                      },
                                       child: const Text(
                                         'Sign up',
                                         style: TextStyle(

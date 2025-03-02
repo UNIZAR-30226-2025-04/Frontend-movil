@@ -6,11 +6,13 @@ class InputFieldWidget extends StatelessWidget {
     required this.label,
     required this.controller,
     required this.isPassword,
+    required this.size,
   });
 
   final String label;
   final TextEditingController controller;
   final bool isPassword;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class InputFieldWidget extends StatelessWidget {
         children: [
           // Label for the input field
           SizedBox( // SizedBox widget to set the width of the label
-            width: 80, 
+            width: size, 
             child: Text( // Text widget to display the label
               label,
               style: const TextStyle( // TextStyle widget to style the text
@@ -34,7 +36,7 @@ class InputFieldWidget extends StatelessWidget {
           const SizedBox(width: 10), 
           // Input field
           SizedBox( // SizedBox widget to set the height and width of the input field
-            height: 35,
+            height: 30,
             width: 240, 
             child: TextField( // TextField widget to create an input field
               controller: controller, // Set the controller for the input field
