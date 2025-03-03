@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nogler/screens/login/login_screen.dart';
 import 'package:nogler/utils/app_styles.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/input_field_widget.dart';
@@ -40,11 +39,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    // Navigate to the home screen after successful registration
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
+    // Navigate to the login screen after successful registration
+    Navigator.pop(context);
   }
 
   @override

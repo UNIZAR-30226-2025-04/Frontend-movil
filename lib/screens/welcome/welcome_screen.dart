@@ -3,6 +3,7 @@ import 'package:nogler/screens/login/login_screen.dart';
 import 'package:nogler/screens/info/info_screen.dart';
 import 'package:nogler/utils/app_styles.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:page_transition/page_transition.dart';
 
 // This is the first screen that the user sees when opening the app
 class WelcomeScreen extends StatelessWidget {
@@ -38,8 +39,9 @@ class WelcomeScreen extends StatelessWidget {
                       // Navigates to HomeScreen when the button is pressed
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: const LoginScreen(),
                         ),
                       );
                     },
@@ -58,8 +60,9 @@ class WelcomeScreen extends StatelessWidget {
                       // Navigates to InfoScreen when the button is pressed
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const InfoScreen(),
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: const InfoScreen(),
                         ),
                       );
                     },

@@ -4,6 +4,7 @@ import 'package:nogler/screens/register/register_screen.dart';
 import 'package:nogler/utils/app_styles.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/input_field_widget.dart';
+import 'package:page_transition/page_transition.dart';
 
 // Screen for the login
 class LoginScreen extends StatefulWidget {
@@ -26,7 +27,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_emailController.text == 'jorge@gmail.com' && _passwordController.text == 'password') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        PageTransition(
+          type: PageTransitionType.fade,
+          child: const HomeScreen(),
+        ),
       );
     } else {
       // Show an error message if the login fails
@@ -114,8 +118,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         // Navigates to RegisterScreen when the button is pressed
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(
-                                            builder: (context) => const RegisterScreen(),
+                                          PageTransition(
+                                            type: PageTransitionType.fade,
+                                            child: const RegisterScreen(),
                                           ),
                                         );
                                       },

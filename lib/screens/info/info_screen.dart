@@ -4,6 +4,7 @@ import 'package:nogler/screens/info/info_compete_screen.dart';
 import 'package:nogler/screens/info/info_friends_screen.dart';
 import 'package:nogler/screens/info/info_shop_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:page_transition/page_transition.dart';
 
 // The screen that the user goes when they click on the "How to play" button
 class InfoScreen extends StatelessWidget {
@@ -42,7 +43,10 @@ class InfoScreen extends StatelessWidget {
                     _buildMenuButton(context, 'Cards', () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const InfoCardsScreen()),
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: const InfoCardsScreen(),
+                        ),
                       );
                     }),
 
@@ -50,7 +54,10 @@ class InfoScreen extends StatelessWidget {
                     _buildMenuButton(context, 'Shop', () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const InfoShopScreen()),
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: const InfoShopScreen(),
+                        ),
                       );
                     }),
 
@@ -58,7 +65,10 @@ class InfoScreen extends StatelessWidget {
                     _buildMenuButton(context, 'Friends', () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const InfoFriendsScreen()),
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: const InfoFriendsScreen(),
+                        ),
                       );
                     }),
 
@@ -66,7 +76,10 @@ class InfoScreen extends StatelessWidget {
                     _buildMenuButton(context, 'Compete', () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const InfoCompeteScreen()),
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: const InfoCompeteScreen(),
+                        ),
                       );
                     }),
                   ],
