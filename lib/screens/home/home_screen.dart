@@ -1,10 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
 
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
 // Home screen of the application
-class HomeScreen extends StatelessWidget {
+class _HomeScreenState extends State<HomeScreen> {
   //no longer const HomeScreen
-  const HomeScreen({super.key}); // Constructor for the class
+
+  List<String> friends = [
+    "Carlos99",
+    "AnaGamer",
+    "David_23",
+    "ElenaPro",
+    "GamerX",
+    "LuisaK",
+    "Pedro_Dev",
+    "SophieP",
+    "Tommy",
+    "ValeriaG",
+  ];
+
+  List<String> friendRequests = [
+    "Manolo23",
+    "SusanaGriso",
+    "Nicolas Pueyo",
+    "Lacastez",
+  ];
+
+  List<String> allUsers = [
+    "NewUser1",
+    "NewUser2",
+    "Mondongo",
+    "David Bisbal",
+    "Pedro Sanchez",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -101,19 +135,6 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _showFriendsList(BuildContext context) {
-    List<String> friends = [
-      "Carlos99",
-      "AnaGamer",
-      "David_23",
-      "ElenaPro",
-      "GamerX",
-      "LuisaK",
-      "Pedro_Dev",
-      "SophieP",
-      "Tommy",
-      "ValeriaG",
-    ];
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -160,11 +181,22 @@ class HomeScreen extends StatelessWidget {
                   child: const Text("Close", style: TextStyle(fontSize: 16)),
                 ),
 
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showFriendRequests(context);
+                  },
+                  child: const Text(
+                    "Friend Requests",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+
                 //add friends pop-up
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    _showAddFriendDialog(context);
+                    _showAddFriend(context);
                   },
                   child: const Text(
                     "Add Friends",
@@ -180,25 +212,11 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Users searching pop-up
-  void _showAddFriendDialog(BuildContext context) {
+  void _showAddFriend(BuildContext context) {
     // Change later on when database is implemented
-    List<String> allUsers = [
-      "Carlos99",
-      "AnaGamer",
-      "David_23",
-      "ElenaPro",
-      "GamerX",
-      "LuisaK",
-      "Pedro_Dev",
-      "SophieP",
-      "Tommy",
-      "ValeriaG",
-      "NewUser1",
-      "NewUser2",
-    ];
 
     List<String> filteredUsers = List.from(allUsers);
-    List<String> friends = [];
+    //List<String> friends = [];
     TextEditingController searchController = TextEditingController();
 
     showDialog(
@@ -216,11 +234,15 @@ class HomeScreen extends StatelessWidget {
                     "Add friends",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 7),
+                  const SizedBox(height: 4),
                   TextField(
                     controller: searchController,
                     decoration: InputDecoration(
                       hintText: "Search user...",
+                      hintStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -243,7 +265,7 @@ class HomeScreen extends StatelessWidget {
               ),
               content: SizedBox(
                 width: double.maxFinite,
-                height: 400,
+                height: 200,
                 child: ListView.builder(
                   itemCount: filteredUsers.length,
                   itemBuilder: (context, index) {
@@ -260,6 +282,10 @@ class HomeScreen extends StatelessWidget {
                               friends.add(
                                 filteredUsers[index], //add user to list, later on to the database
                               );
+                              allUsers.remove(
+                                filteredUsers[index],
+                              ); //remove from allUsers list
+                              filteredUsers.remove(filteredUsers[index]);
                             });
                           }
                         },
@@ -275,13 +301,91 @@ class HomeScreen extends StatelessWidget {
                     //close pop-up button
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.pop(context); //TODO, open profile of the user
                         _showFriendsList(context);
                       },
                       child: const Text(
                         "Close",
                         style: TextStyle(fontSize: 16),
                       ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showFriendRequests(BuildContext context) {
+    List<String> filteredUsers = List.from(friendRequests);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text(
+                "Friends Requests",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              content: SizedBox(
+                width: double.maxFinite, // uses the max width of the pop-up
+                //height: 300, // pop-up height
+                child: ListView.builder(
+                  itemCount: filteredUsers.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: CircleAvatar(child: Text(friends[index][0])),
+                      title: Text(filteredUsers[index]),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.check, color: Colors.lightGreen),
+                            onPressed: () {
+                              setState(() {
+                                // add the new friend to the friends list
+                                friends.add(filteredUsers[index]);
+                                // remove the accepted friend from friendRequests list
+                                friendRequests.remove(friendRequests[index]);
+                                filteredUsers.remove(filteredUsers[index]);
+                              });
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                // remove denied friend from friendRequests list
+                                friendRequests.remove(friendRequests[index]);
+                                filteredUsers.remove(filteredUsers[index]);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showFriendsList(context);
+                      },
+                      child: const Text("Back", style: TextStyle(fontSize: 16)),
                     ),
                   ],
                 ),
