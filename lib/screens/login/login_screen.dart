@@ -22,16 +22,25 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage; // Error message to show if the login fails
 
   // Method to login the user
-  void _login() {
+  void _login() async {
+    // Unfocus the text fields to hide the keyboard
+    FocusScope.of(context).unfocus();
+    // Add a small delay to ensure the keyboard is closed before navigating
+    await Future.delayed(Duration(milliseconds: 300));
+    // Check if the widget is still mounted before using the context
+    if (!mounted) return;
     // Check if the email and password are correct
     if (_emailController.text == 'jorge@gmail.com' && _passwordController.text == 'password') {
-      Navigator.pushReplacement(
-        context,
-        PageTransition(
-          type: PageTransitionType.fade,
-          child: const HomeScreen(),
-        ),
-      );
+      // Navigate to the home screen after successful login
+      if(mounted) { // Check if the widget is still mounted before navigating
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: const HomeScreen(),
+          ),
+        );
+      }
     } else {
       // Show an error message if the login fails
       setState(() {
