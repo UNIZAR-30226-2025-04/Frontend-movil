@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       // Scaffold widget to create the screen
       body: BackgroundWidget(
         // Background image for the screen
@@ -224,94 +225,121 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
+            return Dialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              title: Column(
-                children: [
-                  const Text(
-                    "Add friends",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: "Search user...",
-                      hintStyle: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        filteredUsers =
-                            allUsers
-                                .where(
-                                  (user) => user.toLowerCase().contains(
-                                    value.toLowerCase(),
-                                  ),
-                                )
-                                .toList();
-                      });
-                    },
-                  ),
-                ],
-              ),
-              content: SizedBox(
-                width: double.maxFinite,
-                height: 200,
-                child: ListView.builder(
-                  itemCount: filteredUsers.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: CircleAvatar(
-                        child: Text(filteredUsers[index][0]),
-                      ),
-                      title: Text(filteredUsers[index]),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.person_add, color: Colors.green),
-                        onPressed: () {
-                          if (!friends.contains(filteredUsers[index])) {
-                            setState(() {
-                              friends.add(
-                                filteredUsers[index], //add user to list, later on to the database
-                              );
-                              allUsers.remove(
-                                filteredUsers[index],
-                              ); //remove from allUsers list
-                              filteredUsers.remove(filteredUsers[index]);
-                            });
-                          }
-                        },
-                      ),
-                    );
-                  },
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-              ),
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: [
-                    //close pop-up button
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context); //TODO, open profile of the user
-                        _showFriendsList(context);
-                      },
-                      child: const Text(
-                        "Close",
-                        style: TextStyle(fontSize: 16),
-                      ),
+                    Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Add friends",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: TextField(
+                            controller: searchController,
+                            decoration: InputDecoration(
+                              hintText: "Search user...",
+                              hintStyle: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              prefixIcon: Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                filteredUsers =
+                                    allUsers
+                                        .where(
+                                          (user) => user.toLowerCase().contains(
+                                            value.toLowerCase(),
+                                          ),
+                                        )
+                                        .toList();
+                              });
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.maxFinite,
+                          height: 170,
+                          child: ListView.builder(
+                            //shrinkWrap: true, //bajo sospecha
+                            itemCount: filteredUsers.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  child: Text(filteredUsers[index][0]),
+                                ),
+                                title: Text(filteredUsers[index]),
+                                trailing: IconButton(
+                                  icon: const Icon(
+                                    Icons.person_add,
+                                    color: Colors.green,
+                                  ),
+                                  onPressed: () {
+                                    if (!friends.contains(
+                                      filteredUsers[index],
+                                    )) {
+                                      setState(() {
+                                        friends.add(
+                                          filteredUsers[index], //add user to list, later on to the database
+                                        );
+                                        allUsers.remove(
+                                          filteredUsers[index],
+                                        ); //remove from allUsers list
+                                        filteredUsers.remove(
+                                          filteredUsers[index],
+                                        );
+                                      });
+                                    }
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            //close pop-up button
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(
+                                  context,
+                                ); //TODO, open profile of the user
+                                _showFriendsList(context);
+                              },
+                              child: const Text(
+                                "Close",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             );
           },
         );
