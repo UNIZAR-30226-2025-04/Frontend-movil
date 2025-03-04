@@ -11,22 +11,33 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( // Scaffold widget to create the screen
-      body: BackgroundWidget( // Background image for the screen
-        child: SafeArea( // SafeArea widget to avoid overlapping with the system status bar
-          child: Center( // Centers all elements horizontally and vertically
-            child: Column( // Column widget to stack elements vertically
-              mainAxisAlignment: MainAxisAlignment.center, // Centers all elements vertically
+    return Scaffold(
+      // Scaffold widget to create the screen
+      body: BackgroundWidget(
+        // Background image for the screen
+        child: SafeArea(
+          // SafeArea widget to avoid overlapping with the system status bar
+          child: Center(
+            // Centers all elements horizontally and vertically
+            child: Column(
+              // Column widget to stack elements vertically
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Centers all elements vertically
               children: [
                 const SizedBox(height: 20), // Adds spacing at the top
-                Image.asset('images/nogler.png', width: 250), // Displays the logo image
+                Image.asset(
+                  'images/nogler.png',
+                  width: 250,
+                ), // Displays the logo image
                 const SizedBox(height: 20), // Adds spacing between elements
-                const Text( // The text below the logo
+                const Text(
+                  // The text below the logo
                   'Welcome to Nogler an amazing\ncard game',
-                  style: AppStyles.subtitleStyle, // Uses a predefined text style
+                  style:
+                      AppStyles.subtitleStyle, // Uses a predefined text style
                   textAlign: TextAlign.center, // Centers the text
                 ),
-                
+
                 // The two buttons on the screen
                 SizedBox(
                   width: 200, // Sets a fixed width for the button

@@ -17,8 +17,10 @@ class LoginScreen extends StatefulWidget {
 
 // The state of the login screen
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController(); // Controller for the email input
-  final _passwordController = TextEditingController(); // Controller for the password input
+  final _emailController =
+      TextEditingController(); // Controller for the email input
+  final _passwordController =
+      TextEditingController(); // Controller for the password input
   String? _errorMessage; // Error message to show if the login fails
 
   // Method to login the user
@@ -30,9 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
     // Check if the widget is still mounted before using the context
     if (!mounted) return;
     // Check if the email and password are correct
-    if (_emailController.text == 'jorge@gmail.com' && _passwordController.text == 'password') {
+    if (_emailController.text == 'jorge@gmail.com' &&
+        _passwordController.text == 'password') {
       // Navigate to the home screen after successful login
-      if(mounted) { // Check if the widget is still mounted before navigating
+      if (mounted) {
+        // Check if the widget is still mounted before navigating
         Navigator.pushReplacement(
           context,
           PageTransition(
@@ -51,17 +55,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width; // Get the screen width
-    double screenHeight = MediaQuery.of(context).size.height; // Get the screen height
+    double screenWidth =
+        MediaQuery.of(context).size.width; // Get the screen width
+    double screenHeight =
+        MediaQuery.of(context).size.height; // Get the screen height
     return Scaffold(
-      resizeToAvoidBottomInset: true, // Allow the screen to resize when the keyboard appears
-      body: GestureDetector( // GestureDetector to handle gestures
+      resizeToAvoidBottomInset:
+          true, // Allow the screen to resize when the keyboard appears
+      body: GestureDetector(
+        // GestureDetector to handle gestures
         onTap: () {
-          FocusScope.of(context).unfocus(); // Unfocus the text fields when the user taps outside
+          FocusScope.of(
+            context,
+          ).unfocus(); // Unfocus the text fields when the user taps outside
         },
-        child: BackgroundWidget( // Background image for the screen
-          child: SafeArea( // SafeArea widget to avoid overlapping with the system status bar
-            child: Stack( // Stack widget to stack elements on top of each other
+        child: BackgroundWidget(
+          // Background image for the screen
+          child: SafeArea(
+            // SafeArea widget to avoid overlapping with the system status bar
+            child: Stack(
+              // Stack widget to stack elements on top of each other
               children: [
                 // Displays the logo image
                 Positioned(
@@ -70,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   right: 0,
                   child: Center(
                     child: Image.asset(
-                      'images/nogler.png', 
+                      'images/nogler.png',
                       width: 250,
                       fit: BoxFit.contain,
                     ),
@@ -78,26 +91,42 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 // Login box
                 Center(
-                  child: ConstrainedBox( // ConstrainedBox to limit the size of the login box
-                    constraints: BoxConstraints( // BoxConstraints to limit the size of the login box
-                      maxWidth: screenWidth * 0.8, // Ensures login box doesn't exceed 80% of screen width
+                  child: ConstrainedBox(
+                    // ConstrainedBox to limit the size of the login box
+                    constraints: BoxConstraints(
+                      // BoxConstraints to limit the size of the login box
+                      maxWidth:
+                          screenWidth *
+                          0.8, // Ensures login box doesn't exceed 80% of screen width
                       maxHeight: screenHeight, // Adjusts height dynamically
                     ),
-                    child: SingleChildScrollView( // Wrap the Stack with a SingleChildScrollView to make it scrollable when keyboard appears
-                      child: Container( // Container for the login box
+                    child: SingleChildScrollView(
+                      // Wrap the Stack with a SingleChildScrollView to make it scrollable when keyboard appears
+                      child: Container(
+                        // Container for the login box
                         width: 380, // Increased width from 320 to 380
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15), // Reduced vertical padding
-                        decoration: BoxDecoration( // BoxDecoration widget to add decoration to the container
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 15,
+                        ), // Reduced vertical padding
+                        decoration: BoxDecoration(
+                          // BoxDecoration widget to add decoration to the container
                           // ignore: deprecated_member_use
-                          color: Colors.grey.withOpacity(0.5), // Sets a semi-transparent background
-                          borderRadius: BorderRadius.circular(12), 
-                          border: Border.all(color: Colors.black), 
+                          color: Colors.grey.withOpacity(
+                            0.5,
+                          ), // Sets a semi-transparent background
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.black),
                         ),
-                        child: Column( // Column widget to organize the elements vertically
-                          mainAxisSize: MainAxisSize.min,  // Minimize the size of the column
+                        child: Column(
+                          // Column widget to organize the elements vertically
+                          mainAxisSize:
+                              MainAxisSize
+                                  .min, // Minimize the size of the column
                           //
                           children: [
-                            const Text( // Text widget to display text
+                            const Text(
+                              // Text widget to display text
                               'Login',
                               style: TextStyle(
                                 fontSize: 25,
@@ -105,29 +134,50 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.black87,
                               ),
                             ),
-                            const SizedBox(height: 10), // Reduced height from 16 to 10
-                            
-                            if (_errorMessage != null) // Show the error message if it exists
+                            const SizedBox(
+                              height: 10,
+                            ), // Reduced height from 16 to 10
+
+                            if (_errorMessage !=
+                                null) // Show the error message if it exists
                               Padding(
-                                padding: const EdgeInsets.only(bottom: 4), // Reduced padding from 8 to 4
+                                padding: const EdgeInsets.only(
+                                  bottom: 4,
+                                ), // Reduced padding from 8 to 4
                                 child: Text(
                                   _errorMessage!, // Show the error message
-                                  style: const TextStyle(color: AppStyles.errorColor, fontSize: 14),
+                                  style: const TextStyle(
+                                    color: AppStyles.errorColor,
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
-                            
+
                             // Input fields for the email and password
-                            InputFieldWidget(label: 'Email', controller: _emailController, isPassword: false, size: 80),
+                            InputFieldWidget(
+                              label: 'Email',
+                              controller: _emailController,
+                              isPassword: false,
+                              size: 80,
+                            ),
                             const SizedBox(height: 8),
-                            InputFieldWidget(label: 'Password', controller: _passwordController, isPassword: true, size: 80),
-                      
+                            InputFieldWidget(
+                              label: 'Password',
+                              controller: _passwordController,
+                              isPassword: true,
+                              size: 80,
+                            ),
+
                             const SizedBox(height: 12),
-                            
-                            Row( // Row widget to organize the elements horizontally
-                              mainAxisAlignment: MainAxisAlignment.center, // Center the elements horizontally
+
+                            Row(
+                              // Row widget to organize the elements horizontally
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .center, // Center the elements horizontally
                               children: [
-                                
-                                TextButton( // TextButton widget to create a button with text
+                                TextButton(
+                                  // TextButton widget to create a button with text
                                   onPressed: () {
                                     // Navigates to RegisterScreen when the button is pressed
                                     Navigator.push(
@@ -148,7 +198,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 const SizedBox(width: 40),
                                 // Button to login
-                                ElevatedButton( // ElevatedButton widget to create a button with elevation
+                                ElevatedButton(
+                                  // ElevatedButton widget to create a button with elevation
                                   style: AppStyles.acceptButtonStyle,
                                   onPressed: _login,
                                   child: const Text('Accept'),
@@ -160,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -12,19 +12,27 @@ class InfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( // Scaffold widget to create the screen
-      body: BackgroundWidget( // Background image for the screen
-        child: SafeArea( // SafeArea widget to avoid overlapping with the system status bar
-          child: Padding( // Padding widget to add padding around the content
+    return Scaffold(
+      // Scaffold widget to create the screen
+      body: BackgroundWidget(
+        // Background image for the screen
+        child: SafeArea(
+          // SafeArea widget to avoid overlapping with the system status bar
+          child: Padding(
+            // Padding widget to add padding around the content
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
-            child: Column( // Column widget to stack elements vertically
-              mainAxisAlignment: MainAxisAlignment.center, // Centers all elements vertically
+            child: Column(
+              // Column widget to stack elements vertically
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Centers all elements vertically
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Row( // Row widget to align elements horizontally
+                  child: Row(
+                    // Row widget to align elements horizontally
                     children: [
-                      IconButton( // Back button to navigate back to the previous screen
+                      IconButton(
+                        // Back button to navigate back to the previous screen
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -32,10 +40,12 @@ class InfoScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 30), // Adds spacing between elements
-                Wrap( // Wrap widget to align elements in a grid
+                Wrap(
+                  // Wrap widget to align elements in a grid
                   spacing: 16, // Horizontal spacing between buttons
                   runSpacing: 16, // Vertical spacing between buttons
-                  alignment: WrapAlignment.center, // Aligns the buttons in the center
+                  alignment:
+                      WrapAlignment.center, // Aligns the buttons in the center
                   children: [
                     // The four buttons on the screen
 
@@ -93,19 +103,29 @@ class InfoScreen extends StatelessWidget {
   }
 
   // Widget to create a button with a title and an onPressed callback
-  Widget _buildMenuButton(BuildContext context, String title, VoidCallback onPressed) {
-    return SizedBox( // SizedBox widget to set the size of the button
+  Widget _buildMenuButton(
+    BuildContext context,
+    String title,
+    VoidCallback onPressed,
+  ) {
+    return SizedBox(
+      // SizedBox widget to set the size of the button
       width: MediaQuery.of(context).size.width * 0.4,
-      height: 80, // 
-      child: ElevatedButton( 
-        style: ElevatedButton.styleFrom( 
+      height: 80, //
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white, // Background color of the button
           foregroundColor: Colors.black, // Text color of the button
-          padding: const EdgeInsets.symmetric(vertical: 20), // Padding inside the button
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), // Rounded corners
+          padding: const EdgeInsets.symmetric(
+            vertical: 20,
+          ), // Padding inside the button
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ), // Rounded corners
         ),
         onPressed: onPressed,
-        child: Center( // Center widget to center the text inside the button
+        child: Center(
+          // Center widget to center the text inside the button
           child: Text(
             title,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
