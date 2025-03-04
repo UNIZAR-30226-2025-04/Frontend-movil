@@ -1,3 +1,5 @@
+import 'package:nogler/screens/home/friends_functions.dart';
+
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
 
@@ -94,7 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildMenuButton(context, 'HOST', () {}),
                       _buildMenuButton(context, 'PARTY', () {}),
                       _buildMenuButton(context, 'FRIENDS', () {
-                        _showFriendsList(context);
+                        showFriendsList(
+                          context,
+                          friends,
+                          friendRequests,
+                          allUsers,
+                        );
                       }),
                     ],
                   ),
@@ -134,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
+  /*
   void _showFriendsList(BuildContext context) {
     showDialog(
       context: context,
@@ -424,6 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+  */
 
   // Widget to create the profile button
   Widget _buildProfileButton(BuildContext context, String username) {
