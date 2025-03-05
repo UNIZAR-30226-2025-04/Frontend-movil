@@ -1,27 +1,23 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/screens/welcome/welcome_screen.dart';
 import 'package:nogler/dio/dio_client.dart';
 import 'package:page_transition/page_transition.dart';
 
-String selectedAvatar = 'pixelHeart';
+Future<bool> showProfile(
+  BuildContext context,
+  String currentUsername,
+  int currentAvatar,
+) async {
+  final List<int> iconOptions = List.generate(8, (index) => index);
 
-void showProfile(BuildContext context) {
-  final List<String> avatars = [
-    'pixelHeart',
-    'pixelPica',
-    'pixelDiamond',
-    'pixelTrebol',
-    'pixelSoyi',
-    'pixelBrat',
-    'pixelBarb',
-    'pixelBard',
-  ];
-
-  final usernameController = TextEditingController();
+  final usernameController = TextEditingController(text: currentUsername);
   final passwordController = TextEditingController();
   final repeatPasswordController = TextEditingController();
+  int selectedIcon = currentAvatar;
+  bool changesMade = false;
 
-  showDialog(
+  final result = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
@@ -45,22 +41,23 @@ void showProfile(BuildContext context) {
                         children: [
                           GestureDetector(
                             onTap: () async {
-                              //needed async to upload the profile picture
-                              final newAvatar = await showIconPickerDialog(
+                              FocusScope.of(context).unfocus();
+                              final newIcon = await showIconPickerDialog(
                                 context,
-                                avatars,
-                                selectedAvatar,
+                                iconOptions,
+                                selectedIcon,
                               );
-                              if (newAvatar != null) {
+                              if (newIcon != null) {
                                 setState(() {
-                                  selectedAvatar = newAvatar;
+                                  selectedIcon = newIcon;
+                                  changesMade = true;
                                 });
                               }
                             },
                             child: CircleAvatar(
                               radius: 75,
                               backgroundColor: Colors.white,
-                              child: _buildAvatarImage(selectedAvatar),
+                              child: _buildAvatarImage(selectedIcon),
                             ),
                           ),
 
@@ -68,87 +65,18 @@ void showProfile(BuildContext context) {
                             child: Column(
                               children: [
                                 const SizedBox(height: 8),
-                                // Username field
-                                TextField(
-                                  controller: usernameController,
-                                  style: const TextStyle(color: Colors.white),
-                                  decoration: InputDecoration(
-                                    labelText: 'Username',
-                                    labelStyle: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color(0xFF353A50),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Colors.transparent,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Colors.blueAccent,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-
+                                _buildTextField('Username', usernameController),
                                 const SizedBox(height: 8),
-
-                                // Password field
-                                TextField(
-                                  controller: passwordController,
-                                  style: const TextStyle(color: Colors.white),
-                                  obscureText: true,
-                                  decoration: InputDecoration(
-                                    labelText: 'Password',
-                                    labelStyle: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color(0xFF353A50),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Colors.transparent,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Colors.blueAccent,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
+                                _buildTextField(
+                                  'Password',
+                                  passwordController,
+                                  isPassword: true,
                                 ),
-
                                 const SizedBox(height: 8),
-                                // Repeat Password Field
-                                TextField(
-                                  controller: repeatPasswordController,
-                                  style: const TextStyle(color: Colors.white),
-                                  obscureText: true,
-                                  decoration: InputDecoration(
-                                    labelText: 'Repeat your password',
-                                    labelStyle: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color(0xFF353A50),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Colors.transparent,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Colors.blueAccent,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
+                                _buildTextField(
+                                  'Repeat password',
+                                  repeatPasswordController,
+                                  isPassword: true,
                                 ),
                               ],
                             ),
@@ -159,11 +87,24 @@ void showProfile(BuildContext context) {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ElevatedButton(
-                            onPressed: () {
-                              // Acciones para "Change"
-                              // Por ejemplo, guardar el perfil
+                            onPressed: () async {
+                              bool success = await _updateProfile(
+                                usernameController.text,
+                                passwordController.text,
+                                repeatPasswordController.text,
+                                selectedIcon,
+                                context,
+                              );
+
+                              if (success) {
+                                changesMade = true;
+                                if (context.mounted){
+                                  Navigator.pop(context, true); 
+                                }
+
+                              }
                             },
-                            child: const Text('Change'),
+                            child: const Text('Save Changes'),
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -179,8 +120,12 @@ void showProfile(BuildContext context) {
                               backgroundColor: Colors.redAccent,
                             ),
                             onPressed: () {
-                              // Acción para "Cancel"
-                              // Por ejemplo, Navigator.pop(context);
+                              if (context.mounted) {
+                                Navigator.pop(
+                                  context,
+                                  changesMade,
+                                ); // Close the dialog
+                              }
                             },
                             child: const Text('Cancel'),
                           ),
@@ -196,46 +141,133 @@ void showProfile(BuildContext context) {
       );
     },
   );
+  return result ?? false; // Return false if the dialog is dismissed
 }
 
-// Pop-up to choose between several icons
-Future<String?> showIconPickerDialog(
+/// **Updates the user's profile information**
+/// - Checks if `newPassword` and `repeatPassword` match before sending the request.
+/// - If passwords don't match, it displays an error message.
+/// - Returns `true` if the update is successful, otherwise returns `false`.
+Future<bool> _updateProfile(String newUsername, String newPassword, String repeatPassword, int newIcon, BuildContext context) async {
+  final dioClient = DioClient();
+
+  debugPrint("🔹 Updating Profile with:");
+  debugPrint("   🟢 Username: $newUsername");
+  debugPrint(
+    "   🔵 New Password: ${newPassword.isNotEmpty ? '****' : '(No change)'}",
+  );
+  debugPrint(
+    "   🟠 Repeat Password: ${repeatPassword.isNotEmpty ? '****' : '(No change)'}",
+  );
+  debugPrint("   🟣 Icon: $newIcon");
+  // Validate if the new password matches the repeated password
+  if (newPassword.isNotEmpty && newPassword != repeatPassword) {
+    debugPrint("❌ Error: Passwords do not match.");
+
+    // Show an error message in a small centered dialog
+    if (context.mounted) {
+       await showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12), // Rounded corners
+            ),
+            title: const Text(
+              "Error",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.redAccent,
+              ),
+            ),
+            content: const Text(
+              "Passwords do not match. Please try again.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext); // Close the dialog
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    return false; // Stop the function if passwords do not match
+  }
+
+  try {
+    final response = await dioClient.dio.patch(
+      '/auth/update',
+      data: {
+        "username": newUsername,
+        if (newPassword.isNotEmpty) "password": newPassword, // Only send password if provided
+        "icono": newIcon, // Send the selected icon number
+      },
+      options: Options(
+        // Options for the request
+        contentType: Headers.formUrlEncodedContentType, // Set the content type
+        responseType: ResponseType.json, // Set the response type
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      debugPrint("✅ Profile updated successfully: ${response.data['message']}");
+      return true;
+    } else {
+      debugPrint("❌ Failed to update profile: ${response.data}");
+      return false;
+    }
+  } catch (e) {
+    debugPrint("❌ Error updating profile: $e");
+    return false;
+  }
+}
+
+/// **Displays a pop-up for selecting an avatar icon**
+/// - Shows a list of available icons.
+/// - When the user selects an icon, it returns the corresponding integer.
+Future<int?> showIconPickerDialog(
   BuildContext context,
-  List<String> avatars,
-  String currentAvatar,
+  List<int> icons,
+  int currentIcon,
 ) {
-  return showDialog<String?>(
+  return showDialog<int?>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text("Elige tu ícono"),
+        
+        title: const Text("Choose Your Icon"),
         content: SizedBox(
           width: 400,
           child: Wrap(
             spacing: 10,
             runSpacing: 10,
-            children:
-                avatars.map((avatar) {
-                  return GestureDetector(
-                    onTap: () {
-                      selectedAvatar = avatar;
-                      // Al tocar un ícono, volvemos con ese valor
-                      Navigator.pop(context, avatar);
-                    },
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.white,
-                          child: _buildAvatarImage(avatar),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(avatar),
-                      ],
+            children: icons.map((iconIndex) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pop(context, iconIndex);
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white,
+                      child: _buildAvatarImage(iconIndex),
                     ),
-                  );
-                }).toList(),
+                    const SizedBox(height: 5),
+                    Text("Icon $iconIndex"),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ),
         actions: [
@@ -249,8 +281,28 @@ Future<String?> showIconPickerDialog(
   );
 }
 
-/// Logs out the user by calling the `/auth/logout` API endpoint.
-/// It also clears session cookies and redirects the user to `WelcomeScreen`.
+/// **Displays the correct avatar image based on the icon ID**
+/// - Uses an integer index to select an avatar from the available images.
+Widget _buildAvatarImage(int iconId) {
+  final List<String> avatarPaths = [
+    'images/pixelHeart.png',
+    'images/pixelPica.png',
+    'images/pixelDiamond.png',
+    'images/pixelTrebol.png',
+    'images/pixelSoyi.png',
+    'images/pixelBrat.png',
+    'images/pixelBarb.png',
+    'images/pixelBard.png',
+  ];
+
+  return Image.asset(
+    avatarPaths[iconId],
+    errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 36),
+  );
+}
+
+/// **Logs out the user by calling the `/auth/logout` API endpoint**
+/// - Clears session cookies and redirects the user to the `WelcomeScreen`.
 Future<void> _logout(BuildContext context) async {
   final dioClient = DioClient(); // Get the singleton DioClient instance
 
@@ -273,8 +325,7 @@ Future<void> _logout(BuildContext context) async {
             type: PageTransitionType.fade,
             child: const WelcomeScreen(),
           ),
-          (route) =>
-              false, // Remove all previous screens from the navigation stack
+          (route) => false, // Remove all previous screens from the navigation stack
         );
       }
     } else {
@@ -286,26 +337,32 @@ Future<void> _logout(BuildContext context) async {
   }
 }
 
-// Returns the image selected in avatarName
-Widget _buildAvatarImage(String avatarName) {
-  switch (avatarName) {
-    case 'pixelHeart':
-      return Image.asset('images/pixelHeart.png');
-    case 'pixelPica':
-      return Image.asset('images/pixelPica.png');
-    case 'pixelDiamond':
-      return Image.asset('images/pixelDiamond.png');
-    case 'pixelTrebol':
-      return Image.asset('images/pixelTrebol.png');
-    case 'pixelSoyi':
-      return Image.asset('images/pixelSoyi.png');
-    case 'pixelBrat':
-      return Image.asset('images/pixelBrat.png');
-    case 'pixelBarb':
-      return Image.asset('images/pixelBarb.png');
-    case 'pixelBard':
-      return Image.asset('images/pixelBard.png');
-    default:
-      return const Icon(Icons.person, size: 36);
-  }
+/// **Reusable text field widget**
+/// - Supports password input with `obscureText` option.
+/// - Styled with a dark theme.
+Widget _buildTextField(
+  String label,
+  TextEditingController controller, {
+  bool isPassword = false,
+}) {
+  return TextField(
+    controller: controller,
+    obscureText: isPassword,
+    style: const TextStyle(color: Colors.white),
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.grey),
+      filled: true,
+      fillColor: const Color(0xFF353A50),
+      enabledBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.transparent),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.blueAccent),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+  );
 }
+

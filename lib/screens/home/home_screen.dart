@@ -1,3 +1,4 @@
+import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/screens/home/friends_functions.dart';
 import 'package:nogler/screens/home/profile_screen.dart';
 
@@ -13,7 +14,8 @@ class HomeScreen extends StatefulWidget {
 
 // Home screen of the application
 class _HomeScreenState extends State<HomeScreen> {
-  //no longer const HomeScreen
+  String _username = "Loading...";
+  int _avatar = 1;
 
   List<String> friends = [
     "Carlos99",
@@ -43,6 +45,33 @@ class _HomeScreenState extends State<HomeScreen> {
     "Pedro Sanchez",
   ];
 
+    @override
+  void initState() {
+    super.initState();
+    _loadUserProfile(); // Obtain user profile information
+  }
+
+  /// Method to load the user profile information
+  Future<void> _loadUserProfile() async {
+    final dioClient = DioClient();
+
+    try {
+      final response = await dioClient.dio.get('/auth/me');
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _username = response.data['username'];
+          _avatar = response.data['icon'];
+        });
+      } else {
+        debugPrint("❌ Error getting profile: ${response.data}");
+      }
+    } catch (e) {
+      debugPrint("❌ Network error while getting profile: $e");
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Align(
                   // Aligns the profile button to the top right
                   alignment: Alignment.topRight,
-                  child: _buildProfileButton(context, "Jorge1234"),
+                  child: _buildProfileButton(context, _username),
                 ),
               ),
 
@@ -155,8 +184,12 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(10),
         ), // Rounded edges
       ),
-      onPressed: () {
-        showProfile(context);
+      onPressed: () async {
+        // Abrir perfil y esperar la respuesta
+        final result = await showProfile(context, _username, _avatar);
+        if (result == true) {
+          _loadUserProfile(); // ✅ Recargar datos después de actualizar perfil
+        }
       }, // Empty function for now
       child: Column(
         // Column to stack text and username box vertically
