@@ -22,7 +22,7 @@ class DioClient {
 
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://nogler.ddns.net:8080', // Base URL for API requests
+        baseUrl: 'https://nogler.ddns.net', // Base URL for API requests
         connectTimeout: const Duration(seconds: 10), // Set connection timeout
         receiveTimeout: const Duration(seconds: 10), // Set response timeout
         headers: {
@@ -34,7 +34,7 @@ class DioClient {
 
     // Add CookieManager to automatically handle cookies across requests
     dio.interceptors.add(CookieManager(_cookieJar));
-
+  
     // Add an interceptor to log requests, responses, and errors
     dio.interceptors.add(
       InterceptorsWrapper(
@@ -61,7 +61,7 @@ class DioClient {
   ///
   /// Returns a `Future` containing a `List<Cookie>`.
   Future<List<Cookie>> getCookies() async {
-    return _cookieJar.loadForRequest(Uri.parse('http://nogler.ddns.net:8080'));
+    return _cookieJar.loadForRequest(Uri.parse('https://nogler.ddns.net'));
   }
 
   /// Clears all stored cookies.
