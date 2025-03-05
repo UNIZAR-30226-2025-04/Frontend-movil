@@ -1,3 +1,6 @@
+import 'package:dio/dio.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/screens/register/register_screen.dart';
@@ -22,38 +25,96 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController =
       TextEditingController(); // Controller for the password input
   String? _errorMessage; // Error message to show if the login fails
+  late Dio _dio; // Dio instance for making network requests
+
+  @override
+  void initState() {
+    super.initState();
+    _setupDio();
+  }
+
+  void _setupDio() {
+    _dio = Dio();
+    final cookieJar = CookieJar();
+    _dio.interceptors.add(CookieManager(cookieJar));
+  }
 
   // Method to login the user
-  void _login() async {
+  // Method to login the user
+  Future<void> _login() async {
     // Unfocus the text fields to hide the keyboard
     FocusScope.of(context).unfocus();
-    // Add a small delay to ensure the keyboard is closed before navigating
-    await Future.delayed(Duration(milliseconds: 300));
-    // Check if the widget is still mounted before using the context
-    if (!mounted) return;
-    // Check if the email and password are correct
+
     // Simple validation
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       setState(() {
         _errorMessage = 'Please enter email and password';
       });
-    } else if (_emailController.text == 'jorge@gmail.com' &&
-        _passwordController.text == 'password') {
-      // Navigate to the home screen after successful login
-      if (mounted) {
-        // Check if the widget is still mounted before navigating
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            type: PageTransitionType.fade,
-            child: const HomeScreen(),
-          ),
-        );
+      return;
+    }
+
+    // Make a POST request to the login endpoint
+    try {
+      final response = await _dio.post(
+        // Use the Dio instance to make a POST request
+        'http://nogler.ddns.net:8080/login',
+        data: {
+          // Data to send in the request
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        },
+        options: Options(
+          // Options for the request
+          contentType:
+              Headers.formUrlEncodedContentType, // Set the content type
+          responseType: ResponseType.json, // Set the response type
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // If the response status code is 200 navigate to the home screen after successful login
+
+        if (mounted) {
+          // Check if the widget is still mounted before navigating
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+              duration: const Duration(
+                milliseconds: 300,
+              ), // Set the duration of the transition
+              type: PageTransitionType.fade,
+              child: const HomeScreen(),
+            ),
+          );
+        }
       }
-    } else {
-      // Show an error message if the login fails
+    } on DioException catch (e) {
+      // Catch DioException to handle network errors
       setState(() {
-        _errorMessage = 'Incorrect password or username';
+        if (e.response != null) {
+          // Check if the response is not null
+          if (e.response!.statusCode == 400) {
+            // Handle bad request error
+            _errorMessage = 'Bad request. Please check your input.';
+          } else if (e.response!.statusCode == 401) {
+            // Handle unauthorized error
+            _errorMessage =
+                e.response!.data['error'] ??
+                'Unauthorized. Please check your credentials.';
+          } else {
+            // Handle other errors
+            _errorMessage = 'An error occurred during login.';
+          }
+        } else {
+          // Handle network errors
+          _errorMessage =
+              'Network error. Please check your internet connection.';
+        }
+      });
+    } catch (e) {
+      // Catch all other exceptions
+      setState(() {
+        _errorMessage = 'An unexpected error occurred. Please try again.';
       });
     }
   }
