@@ -32,7 +32,12 @@ class _LoginScreenState extends State<LoginScreen> {
     // Check if the widget is still mounted before using the context
     if (!mounted) return;
     // Check if the email and password are correct
-    if (_emailController.text == 'jorge@gmail.com' &&
+    // Simple validation
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter email and password';
+      });
+    } else if (_emailController.text == 'jorge@gmail.com' &&
         _passwordController.text == 'password') {
       // Navigate to the home screen after successful login
       if (mounted) {
