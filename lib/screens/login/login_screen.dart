@@ -27,19 +27,20 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage; // Error message to show if the login fails
   late Dio _dio; // Dio instance for making network requests
 
+  // Method to initialize the state
   @override
   void initState() {
     super.initState();
     _setupDio();
   }
 
+  // Method to setup the Dio instance
   void _setupDio() {
     _dio = Dio();
     final cookieJar = CookieJar();
     _dio.interceptors.add(CookieManager(cookieJar));
   }
 
-  // Method to login the user
   // Method to login the user
   Future<void> _login() async {
     // Unfocus the text fields to hide the keyboard

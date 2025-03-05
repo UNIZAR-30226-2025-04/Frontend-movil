@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/utils/app_styles.dart';
 import 'package:nogler/widgets/background_widget.dart';
@@ -24,10 +25,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController(); // Controller for username input
 
   String? _errorMessage; // Stores error message if registration fails
+  late Dio _dio; // Dio instance for making network requests
+
+  // Initialize the state of the widget
+  @override
+  void initState() {
+    super.initState();
+    _dio = Dio(); // Create a new Dio instance
+  }
 
   // Method to register the user
-  void _register() {
-    // Check if passwords match
+  Future<void> _register() async {
+    
+    // Simple validation
     if (_passwordController.text != _repeatPasswordController.text) {
       setState(() {
         _errorMessage = 'Passwords do not match';
@@ -35,16 +45,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    // Mock validation for existing user
-    if (_emailController.text == 'jorge@gmail.com') {
-      setState(() {
-        _errorMessage = 'User already exists';
-      });
-      return;
-    }
+    // Make a POST request to the register endpoint
+    try {
+      final response = await _dio.post( // Use the Dio instance to make a POST request
+        'http://nogler.ddns.net:8080/signup',
+        data: {
+          'username': _usernameController.text,
+          'email': _emailController.text,
+          'password': _passwordController.text,
+          'icono': 1,
+        },
+        options: Options( // Options for the request
+          contentType: Headers.formUrlEncodedContentType, // Set the content type
+          responseType: ResponseType.json, // Set the response type
+        ),
+      );
 
-    // Navigate to the login screen after successful registration
-    Navigator.pop(context);
+      if (response.statusCode == 201) { // Registration successful
+        if (mounted) { // Check if the widget is still mounted
+          Navigator.pop(context); // Return to login screen
+        }
+      }
+    } on DioException catch (e) { // Catch DioException to handle network errors
+
+      setState(() {
+        if (e.response != null) { // Check if the response is not null
+          if (e.response!.statusCode == 400) { // Handle bad request error
+            _errorMessage =
+                e.response!.data['error'] ??
+                'Bad request. Please check your input.';
+          } else if (e.response!.statusCode == 409) { // Handle conflict error
+            _errorMessage = e.response!.data['error'] ?? 'User already exists.';
+          } else { // Handle other errors
+            _errorMessage = 'An error occurred during registration.';
+          }
+        } else { // Handle network errors
+          _errorMessage =
+              'Network error. Please check your internet connection.';
+        }
+      });
+    } catch (e) { // Catch other exceptions
+      setState(() {
+        _errorMessage = 'An unexpected error occurred. Please try again.';
+      });
+    }
   }
 
   @override
