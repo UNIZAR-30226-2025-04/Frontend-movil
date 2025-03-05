@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/screens/register/register_screen.dart';
 import 'package:nogler/utils/app_styles.dart';
@@ -25,21 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController =
       TextEditingController(); // Controller for the password input
   String? _errorMessage; // Error message to show if the login fails
-  late Dio _dio; // Dio instance for making network requests
-
-  // Method to initialize the state
-  @override
-  void initState() {
-    super.initState();
-    _setupDio();
-  }
-
-  // Method to setup the Dio instance
-  void _setupDio() {
-    _dio = Dio();
-    final cookieJar = CookieJar();
-    _dio.interceptors.add(CookieManager(cookieJar));
-  }
+  final DioClient _dioClient = DioClient(); // DioClient instance
 
   // Method to login the user
   Future<void> _login() async {
@@ -56,9 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Make a POST request to the login endpoint
     try {
-      final response = await _dio.post(
+      final response = await _dioClient.dio.post(
         // Use the Dio instance to make a POST request
-        'http://nogler.ddns.net:8080/login',
+        '/login',
         data: {
           // Data to send in the request
           'email': _emailController.text,
@@ -74,7 +59,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         // If the response status code is 200 navigate to the home screen after successful login
-
         if (mounted) {
           // Check if the widget is still mounted before navigating
           Navigator.pushReplacement(
