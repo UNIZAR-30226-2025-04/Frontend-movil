@@ -315,7 +315,7 @@ Future<void> _logout(BuildContext context) async {
       debugPrint("✅ Logout successful: ${response.data['message']}");
 
       // Clear all stored cookies to ensure the session is completely ended
-      await dioClient.clearCookies();
+      dioClient.clearToken();
 
       // Navigate to `WelcomeScreen` and remove all previous routes
       if (context.mounted) {

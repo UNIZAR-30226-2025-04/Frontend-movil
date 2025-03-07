@@ -58,6 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (response.statusCode == 200) {
+        final token = response.data["token"]; // Get the token from the response
+        _dioClient.setToken(token); // Set the token in the DioClient
         // If the response status code is 200 navigate to the home screen after successful login
         if (mounted) {
           // Check if the widget is still mounted before navigating

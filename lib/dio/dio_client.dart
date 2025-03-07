@@ -1,6 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 
 /// Singleton class for managing HTTP requests with Dio.
@@ -9,7 +7,7 @@ class DioClient {
   static final DioClient _instance =
       DioClient._internal(); // Singleton instance
   late final Dio dio; // Dio instance for making API requests
-  late final CookieJar _cookieJar; // CookieJar instance to manage cookies
+  String? _jwtToken; // JWT token to be used for authentication
 
   /// Factory constructor that returns the same instance every time.
   factory DioClient() {
@@ -18,11 +16,9 @@ class DioClient {
 
   /// Private named constructor to initialize the singleton.
   DioClient._internal() {
-    _cookieJar = CookieJar(); // Initialize CookieJar for handling cookies
-
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://nogler.ddns.net', // Base URL for API requests
+        baseUrl: 'https://nogler.ddns.net:443', // Base URL for API requests
         connectTimeout: const Duration(seconds: 10), // Set connection timeout
         receiveTimeout: const Duration(seconds: 10), // Set response timeout
         headers: {
@@ -32,13 +28,13 @@ class DioClient {
       ),
     );
 
-    // Add CookieManager to automatically handle cookies across requests
-    dio.interceptors.add(CookieManager(_cookieJar));
-  
-    // Add an interceptor to log requests, responses, and errors
+    // Add an interceptor to handle JWT authentication and logging
     dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
+        onRequest: (options, handler) { // Interceptor for requests
+          if (_jwtToken != null) { // Add JWT token to Authorization header
+            options.headers['Authorization'] = 'Bearer $_jwtToken';
+          }
           debugPrint("🚀 Sending Request: ${options.method} ${options.path}");
           return handler.next(options); // Continue with the request
         },
@@ -54,22 +50,19 @@ class DioClient {
     );
   }
 
-  /// Retrieves stored cookies for the base URL.
+  /// Sets the JWT token for authentication.
   ///
-  /// This method fetches the cookies saved in the CookieJar for requests
-  /// made to the API.
-  ///
-  /// Returns a `Future` containing a `List<Cookie>`.
-  Future<List<Cookie>> getCookies() async {
-    return _cookieJar.loadForRequest(Uri.parse('https://nogler.ddns.net'));
+  /// This method should be called after the user logs in successfully.
+  void setToken(String token) {
+    _jwtToken = token;
+    debugPrint("🔑 JWT Token Set");
   }
 
-  /// Clears all stored cookies.
+  /// Clears the JWT token when the user logs out.
   ///
-  /// This method is useful when the user logs out, ensuring that any stored
-  /// session data is deleted.
-  Future<void> clearCookies() async {
-    await _cookieJar.deleteAll();
-    debugPrint("🚪 User logged out. Cookies cleared.");
+  /// This ensures that the authorization header is no longer included in requests.
+  void clearToken() {
+    _jwtToken = null;
+    debugPrint("🚪 User logged out. Token cleared.");
   }
 }
