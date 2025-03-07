@@ -1,9 +1,11 @@
 import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/screens/home/friends_functions.dart';
 import 'package:nogler/screens/home/profile_screen.dart';
+import 'package:nogler/screens/lobby/lobby_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     "Pedro Sanchez",
   ];
 
-    @override
+  @override
   void initState() {
     super.initState();
     _loadUserProfile(); // Obtain user profile information
@@ -70,7 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint("❌ Network error while getting profile: $e");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +124,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       _buildMenuButton(context, 'OFFLINE', () {}),
                       _buildMenuButton(context, 'JOIN', () {}),
-                      _buildMenuButton(context, 'HOST', () {}),
+                      _buildMenuButton(context, 'HOST', () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: const LobbyScreen(),
+                          ),
+                        );
+                      }),
                       _buildMenuButton(context, 'PARTY', () {}),
                       _buildMenuButton(context, 'FRIENDS', () {
                         showFriendsList(
