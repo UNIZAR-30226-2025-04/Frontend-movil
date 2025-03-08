@@ -31,8 +31,10 @@ class DioClient {
     // Add an interceptor to handle JWT authentication and logging
     dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) { // Interceptor for requests
-          if (_jwtToken != null) { // Add JWT token to Authorization header
+        onRequest: (options, handler) {
+          // Interceptor for requests
+          if (_jwtToken != null) {
+            // Add JWT token to Authorization header
             options.headers['Authorization'] = 'Bearer $_jwtToken';
           }
           debugPrint("🚀 Sending Request: ${options.method} ${options.path}");
@@ -43,7 +45,14 @@ class DioClient {
           return handler.next(response); // Continue processing the response
         },
         onError: (DioException e, handler) {
-          debugPrint("❌ Error: ${e.message}");
+          final errorMessage =
+              e.response?.data['error'] ?? 'Unknown error occurred';
+
+          if (e.response == null) {
+            debugPrint("❌ Error: ${e.message}");
+          } else {
+            debugPrint("❌ Error: $errorMessage");
+          }
           return handler.next(e); // Continue error handling
         },
       ),
