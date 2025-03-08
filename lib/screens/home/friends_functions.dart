@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
 
@@ -7,6 +8,7 @@ void showFriendsList(
   List<String> friends,
   List<String> friendRequests,
   List<String> allUsers,
+  String username,
 ) {
   showDialog(
     context: context,
@@ -62,6 +64,7 @@ void showFriendsList(
                     friends,
                     friendRequests,
                     allUsers,
+                    username,
                   );
                 },
                 child: const Text(
@@ -74,7 +77,7 @@ void showFriendsList(
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  showAddFriend(context);
+                  showAddFriend(context, username);
                 },
                 child: const Text(
                   "Add Friends",
@@ -90,7 +93,7 @@ void showFriendsList(
 }
 
 // Users searching pop-up
-Future<void> showAddFriend(BuildContext context) async {
+Future<void> showAddFriend(BuildContext context, String username) async {
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> nonFriends = [];
   List<Map<String, dynamic>> filteredFriends = [];
@@ -105,7 +108,7 @@ Future<void> showAddFriend(BuildContext context) async {
           if (!hasFetched) {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
-              final data = await _getNonFriends();
+              final data = await _getNonFriends(username);
               if (context.mounted) {
                 setState(() {
                   nonFriends = data;
@@ -202,7 +205,11 @@ Future<void> showAddFriend(BuildContext context) async {
                                       Icons.person_add,
                                       color: Colors.green,
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      sendFriendRequest(
+                                        filteredFriends[index]['username'],
+                                      );
+                                    },
                                   ),
                                 );
                               },
@@ -216,7 +223,7 @@ Future<void> showAddFriend(BuildContext context) async {
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              showFriendsList(context, [], [], []);
+                              showFriendsList(context, [], [], [], username);
                             },
                             child: const Text(
                               "Back",
@@ -242,6 +249,7 @@ void showFriendRequests(
   List<String> friends,
   List<String> friendRequests,
   List<String> allUsers,
+  String username,
 ) {
   List<String> filteredUsers = List.from(friendRequests);
 
@@ -311,6 +319,7 @@ void showFriendRequests(
                         friends,
                         friendRequests,
                         allUsers,
+                        username,
                       );
                     },
                     child: const Text("Back", style: TextStyle(fontSize: 16)),
@@ -325,25 +334,103 @@ void showFriendRequests(
   );
 }
 
-Future<List<Map<String, dynamic>>> _getNonFriends() async {
-  final dioClient = DioClient();
+/// Function to get a list of users who are neither friends, nor users to whom a friend request has been sent,
+/// and excluding the specified username
+Future<List<Map<String, dynamic>>> _getNonFriends(String username) async {
+  final dioClient = DioClient(); // Create a new Dio client instance
   try {
+    // Fetch all users from the API
     final response = await dioClient.dio.get('/allusers');
+
+    // Fetch the current user's friends list
     final friendsResponse = await dioClient.dio.get('/auth/friends');
 
-    if (response.statusCode == 200 && friendsResponse.statusCode == 200) {
+    // Fetch the list of friend requests that the user has sent
+    final sentRequestsResponse = await dioClient.dio.get(
+      '/auth/sent_friendship_requests',
+    );
+
+    // Fetch the list of friend requests received by the authenticated user
+    final receivedRequestsResponse = await dioClient.dio.get(
+      '/auth/received_friendship_requests',
+    );
+
+    // If the API responses are successful, process the data
+    if (response.statusCode == 200 &&
+        friendsResponse.statusCode == 200 &&
+        sentRequestsResponse.statusCode == 200 &&
+        receivedRequestsResponse.statusCode == 200) {
+      // Convert the response data to a list of all users
       List<Map<String, dynamic>> allUsers = List<Map<String, dynamic>>.from(
         response.data,
       );
+
+      // Extract a list of friends' usernames from the response
       List<String> friends = List<String>.from(
         friendsResponse.data.map((friend) => friend['username']),
       );
+
+      // Extract a list of usernames to whom friend requests have been sent
+      List<String> sentRequests = List<String>.from(
+        (sentRequestsResponse.data['sent_friendship_requests'] as List?)?.map(
+              (request) => request['username'] as String,
+            ) ??
+            [], // Handle null and return an empty list if null
+      );
+
+      // Extract a list of usernames who have sent friend requests to the user
+      List<String> receivedRequests = List<String>.from(
+        (receivedRequestsResponse.data['received_friendship_requests'] as List?)
+                ?.map((request) => request['username'] as String) ??
+            [], // Handle null and return an empty list if null
+      );
+
+      // Return a filtered list of users who are neither friends nor those to whom a request has been sent
       return allUsers
-          .where((user) => !friends.contains(user['username']))
+          .where(
+            (user) =>
+                !friends.contains(user['username']) && // Exclude friends
+                !sentRequests.contains(
+                  user['username'],
+                ) && // Exclude users with sent friend requests
+                !receivedRequests.contains(
+                  user['username'],
+                ) && // Exclude users who sent requests to the user
+                user['username'] != username, // Exclude the current username
+          )
           .toList();
     }
   } catch (e) {
+    // Print error message if there is an issue fetching data
     debugPrint("❌ Error fetching non-friends: $e");
   }
+  // Return an empty list in case of failure
   return [];
+}
+
+/// Function to send a friend request to a specific user
+Future<void> sendFriendRequest(String friendUsername) async {
+  final dioClient = DioClient(); // Create a new Dio client instance
+  try {
+    // Send a POST request to the API to send a friend request
+    final response = await dioClient.dio.post(
+      '/auth/sendFriendshipRequest',
+      data: {
+        'friendUsername': friendUsername,
+      }, // Send the friend's username as form data
+      options: Options(
+        contentType:
+            Headers
+                .formUrlEncodedContentType, // Set content type to 'application/x-www-form-urlencoded'
+        responseType: ResponseType.json, // Expect JSON response
+      ),
+    );
+    if (response.statusCode == 200) {
+      // Print success message if the request was sent successfully
+      debugPrint('✅ Friend request sent to $friendUsername');
+    }
+  } catch (e) {
+    // Print error message if sending the request fails
+    debugPrint('❌ Failed to send request: $e');
+  }
 }
