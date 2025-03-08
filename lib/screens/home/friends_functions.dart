@@ -118,6 +118,7 @@ Future<void> showAddFriend(BuildContext context) async {
 
           void filterSearchResults(String query) {
             setState(() {
+              filteredFriends.clear();
               if (query.isEmpty) {
                 filteredFriends = List.from(nonFriends);
               } else {
@@ -185,15 +186,17 @@ Future<void> showAddFriend(BuildContext context) async {
                             width: double.maxFinite,
                             height: 170,
                             child: ListView.builder(
-                              itemCount: nonFriends.length,
+                              itemCount: filteredFriends.length,
                               itemBuilder: (context, index) {
                                 return ListTile(
                                   leading: CircleAvatar(
                                     child: Text(
-                                      nonFriends[index]['username'][0],
+                                      filteredFriends[index]['username'][0],
                                     ),
                                   ),
-                                  title: Text(nonFriends[index]['username']),
+                                  title: Text(
+                                    filteredFriends[index]['username'],
+                                  ),
                                   trailing: IconButton(
                                     icon: const Icon(
                                       Icons.person_add,
