@@ -161,6 +161,18 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
+
+                  // My Requests button
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      showMyRequest(context, username);
+                    },
+                    child: const Text(
+                      "My Sent Requests",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -417,7 +429,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                           .isEmpty // Check if the list is empty
                       ? Center(
                         child: Text(
-                          "No friend requests available", // Message when no requests are present
+                          "You haven't sent any friend requests yet", // Message when no requests are present
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       )
@@ -471,6 +483,128 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                                       receivedRequests.removeAt(
                                         index,
                                       ); // Remove the declined request from the list
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+            ),
+            actions: [
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.end, // Align the back button to the right
+                children: [
+                  // "Back" button to close the dialog and return to the friends list
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close the dialog
+                      showFriendsList(
+                        context,
+                        username,
+                      ); // Show the updated friends list after closing the dialog
+                    },
+                    child: const Text("Back", style: TextStyle(fontSize: 16)),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+/// Function to show the "My Requests" dialog and allow the user to decline his requests
+Future<void> showMyRequest(BuildContext context, String username) async {
+  // List to store my requests
+  List<Map<String, dynamic>> myRequests = [];
+  bool hasFetched = false; // Flag to ensure data is fetched once
+  bool isLoading = true; // Flag to track loading state
+
+  // Show the dialog to display the my requests
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          // Fetch my requests if not already fetched
+          if (!hasFetched) {
+            hasFetched = true;
+            Future.delayed(Duration.zero, () async {
+              final data =
+                  await _getMyFriendRequests(); // Fetch my requests from the API
+              if (context.mounted) {
+                setState(() {
+                  myRequests = List.from(
+                    data,
+                  ); // Update the list of my requests
+                  isLoading =
+                      false; // Set loading to false once data is fetched
+                });
+              }
+            });
+          }
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                20,
+              ), // Rounded corners for the dialog
+            ),
+            title: const Text(
+              "My Sent Requests", // Title of the dialog
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+
+            content: SizedBox(
+              width: double.maxFinite, // Uses the max width of the pop-up
+              child:
+                  // Show loading indicator while data is being fetched
+                  isLoading
+                      ? const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                      : myRequests
+                          .isEmpty // Check if the list is empty
+                      ? Center(
+                        child: Text(
+                          "No friend requests available", // Message when no requests are present
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      )
+                      : ListView.builder(
+                        itemCount:
+                            myRequests
+                                .length, // Build the list of my requests
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: CircleAvatar(
+                              child: Text(
+                                myRequests[index]['username'][0], // Display the first letter of the username
+                              ),
+                            ),
+                            title: Text(
+                              myRequests[index]['username'],
+                            ), // Display the username of the requester
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.close, color: Colors.red),
+                                  onPressed: () {
+                                    // Delete the my request
+                                    
+                                    setState(() {
+                                      myRequests.removeAt(
+                                        index,
+                                      ); // Remove the deleted request from the list
                                     });
                                   },
                                 ),
@@ -715,4 +849,27 @@ Future<void> _deleteFriend(String friendUsername) async {
     // Handle errors during the deletion process
     debugPrint('❌ Error deleting friend: $e');
   }
+}
+
+/// Function to fetch the list of my friend requests
+Future<List<Map<String, dynamic>>> _getMyFriendRequests() async {
+  final dioClient = DioClient();
+  try {
+    final response = await dioClient.dio.get(
+      '/auth/sent_friendship_requests', // Correct endpoint to get sent requests
+    );
+
+    if (response.statusCode == 200) {
+      // Extract and return the list of usernames who I sent friend requests
+      return List<Map<String, dynamic>>.from(
+        (response.data['sent_friendship_requests'] ?? [])
+            as List, // Correct access to the field
+      );
+    }
+  } catch (e) {
+    // Handle any error that occurs while fetching my friend requests
+    debugPrint("❌ Error fetching my friend requests: $e");
+  }
+  // Return an empty list if there is any error or the response is empty
+  return [];
 }
