@@ -208,7 +208,7 @@ Future<bool> _updateProfile(String newUsername, String newPassword, String repea
       data: {
         "username": newUsername,
         if (newPassword.isNotEmpty) "password": newPassword, // Only send password if provided
-        "icono": newIcon, // Send the selected icon number
+        "icon": newIcon, // Send the selected icon number
       },
       options: Options(
         // Options for the request

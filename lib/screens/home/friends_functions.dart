@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/dio/dio_client.dart';
 
 // Show the list of friends of your current profile
 void showFriendsList(
@@ -73,7 +74,7 @@ void showFriendsList(
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  showAddFriend(context, friends, friendRequests, allUsers);
+                  showAddFriend(context);
                 },
                 child: const Text(
                   "Add Friends",
@@ -89,20 +90,21 @@ void showFriendsList(
 }
 
 // Users searching pop-up
-void showAddFriend(
-  BuildContext context,
-  List<String> friends,
-  List<String> friendRequests,
-  List<String> allUsers,
-) {
-  // Change later on when database is implemented
-
-  List<String> filteredUsers = List.from(allUsers);
+Future<void> showAddFriend(BuildContext context) async {
+  final navigator = Navigator.of(context);
   //List<String> friends = [];
   TextEditingController searchController = TextEditingController();
 
-  showDialog(
-    context: context,
+  List<Map<String, dynamic>> nonFriends = [];
+
+  
+
+  nonFriends = await _getNonFriends();
+  
+  if (!navigator.mounted) return;
+
+  await showDialog(
+    context: navigator.context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
@@ -142,18 +144,7 @@ void showAddFriend(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              filteredUsers =
-                                  allUsers
-                                      .where(
-                                        (user) => user.toLowerCase().contains(
-                                          value.toLowerCase(),
-                                        ),
-                                      )
-                                      .toList();
-                            });
-                          },
+                          onChanged: (value) async {},
                         ),
                       ),
 
@@ -162,33 +153,19 @@ void showAddFriend(
                         width: double.maxFinite,
                         height: 170,
                         child: ListView.builder(
-                          //shrinkWrap: true, //bajo sospecha
-                          itemCount: filteredUsers.length,
+                          itemCount: nonFriends.length,
                           itemBuilder: (context, index) {
                             return ListTile(
                               leading: CircleAvatar(
-                                child: Text(filteredUsers[index][0]),
+                                child: Text(nonFriends[index]['username'][0]),
                               ),
-                              title: Text(filteredUsers[index]),
-                              trailing: IconButton(
+                              title: Text(nonFriends[index]['username']),
+                                trailing: IconButton(
                                 icon: const Icon(
                                   Icons.person_add,
                                   color: Colors.green,
                                 ),
                                 onPressed: () {
-                                  if (!friends.contains(filteredUsers[index])) {
-                                    setState(() {
-                                      friends.add(
-                                        filteredUsers[index], //add user to list, later on to the database
-                                      );
-                                      allUsers.remove(
-                                        filteredUsers[index],
-                                      ); //remove from allUsers list
-                                      filteredUsers.remove(
-                                        filteredUsers[index],
-                                      );
-                                    });
-                                  }
                                 },
                               ),
                             );
@@ -202,18 +179,11 @@ void showAddFriend(
                           //close pop-up button
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(
-                                context,
-                              ); //TODO, open profile of the user
-                              showFriendsList(
-                                context,
-                                friends,
-                                friendRequests,
-                                allUsers,
-                              );
+                              Navigator.pop(navigator.context);
+                              showFriendsList(navigator.context, [], [], []);
                             },
                             child: const Text(
-                              "Close",
+                              "Back",
                               style: TextStyle(fontSize: 16),
                             ),
                           ),
@@ -317,4 +287,27 @@ void showFriendRequests(
       );
     },
   );
+}
+
+Future<List<Map<String, dynamic>>> _getNonFriends() async {
+  final dioClient = DioClient();
+  try {
+    final response = await dioClient.dio.get('/allusers');
+    final friendsResponse = await dioClient.dio.get('/auth/friends');
+
+    if (response.statusCode == 200 && friendsResponse.statusCode == 200) {
+      List<Map<String, dynamic>> allUsers = List<Map<String, dynamic>>.from(
+        response.data,
+      );
+      List<String> friends = List<String>.from(
+        friendsResponse.data.map((friend) => friend['username']),
+      );
+      return allUsers
+          .where((user) => !friends.contains(user['username']))
+          .toList();
+    }
+  } catch (e) {
+    debugPrint("❌ Error fetching non-friends: $e");
+  }
+  return [];
 }
