@@ -91,23 +91,26 @@ void showFriendsList(
 
 // Users searching pop-up
 Future<void> showAddFriend(BuildContext context) async {
-  final navigator = Navigator.of(context);
   //List<String> friends = [];
   TextEditingController searchController = TextEditingController();
 
   List<Map<String, dynamic>> nonFriends = [];
-
-  
-
-  nonFriends = await _getNonFriends();
-  
-  if (!navigator.mounted) return;
+  bool isLoading = true;
 
   await showDialog(
-    context: navigator.context,
+    context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          Future.delayed(Duration.zero, () async {
+            final data = await _getNonFriends();
+            if (context.mounted) {
+              setState(() {
+                nonFriends = data;
+                isLoading = false;
+              });
+            }
+          });
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -149,29 +152,37 @@ Future<void> showAddFriend(BuildContext context) async {
                       ),
 
                       const SizedBox(height: 10),
-                      SizedBox(
-                        width: double.maxFinite,
-                        height: 170,
-                        child: ListView.builder(
-                          itemCount: nonFriends.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              leading: CircleAvatar(
-                                child: Text(nonFriends[index]['username'][0]),
-                              ),
-                              title: Text(nonFriends[index]['username']),
-                                trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.person_add,
-                                  color: Colors.green,
-                                ),
-                                onPressed: () {
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                      isLoading
+                          ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                          : SizedBox(
+                            width: double.maxFinite,
+                            height: 170,
+                            child: ListView.builder(
+                              itemCount: nonFriends.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    child: Text(
+                                      nonFriends[index]['username'][0],
+                                    ),
+                                  ),
+                                  title: Text(nonFriends[index]['username']),
+                                  trailing: IconButton(
+                                    icon: const Icon(
+                                      Icons.person_add,
+                                      color: Colors.green,
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -179,8 +190,8 @@ Future<void> showAddFriend(BuildContext context) async {
                           //close pop-up button
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(navigator.context);
-                              showFriendsList(navigator.context, [], [], []);
+                              Navigator.pop(context);
+                              showFriendsList(context, [], [], []);
                             },
                             child: const Text(
                               "Back",
