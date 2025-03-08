@@ -6,6 +6,7 @@ import 'package:nogler/dio/dio_client.dart';
 Future<void> showFriendsList(BuildContext context, String username) async {
   List<Map<String, dynamic>> friendsList = [];
   bool hasFetched = false; // To ensure the data is fetched only once
+  bool isLoading = true; // Flag to track loading state
 
   showDialog(
     context: context,
@@ -20,6 +21,8 @@ Future<void> showFriendsList(BuildContext context, String username) async {
               if (context.mounted) {
                 setState(() {
                   friendsList = List.from(data);
+                  isLoading =
+                      false; // Set loading to false once data is fetched
                 });
               }
             });
@@ -37,7 +40,12 @@ Future<void> showFriendsList(BuildContext context, String username) async {
               width: double.maxFinite, // uses the max width of the pop-up
               height: 300, // pop-up height
               child:
-                  friendsList.isEmpty
+                  isLoading
+                      ? const Center(
+                        child:
+                            CircularProgressIndicator(), // Show loading spinner
+                      )
+                      : friendsList.isEmpty
                       ? Center(
                         child: Text(
                           'No friends available', // Message when no data is available
@@ -218,6 +226,17 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                               child: CircularProgressIndicator(),
                             ),
                           )
+                          : filteredFriends
+                              .isEmpty // Check if the list is empty
+                          ? Center(
+                            child: Text(
+                              "No friend requests available", // Message when no requests are present
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          )
                           : SizedBox(
                             width: double.maxFinite,
                             height: 170,
@@ -294,6 +313,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
   // List to store received friend requests
   List<Map<String, dynamic>> receivedRequests = [];
   bool hasFetched = false; // Flag to ensure data is fetched once
+  bool isLoading = true; // Flag to track loading state
 
   // Show the dialog to display the friend requests
   showDialog(
@@ -312,6 +332,8 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                   receivedRequests = List.from(
                     data,
                   ); // Update the list of received requests
+                  isLoading =
+                      false; // Set loading to false once data is fetched
                 });
               }
             });
@@ -331,11 +353,18 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
             content: SizedBox(
               width: double.maxFinite, // Uses the max width of the pop-up
               child:
-                  receivedRequests
+                  isLoading
+                      ? const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                      : receivedRequests
                           .isEmpty // Check if the list is empty
                       ? Center(
                         child: Text(
-                          "No friend requests available", // Message when no requests are present
+                          "No users available to add", // Message when no requests are present
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       )
