@@ -74,44 +74,54 @@ void showFriendsList(BuildContext context, String username) {
   );
 }
 
-// Users searching pop-up
+/// Function to show the "Add Friends" dialog and allow the user to search and add friends
 Future<void> showAddFriend(BuildContext context, String username) async {
+  // Controllers and state variables for managing the search and data
   TextEditingController searchController = TextEditingController();
-  List<Map<String, dynamic>> nonFriends = [];
-  List<Map<String, dynamic>> filteredFriends = [];
-  bool isLoading = true;
-  bool hasFetched = false;
+  List<Map<String, dynamic>> nonFriends = []; // List of non-friends
+  List<Map<String, dynamic>> filteredFriends =
+      []; // Filtered list based on search
+  bool isLoading = true; // Flag to track loading state
+  bool hasFetched = false; // Flag to ensure data is fetched once
 
+  // Show the dialog where users can search and add friends
   await showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          // Fetch the non-friends list only once when the dialog is first shown
           if (!hasFetched) {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
-              final data = await _getNonFriends(username);
+              final data = await _getNonFriends(username); // Fetch non-friends
               if (context.mounted) {
                 setState(() {
                   nonFriends = data;
-                  filteredFriends = List.from(nonFriends);
-                  isLoading = false;
+                  filteredFriends = List.from(
+                    nonFriends,
+                  ); // Initialize filtered list
+                  isLoading =
+                      false; // Set loading to false once data is fetched
                 });
               }
             });
           }
 
+          // Function to filter the non-friends list based on the search query
           void filterSearchResults(String query) {
             setState(() {
               filteredFriends.clear();
               if (query.isEmpty) {
-                filteredFriends = List.from(nonFriends);
+                filteredFriends = List.from(
+                  nonFriends,
+                ); // Show all if query is empty
               } else {
                 filteredFriends =
                     nonFriends
                         .where(
                           (user) => user['username'].toLowerCase().contains(
-                            query.toLowerCase(),
+                            query.toLowerCase(), // Filter by username
                           ),
                         )
                         .toList();
@@ -143,23 +153,26 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: TextField(
-                          controller: searchController,
+                          controller:
+                              searchController, // Controller for the search input
                           decoration: InputDecoration(
-                            hintText: "Search user...",
+                            hintText: "Search user...", // Search hint
                             hintStyle: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
-                            prefixIcon: Icon(Icons.search),
+                            prefixIcon: Icon(Icons.search), // Search icon
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onChanged: filterSearchResults,
+                          onChanged:
+                              filterSearchResults, // Trigger filtering on text change
                         ),
                       ),
 
                       const SizedBox(height: 10),
+                      // Show loading indicator while data is being fetched
                       isLoading
                           ? const Center(
                             child: Padding(
@@ -171,16 +184,18 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                             width: double.maxFinite,
                             height: 170,
                             child: ListView.builder(
-                              itemCount: filteredFriends.length,
+                              itemCount:
+                                  filteredFriends
+                                      .length, // Show the filtered friends
                               itemBuilder: (context, index) {
                                 return ListTile(
                                   leading: CircleAvatar(
                                     child: Text(
-                                      filteredFriends[index]['username'][0],
+                                      filteredFriends[index]['username'][0], // Display first letter of username
                                     ),
                                   ),
                                   title: Text(
-                                    filteredFriends[index]['username'],
+                                    filteredFriends[index]['username'], // Display username
                                   ),
                                   trailing: IconButton(
                                     icon: const Icon(
@@ -188,10 +203,11 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                                       color: Colors.green,
                                     ),
                                     onPressed: () {
+                                      // Send friend request when button is pressed
                                       _sendFriendRequest(
                                         filteredFriends[index]['username'],
                                       );
-                                     // Remove the user from the filteredFriends list after sending the request
+                                      // Remove the user from the filteredFriends list after sending the request
                                       setState(() {
                                         filteredFriends.removeAt(
                                           index,
@@ -207,11 +223,14 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          //close pop-up button
+                          // Back button to close the dialog
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              showFriendsList(context, username);
+                              showFriendsList(
+                                context,
+                                username,
+                              ); // Show friends list
                             },
                             child: const Text(
                               "Back",
@@ -232,68 +251,100 @@ Future<void> showAddFriend(BuildContext context, String username) async {
   );
 }
 
+/// Function to show the "Friend Requests" dialog and allow the user to accept or decline requests
 Future<void> showFriendRequests(BuildContext context, String username) async {
-  // Fetch the list of received friend requests
+  // List to store received friend requests
   List<Map<String, dynamic>> receivedRequests = [];
-  bool isLoading = true;
-  bool hasFetched = false;
+  bool hasFetched = false; // Flag to ensure data is fetched once
 
+  // Show the dialog to display the friend requests
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          // Fetch the received friend requests if not already fetched
           if (!hasFetched) {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
-              final data = await _getReceivedFriendRequests();
+              final data =
+                  await _getReceivedFriendRequests(); // Fetch friend requests from the API
               if (context.mounted) {
                 setState(() {
-                  receivedRequests = List.from(data);
-                  isLoading = false;
+                  receivedRequests = List.from(
+                    data,
+                  ); // Update the list of received requests
                 });
               }
             });
           }
           return AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(
+                20,
+              ), // Rounded corners for the dialog
             ),
             title: const Text(
-              "Friends Requests",
+              "Friends Requests", // Title of the dialog
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
             content: SizedBox(
-              width: double.maxFinite, // uses the max width of the pop-up
-              //height: 300, // pop-up height
-              child: ListView.builder(
-                itemCount: receivedRequests.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      child: Text(receivedRequests[index]['username'][0]),
-                    ),
-                    title: Text(receivedRequests[index]['username']),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.check, color: Colors.lightGreen),
-                          onPressed: () {},
+              width: double.maxFinite, // Uses the max width of the pop-up
+              child:
+                  receivedRequests
+                          .isEmpty // Check if the list is empty
+                      ? Center(
+                        child: Text(
+                          "No friend requests available", // Message when no requests are present
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.close, color: Colors.red),
-                          onPressed: () {
-                            setState(() {});
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                      )
+                      : ListView.builder(
+                        itemCount: receivedRequests.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: CircleAvatar(
+                              child: Text(
+                                receivedRequests[index]['username'][0],
+                              ),
+                            ),
+                            title: Text(receivedRequests[index]['username']),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.check,
+                                    color: Colors.lightGreen,
+                                  ),
+                                  onPressed: () {
+                                    _acceptFriendRequest(
+                                      receivedRequests[index]['username'],
+                                    );
+                                    _deleteFriendRequest(
+                                      receivedRequests[index]['username'],
+                                    );
+                                    receivedRequests.removeAt(index);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.close, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      _deleteFriendRequest(
+                                        receivedRequests[index]['username'],
+                                      );
+                                      receivedRequests.removeAt(index);
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
             ),
             actions: [
               Row(
@@ -438,4 +489,59 @@ Future<List<Map<String, dynamic>>> _getReceivedFriendRequests() async {
   }
   // Return an empty list if there is any error or the response is empty
   return [];
+}
+
+/// Function to accept a friend request and add a friend
+Future<void> _acceptFriendRequest(String friendUsername) async {
+  final dioClient = DioClient(); // Create a new Dio client instance
+  try {
+    // Send a POST request to the API to add a friend
+    final response = await dioClient.dio.post(
+      '/auth/addFriend', // API endpoint to add a friend
+      data: {
+        'friendUsername':
+            friendUsername, // Send the friend's username to be added
+      },
+      options: Options(
+        contentType:
+            Headers
+                .formUrlEncodedContentType, // Set content type to 'application/x-www-form-urlencoded'
+        responseType: ResponseType.json, // Expect JSON response
+      ),
+    );
+    if (response.statusCode == 200) {
+      // Print success message if the friend is added successfully
+      debugPrint('✅ Friend added: $friendUsername');
+    }
+  } catch (e) {
+    // Print error message if adding the friend fails
+    debugPrint('❌ Failed to add friend: $e');
+  }
+}
+
+/// Function to delete a received friend request after accepting it
+Future<void> _deleteFriendRequest(String friendUsername) async {
+  final dioClient = DioClient(); // Create a new Dio client instance
+  try {
+    // Send a DELETE request to remove the received friendship request
+    final response = await dioClient.dio.delete(
+      '/auth/received_friendship_request/$friendUsername', // API endpoint to delete the request
+      options: Options(
+        headers: {
+          'Authorization':
+              'Bearer YOUR_JWT_TOKEN', // Replace with the actual token
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // Print success message if the request was deleted successfully
+      debugPrint(
+        '✅ Friendship request from $friendUsername deleted successfully',
+      );
+    }
+  } catch (e) {
+    // Handle errors during the deletion process
+    debugPrint('❌ Error deleting friend request: $e');
+  }
 }
