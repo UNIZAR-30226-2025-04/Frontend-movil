@@ -166,10 +166,10 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      showMyRequest(context, username);
+                      showSentRequest(context, username);
                     },
                     child: const Text(
-                      "My Sent Requests",
+                      "Sent Requests",
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -429,7 +429,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                           .isEmpty // Check if the list is empty
                       ? Center(
                         child: Text(
-                          "You haven't sent any friend requests yet", // Message when no requests are present
+                          "No friend requests available ", // Message when no requests are present
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       )
@@ -518,10 +518,10 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
   );
 }
 
-/// Function to show the "My Requests" dialog and allow the user to decline his requests
-Future<void> showMyRequest(BuildContext context, String username) async {
+/// Function to show the "Sent Requests" dialog and allow the user to decline his requests
+Future<void> showSentRequest(BuildContext context, String username) async {
   // List to store my requests
-  List<Map<String, dynamic>> myRequests = [];
+  List<Map<String, dynamic>> sentRequests = [];
   bool hasFetched = false; // Flag to ensure data is fetched once
   bool isLoading = true; // Flag to track loading state
 
@@ -531,17 +531,17 @@ Future<void> showMyRequest(BuildContext context, String username) async {
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
-          // Fetch my requests if not already fetched
+          // Fetch the sent friend requests if not already fetched
           if (!hasFetched) {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
               final data =
-                  await _getMyFriendRequests(); // Fetch my requests from the API
+                  await _getSentFriendRequests(); // Fetch the sent friend requests from the API
               if (context.mounted) {
                 setState(() {
-                  myRequests = List.from(
+                  sentRequests = List.from(
                     data,
-                  ); // Update the list of my requests
+                  ); // Update the list of the sent friends requests
                   isLoading =
                       false; // Set loading to false once data is fetched
                 });
@@ -555,7 +555,7 @@ Future<void> showMyRequest(BuildContext context, String username) async {
               ), // Rounded corners for the dialog
             ),
             title: const Text(
-              "My Sent Requests", // Title of the dialog
+              "Sent Requests", // Title of the dialog
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -571,27 +571,27 @@ Future<void> showMyRequest(BuildContext context, String username) async {
                           child: CircularProgressIndicator(),
                         ),
                       )
-                      : myRequests
+                      : sentRequests
                           .isEmpty // Check if the list is empty
                       ? Center(
                         child: Text(
-                          "No friend requests available", // Message when no requests are present
+                          "You haven't sent any friend requests yet", // Message when no requests are present
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       )
                       : ListView.builder(
                         itemCount:
-                            myRequests
-                                .length, // Build the list of my requests
+                            sentRequests
+                                .length, // Build the list of the sent friend requests
                         itemBuilder: (context, index) {
                           return ListTile(
                             leading: CircleAvatar(
                               child: Text(
-                                myRequests[index]['username'][0], // Display the first letter of the username
+                                sentRequests[index]['username'][0], // Display the first letter of the username
                               ),
                             ),
                             title: Text(
-                              myRequests[index]['username'],
+                              sentRequests[index]['username'],
                             ), // Display the username of the requester
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -599,10 +599,10 @@ Future<void> showMyRequest(BuildContext context, String username) async {
                                 IconButton(
                                   icon: Icon(Icons.close, color: Colors.red),
                                   onPressed: () {
-                                    // Delete the my request
-                                    
+                                    // Delete the sent friend request
+                                    _deleteSentFriendRequest(sentRequests[index]['username']);
                                     setState(() {
-                                      myRequests.removeAt(
+                                      sentRequests.removeAt(
                                         index,
                                       ); // Remove the deleted request from the list
                                     });
@@ -851,8 +851,8 @@ Future<void> _deleteFriend(String friendUsername) async {
   }
 }
 
-/// Function to fetch the list of my friend requests
-Future<List<Map<String, dynamic>>> _getMyFriendRequests() async {
+/// Function to fetch the list of my sent friend requests
+Future<List<Map<String, dynamic>>> _getSentFriendRequests() async {
   final dioClient = DioClient();
   try {
     final response = await dioClient.dio.get(
@@ -872,4 +872,25 @@ Future<List<Map<String, dynamic>>> _getMyFriendRequests() async {
   }
   // Return an empty list if there is any error or the response is empty
   return [];
+}
+
+/// Function to delete a sent friend request
+Future<void> _deleteSentFriendRequest(String friendUsername) async {
+  final dioClient = DioClient(); // Create a new Dio client instance
+  try {
+    // Send a DELETE request to remove the sent friendship request
+    final response = await dioClient.dio.delete(
+      '/auth/sent_friendship_request/$friendUsername',
+    );
+
+    if (response.statusCode == 200) {
+      // Print success message if the request was deleted successfully
+      debugPrint(
+        '✅ Friendship request to $friendUsername deleted successfully',
+      );
+    }
+  } catch (e) {
+    // Handle errors during the deletion process
+    debugPrint('❌ Error deleting friend request: $e');
+  }
 }
