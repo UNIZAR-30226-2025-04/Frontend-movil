@@ -19,34 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String _username = "Loading...";
   int _avatar = 1;
 
-  List<String> friends = [
-    "Carlos99",
-    "AnaGamer",
-    "David_23",
-    "ElenaPro",
-    "GamerX",
-    "LuisaK",
-    "Pedro_Dev",
-    "SophieP",
-    "Tommy",
-    "ValeriaG",
-  ];
-
-  List<String> friendRequests = [
-    "Manolo23",
-    "SusanaGriso",
-    "Nicolas Pueyo",
-    "Lacastez",
-  ];
-
-  List<String> allUsers = [
-    "NewUser1",
-    "NewUser2",
-    "Mondongo",
-    "David Bisbal",
-    "Pedro Sanchez",
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -137,9 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildMenuButton(context, 'FRIENDS', () {
                         showFriendsList(
                           context,
-                          friends,
-                          friendRequests,
-                          allUsers,
                           _username
                         );
                       }),

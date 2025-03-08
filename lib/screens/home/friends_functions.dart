@@ -3,13 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
 
 // Show the list of friends of your current profile
-void showFriendsList(
-  BuildContext context,
-  List<String> friends,
-  List<String> friendRequests,
-  List<String> allUsers,
-  String username,
-) {
+void showFriendsList(BuildContext context, String username) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -26,20 +20,14 @@ void showFriendsList(
           width: double.maxFinite, // uses the max width of the pop-up
           height: 300, // pop-up height
           child: ListView.builder(
-            itemCount: friends.length,
+            itemCount:
+                1, // Always show 1 item (the "No friends available" message)
             itemBuilder: (context, index) {
-              return ListTile(
-                leading: CircleAvatar(
-                  child: Text(friends[index][0]), // Change later with images
+              return Center(
+                child: Text(
+                  'No friends available', // Message when no data is available
+                  style: TextStyle(fontSize: 16),
                 ),
-                title: Text(friends[index]),
-                trailing: Icon(Icons.message, color: Colors.blue),
-                onTap: () {
-                  Navigator.pop(
-                    context,
-                  ); // Closes pop-up when a friend is selected
-                  // Add code to see friend's profile
-                },
               );
             },
           ),
@@ -59,13 +47,7 @@ void showFriendsList(
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  showFriendRequests(
-                    context,
-                    friends,
-                    friendRequests,
-                    allUsers,
-                    username,
-                  );
+                  showFriendRequests(context, username);
                 },
                 child: const Text(
                   "Friend Requests",
@@ -206,9 +188,15 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                                       color: Colors.green,
                                     ),
                                     onPressed: () {
-                                      sendFriendRequest(
+                                      _sendFriendRequest(
                                         filteredFriends[index]['username'],
                                       );
+                                     // Remove the user from the filteredFriends list after sending the request
+                                      setState(() {
+                                        filteredFriends.removeAt(
+                                          index,
+                                        ); // Remove the user at the given index
+                                      });
                                     },
                                   ),
                                 );
@@ -223,7 +211,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              showFriendsList(context, [], [], [], username);
+                              showFriendsList(context, username);
                             },
                             child: const Text(
                               "Back",
@@ -244,20 +232,29 @@ Future<void> showAddFriend(BuildContext context, String username) async {
   );
 }
 
-void showFriendRequests(
-  BuildContext context,
-  List<String> friends,
-  List<String> friendRequests,
-  List<String> allUsers,
-  String username,
-) {
-  List<String> filteredUsers = List.from(friendRequests);
+Future<void> showFriendRequests(BuildContext context, String username) async {
+  // Fetch the list of received friend requests
+  List<Map<String, dynamic>> receivedRequests = [];
+  bool isLoading = true;
+  bool hasFetched = false;
 
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          if (!hasFetched) {
+            hasFetched = true;
+            Future.delayed(Duration.zero, () async {
+              final data = await _getReceivedFriendRequests();
+              if (context.mounted) {
+                setState(() {
+                  receivedRequests = List.from(data);
+                  isLoading = false;
+                });
+              }
+            });
+          }
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -267,38 +264,29 @@ void showFriendRequests(
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+
             content: SizedBox(
               width: double.maxFinite, // uses the max width of the pop-up
               //height: 300, // pop-up height
               child: ListView.builder(
-                itemCount: filteredUsers.length,
+                itemCount: receivedRequests.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: CircleAvatar(child: Text(friends[index][0])),
-                    title: Text(filteredUsers[index]),
+                    leading: CircleAvatar(
+                      child: Text(receivedRequests[index]['username'][0]),
+                    ),
+                    title: Text(receivedRequests[index]['username']),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           icon: Icon(Icons.check, color: Colors.lightGreen),
-                          onPressed: () {
-                            setState(() {
-                              // add the new friend to the friends list
-                              friends.add(filteredUsers[index]);
-                              // remove the accepted friend from friendRequests list
-                              friendRequests.remove(friendRequests[index]);
-                              filteredUsers.remove(filteredUsers[index]);
-                            });
-                          },
+                          onPressed: () {},
                         ),
                         IconButton(
                           icon: Icon(Icons.close, color: Colors.red),
                           onPressed: () {
-                            setState(() {
-                              // remove denied friend from friendRequests list
-                              friendRequests.remove(friendRequests[index]);
-                              filteredUsers.remove(filteredUsers[index]);
-                            });
+                            setState(() {});
                           },
                         ),
                       ],
@@ -314,13 +302,7 @@ void showFriendRequests(
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      showFriendsList(
-                        context,
-                        friends,
-                        friendRequests,
-                        allUsers,
-                        username,
-                      );
+                      showFriendsList(context, username);
                     },
                     child: const Text("Back", style: TextStyle(fontSize: 16)),
                   ),
@@ -409,7 +391,7 @@ Future<List<Map<String, dynamic>>> _getNonFriends(String username) async {
 }
 
 /// Function to send a friend request to a specific user
-Future<void> sendFriendRequest(String friendUsername) async {
+Future<void> _sendFriendRequest(String friendUsername) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a POST request to the API to send a friend request
@@ -433,4 +415,27 @@ Future<void> sendFriendRequest(String friendUsername) async {
     // Print error message if sending the request fails
     debugPrint('❌ Failed to send request: $e');
   }
+}
+
+/// Function to fetch the list of received friend requests
+Future<List<Map<String, dynamic>>> _getReceivedFriendRequests() async {
+  final dioClient = DioClient();
+  try {
+    final response = await dioClient.dio.get(
+      '/auth/received_friendship_requests',
+    );
+
+    if (response.statusCode == 200) {
+      // Extract and return the list of usernames who sent friend requests to the authenticated user
+      return List<Map<String, dynamic>>.from(
+        response.data['received_friendship_requests']
+            as List, // Access the correct field
+      );
+    }
+  } catch (e) {
+    // Handle any error that occurs while fetching the received friend requests
+    debugPrint("❌ Error fetching received friend requests: $e");
+  }
+  // Return an empty list if there is any error or the response is empty
+  return [];
 }
