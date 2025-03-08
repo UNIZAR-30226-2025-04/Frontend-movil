@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
+import 'package:nogler/screens/home/profile_screen.dart';
 
 /// Function to show the list of friends of the current profile
 Future<void> showFriendsList(BuildContext context, String username) async {
@@ -59,9 +60,10 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                         itemBuilder: (context, index) {
                           return ListTile(
                             leading: CircleAvatar(
-                              child: Text(
-                                friendsList[index]['username'][0],
-                              ), // Display first letter of username
+                              // Display the avatar image based on the 'icon' ID
+                              child: buildAvatarImage(
+                                friendsList[index]['icon'],
+                              ),
                             ),
                             title: Text(friendsList[index]['username']),
                             trailing: Row(
@@ -311,8 +313,9 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                               itemBuilder: (context, index) {
                                 return ListTile(
                                   leading: CircleAvatar(
-                                    child: Text(
-                                      filteredFriends[index]['username'][0], // Display first letter of username
+                                    // Display the avatar image based on the 'icon' ID
+                                    child: buildAvatarImage(
+                                      filteredFriends[index]['icon'],
                                     ),
                                   ),
                                   title: Text(
@@ -440,8 +443,9 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                         itemBuilder: (context, index) {
                           return ListTile(
                             leading: CircleAvatar(
-                              child: Text(
-                                receivedRequests[index]['username'][0], // Display the first letter of the username
+                              // Display the avatar image based on the 'icon' ID
+                              child: buildAvatarImage(
+                                receivedRequests[index]['icon'],
                               ),
                             ),
                             title: Text(
@@ -586,8 +590,9 @@ Future<void> showSentRequest(BuildContext context, String username) async {
                         itemBuilder: (context, index) {
                           return ListTile(
                             leading: CircleAvatar(
-                              child: Text(
-                                sentRequests[index]['username'][0], // Display the first letter of the username
+                              // Display the avatar image based on the 'icon' ID
+                              child: buildAvatarImage(
+                                sentRequests[index]['icon'],
                               ),
                             ),
                             title: Text(
@@ -600,7 +605,9 @@ Future<void> showSentRequest(BuildContext context, String username) async {
                                   icon: Icon(Icons.close, color: Colors.red),
                                   onPressed: () {
                                     // Delete the sent friend request
-                                    _deleteSentFriendRequest(sentRequests[index]['username']);
+                                    _deleteSentFriendRequest(
+                                      sentRequests[index]['username'],
+                                    );
                                     setState(() {
                                       sentRequests.removeAt(
                                         index,
