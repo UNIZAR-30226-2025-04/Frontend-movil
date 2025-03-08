@@ -91,26 +91,48 @@ void showFriendsList(
 
 // Users searching pop-up
 Future<void> showAddFriend(BuildContext context) async {
-  //List<String> friends = [];
   TextEditingController searchController = TextEditingController();
-
   List<Map<String, dynamic>> nonFriends = [];
+  List<Map<String, dynamic>> filteredFriends = [];
   bool isLoading = true;
+  bool hasFetched = false;
 
   await showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
-          Future.delayed(Duration.zero, () async {
-            final data = await _getNonFriends();
-            if (context.mounted) {
-              setState(() {
-                nonFriends = data;
-                isLoading = false;
-              });
-            }
-          });
+          if (!hasFetched) {
+            hasFetched = true;
+            Future.delayed(Duration.zero, () async {
+              final data = await _getNonFriends();
+              if (context.mounted) {
+                setState(() {
+                  nonFriends = data;
+                  filteredFriends = List.from(nonFriends);
+                  isLoading = false;
+                });
+              }
+            });
+          }
+
+          void filterSearchResults(String query) {
+            setState(() {
+              if (query.isEmpty) {
+                filteredFriends = List.from(nonFriends);
+              } else {
+                filteredFriends =
+                    nonFriends
+                        .where(
+                          (user) => user['username'].toLowerCase().contains(
+                            query.toLowerCase(),
+                          ),
+                        )
+                        .toList();
+              }
+            });
+          }
+
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -147,7 +169,7 @@ Future<void> showAddFriend(BuildContext context) async {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onChanged: (value) async {},
+                          onChanged: filterSearchResults,
                         ),
                       ),
 
