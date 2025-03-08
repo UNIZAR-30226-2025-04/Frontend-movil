@@ -2,73 +2,111 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
 
-// Show the list of friends of your current profile
-void showFriendsList(BuildContext context, String username) {
+/// Function to show the list of friends of the current profile
+Future<void> showFriendsList(BuildContext context, String username) async {
+  List<Map<String, dynamic>> friendsList = [];
+  bool hasFetched = false; // To ensure the data is fetched only once
+
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20), // Pop up border
-        ),
-        title: const Text(
-          "Friends List",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        content: SizedBox(
-          width: double.maxFinite, // uses the max width of the pop-up
-          height: 300, // pop-up height
-          child: ListView.builder(
-            itemCount:
-                1, // Always show 1 item (the "No friends available" message)
-            itemBuilder: (context, index) {
-              return Center(
-                child: Text(
-                  'No friends available', // Message when no data is available
-                  style: TextStyle(fontSize: 16),
-                ),
-              );
-            },
-          ),
-        ),
-        actions: [
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment
-                    .spaceBetween, //aligns both buttons to the sides
-            children: [
-              //close pop-up button
-              TextButton(
-                onPressed: () => Navigator.pop(context), // closes pop-up
-                child: const Text("Close", style: TextStyle(fontSize: 16)),
-              ),
+      return StatefulBuilder(
+        builder: (context, setState) {
+          if (!hasFetched) {
+            hasFetched = true;
+            Future.delayed(Duration.zero, () async {
+              // Fetch the friends list from the API
+              final data = await _getFriendsList(); // Function to fetch friends
+              if (context.mounted) {
+                setState(() {
+                  friendsList = List.from(data);
+                });
+              }
+            });
+          }
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20), // Pop up border
+            ),
+            title: const Text(
+              "Friends List",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            content: SizedBox(
+              width: double.maxFinite, // uses the max width of the pop-up
+              height: 300, // pop-up height
+              child:
+                  friendsList.isEmpty
+                      ? Center(
+                        child: Text(
+                          'No friends available', // Message when no data is available
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      )
+                      : ListView.builder(
+                        itemCount:
+                            friendsList.length, // Number of friends to display
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: CircleAvatar(
+                              child: Text(
+                                friendsList[index]['username'][0],
+                              ), // Display first letter of username
+                            ),
+                            title: Text(friendsList[index]['username']),
+                            trailing: Icon(Icons.message, color: Colors.blue),
+                            onTap: () {
+                              Navigator.pop(
+                                context,
+                              ); // Closes pop-up when a friend is selected
+                              // Add code to see friend's profile
+                            },
+                            // Display username
+                          );
+                        },
+                      ),
+            ),
+            actions: [
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment
+                        .spaceBetween, //aligns both buttons to the sides
+                children: [
+                  // Close pop-up button
+                  TextButton(
+                    onPressed: () => Navigator.pop(context), // Closes pop-up
+                    child: const Text("Close", style: TextStyle(fontSize: 16)),
+                  ),
 
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  showFriendRequests(context, username);
-                },
-                child: const Text(
-                  "Friend Requests",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
+                  // Friend Requests button
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      showFriendRequests(context, username);
+                    },
+                    child: const Text(
+                      "Friend Requests",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
 
-              //add friends pop-up
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  showAddFriend(context, username);
-                },
-                child: const Text(
-                  "Add Friends",
-                  style: TextStyle(fontSize: 16),
-                ),
+                  // Add Friends button
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      showAddFriend(context, username);
+                    },
+                    child: const Text(
+                      "Add Friends",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
-        ],
+          );
+        },
       );
     },
   );
@@ -544,4 +582,33 @@ Future<void> _deleteFriendRequest(String friendUsername) async {
     // Handle errors during the deletion process
     debugPrint('❌ Error deleting friend request: $e');
   }
+}
+
+/// Function to fetch the list of friends of the current user
+Future<List<Map<String, dynamic>>> _getFriendsList() async {
+  final dioClient = DioClient(); // Create a new Dio client instance
+  try {
+    final response = await dioClient.dio.get(
+      '/auth/friends', // API endpoint to get the list of friends
+      options: Options(
+        headers: {
+          'Authorization':
+              'Bearer YOUR_JWT_TOKEN', // Replace with the actual JWT token
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // Return the list of friends
+      return List<Map<String, dynamic>>.from(response.data);
+    } else {
+      // Handle non-200 responses (if needed)
+      debugPrint('❌ Error fetching friends: ${response.data}');
+    }
+  } catch (e) {
+    // Handle any error that occurs during the API call
+    debugPrint('❌ Error fetching friends list: $e');
+  }
+  // Return an empty list if there's an error or no friends
+  return [];
 }
