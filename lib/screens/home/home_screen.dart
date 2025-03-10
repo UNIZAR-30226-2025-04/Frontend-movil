@@ -5,7 +5,7 @@ import 'package:nogler/screens/lobby/lobby_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
-import 'package:page_transition/page_transition.dart';
+//import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -97,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildMenuButton(context, 'OFFLINE', () {}),
                       _buildMenuButton(context, 'JOIN', () {}),
                       _buildMenuButton(context, 'HOST', () {
+                        /*
                         Navigator.push(
                           context,
                           PageTransition(
@@ -104,13 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: const LobbyScreen(),
                           ),
                         );
+                        */
+                        showCreateLobbyButton(context);
                       }),
                       _buildMenuButton(context, 'PARTY', () {}),
                       _buildMenuButton(context, 'FRIENDS', () {
-                        showFriendsList(
-                          context,
-                          _username
-                        );
+                        showFriendsList(context, _username);
                       }),
                     ],
                   ),

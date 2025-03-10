@@ -6,7 +6,9 @@ import 'package:nogler/widgets/player_box.dart';
 import 'package:page_transition/page_transition.dart';
 
 class LobbyScreen extends StatefulWidget {
-  const LobbyScreen({super.key});
+  const LobbyScreen({super.key, required this.lobbyState});
+
+  final bool lobbyState; // true = private, false = public
 
   @override
   State<LobbyScreen> createState() => _LobbyScreen();
@@ -26,6 +28,12 @@ class _LobbyScreen extends State<LobbyScreen> {
 
   String publicPrivateButton = "Public";
   String lobbyCode = "1234";
+
+  @override
+  void initState() {
+    super.initState();
+    publicPrivateButton = widget.lobbyState ? "Private" : "Public";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -233,4 +241,118 @@ class _LobbyScreen extends State<LobbyScreen> {
       },
     );
   }
+}
+
+Future<void> showCreateLobbyButton(BuildContext context) async {
+  bool isSwitched = false;
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20), // Pop up border
+            ),
+            //Pop-up title
+            title: const Text(
+              "Create a lobby",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            content: SizedBox(
+              width: 300,
+              height: 200,
+              child: Column(
+                children: [
+                  //Text explaining creating the lobby
+                  Text(
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  //Add some space between
+                  SizedBox(height: 10),
+
+                  Row(
+                    children: [
+                      //Add some space between
+                      SizedBox(width: 10),
+                      //Text private
+                      Text(
+                        'Private',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      //Add some space between
+                      SizedBox(width: 8),
+
+                      //Switch to select whether the lobby is private or public
+                      Switch(
+                        value: isSwitched,
+                        onChanged: (value) {
+                          setState(() {
+                            isSwitched = value;
+                          });
+                        },
+                      ),
+                      //Add some space between
+                      SizedBox(width: 10),
+
+                      //Create lobby button
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 50,
+                            vertical: 12,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.fade,
+                              child: LobbyScreen(lobbyState: isSwitched),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Create",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ],
+                  ),
+                  //Add some space between
+                  SizedBox(height: 10),
+
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 120,
+                        vertical: 12,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context); // Close the confirmation dialog
+                    },
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 }
