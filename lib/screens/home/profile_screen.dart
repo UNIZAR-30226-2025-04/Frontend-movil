@@ -60,6 +60,8 @@ Future<bool> showProfile(
                               child: buildAvatarImage(selectedIcon),
                             ),
                           ),
+                          //make space between
+                          SizedBox(width: 20),
 
                           Expanded(
                             child: Column(
@@ -98,10 +100,9 @@ Future<bool> showProfile(
 
                               if (success) {
                                 changesMade = true;
-                                if (context.mounted){
-                                  Navigator.pop(context, true); 
+                                if (context.mounted) {
+                                  Navigator.pop(context, true);
                                 }
-
                               }
                             },
                             child: const Text('Save Changes'),
@@ -148,7 +149,13 @@ Future<bool> showProfile(
 /// - Checks if `newPassword` and `repeatPassword` match before sending the request.
 /// - If passwords don't match, it displays an error message.
 /// - Returns `true` if the update is successful, otherwise returns `false`.
-Future<bool> _updateProfile(String newUsername, String newPassword, String repeatPassword, int newIcon, BuildContext context) async {
+Future<bool> _updateProfile(
+  String newUsername,
+  String newPassword,
+  String repeatPassword,
+  int newIcon,
+  BuildContext context,
+) async {
   final dioClient = DioClient();
 
   debugPrint("🔹 Updating Profile with:");
@@ -166,7 +173,7 @@ Future<bool> _updateProfile(String newUsername, String newPassword, String repea
 
     // Show an error message in a small centered dialog
     if (context.mounted) {
-       await showDialog(
+      await showDialog(
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
@@ -207,7 +214,8 @@ Future<bool> _updateProfile(String newUsername, String newPassword, String repea
       '/auth/update',
       data: {
         "username": newUsername,
-        if (newPassword.isNotEmpty) "password": newPassword, // Only send password if provided
+        if (newPassword.isNotEmpty)
+          "password": newPassword, // Only send password if provided
         "icon": newIcon, // Send the selected icon number
       },
       options: Options(
@@ -242,32 +250,32 @@ Future<int?> showIconPickerDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        
         title: const Text("Choose Your Icon"),
         content: SizedBox(
           width: 400,
           child: Wrap(
             spacing: 10,
             runSpacing: 10,
-            children: icons.map((iconIndex) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.pop(context, iconIndex);
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.white,
-                      child: buildAvatarImage(iconIndex),
+            children:
+                icons.map((iconIndex) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context, iconIndex);
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.white,
+                          child: buildAvatarImage(iconIndex),
+                        ),
+                        const SizedBox(height: 5),
+                        Text("Icon $iconIndex"),
+                      ],
                     ),
-                    const SizedBox(height: 5),
-                    Text("Icon $iconIndex"),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ),
         actions: [
@@ -303,9 +311,9 @@ Widget buildAvatarImage(int iconId) {
     // Clip the image to fit in a circular shape
     child: Image.asset(
       avatarPaths[iconId], // Display the avatar corresponding to the iconId
-      width: 40.0, // Set the width of the image to fit inside the CircleAvatar
-      height:
-          40.0, // Set the height of the image to fit inside the CircleAvatar
+      //width: 150.0, // Set the width of the image to fit inside the CircleAvatar
+      //height:
+      //    150.0, // Set the height of the image to fit inside the CircleAvatar
       fit: BoxFit.cover, // Ensure the image covers the CircleAvatar area
       errorBuilder:
           (_, __, ___) => const Icon(
@@ -340,7 +348,8 @@ Future<void> _logout(BuildContext context) async {
             type: PageTransitionType.fade,
             child: const WelcomeScreen(),
           ),
-          (route) => false, // Remove all previous screens from the navigation stack
+          (route) =>
+              false, // Remove all previous screens from the navigation stack
         );
       }
     } else {
@@ -380,4 +389,3 @@ Widget _buildTextField(
     ),
   );
 }
-
