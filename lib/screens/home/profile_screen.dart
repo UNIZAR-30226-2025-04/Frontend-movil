@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/screens/welcome/welcome_screen.dart';
 import 'package:nogler/dio/dio_client.dart';
+import 'package:nogler/widgets/build_avatar_image.dart';
 import 'package:page_transition/page_transition.dart';
 
 Future<bool> showProfile(
@@ -286,41 +287,6 @@ Future<int?> showIconPickerDialog(
         ],
       );
     },
-  );
-}
-
-/// **Displays the correct avatar image based on the icon ID**
-/// - Uses an integer index to select an avatar from the available images.
-Widget buildAvatarImage(int iconId) {
-  final List<String> avatarPaths = [
-    'images/pixelHeart.png',
-    'images/pixelPica.png',
-    'images/pixelDiamond.png',
-    'images/pixelTrebol.png',
-    'images/pixelSoyi.png',
-    'images/pixelBrat.png',
-    'images/pixelBarb.png',
-    'images/pixelBard.png',
-  ];
-  // Check if the iconId exceeds the size of the list, if so, default to index 0
-  if (iconId >= avatarPaths.length) {
-    iconId = 0; // Default to the first avatar if the id exceeds the list size
-  }
-
-  return ClipOval(
-    // Clip the image to fit in a circular shape
-    child: Image.asset(
-      avatarPaths[iconId], // Display the avatar corresponding to the iconId
-      //width: 150.0, // Set the width of the image to fit inside the CircleAvatar
-      //height:
-      //    150.0, // Set the height of the image to fit inside the CircleAvatar
-      fit: BoxFit.cover, // Ensure the image covers the CircleAvatar area
-      errorBuilder:
-          (_, __, ___) => const Icon(
-            Icons.person,
-            size: 36,
-          ), // Default icon if image fails to load
-    ),
   );
 }
 

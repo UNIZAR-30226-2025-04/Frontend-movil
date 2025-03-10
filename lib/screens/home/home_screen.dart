@@ -1,11 +1,12 @@
 import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/screens/home/friends_functions.dart';
+import 'package:nogler/screens/home/join_lobby_screen.dart';
 import 'package:nogler/screens/home/profile_screen.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
-//import 'package:page_transition/page_transition.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -95,7 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     alignment: WrapAlignment.center, // Centers the buttons
                     children: [
                       _buildMenuButton(context, 'OFFLINE', () {}),
-                      _buildMenuButton(context, 'JOIN', () {}),
+                      _buildMenuButton(context, 'JOIN', () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: const JoinLobbyScreen(),
+                          ),
+                        );
+                      }),
                       _buildMenuButton(context, 'HOST', () {
                         /*
                         Navigator.push(

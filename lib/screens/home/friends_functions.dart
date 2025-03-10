@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
-import 'package:nogler/screens/home/profile_screen.dart';
+import 'package:nogler/widgets/build_avatar_image.dart';
 
 /// Function to show the list of friends of the current profile
 Future<void> showFriendsList(BuildContext context, String username) async {
