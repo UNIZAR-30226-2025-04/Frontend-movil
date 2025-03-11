@@ -1,7 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
+import 'package:nogler/dio/dio_client.dart';
+import 'package:dio/dio.dart';
 
 /// Function to show the list of friends of the current profile
 Future<void> showFriendsList(BuildContext context, String username) async {
@@ -18,7 +18,7 @@ Future<void> showFriendsList(BuildContext context, String username) async {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
               // Fetch the friends list from the API
-              final data = await _getFriendsList(); // Function to fetch friends
+              final data = await getFriendsList(); // Function to fetch friends
               if (context.mounted) {
                 setState(() {
                   friendsList = List.from(data);
@@ -99,7 +99,7 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                                             TextButton(
                                               onPressed: () {
                                                 // If user confirms, delete the friend and close the dialog
-                                                _deleteFriend(
+                                                deleteFriend(
                                                   friendsList[index]['username'],
                                                 ); // Call function to delete the friend
                                                 setState(() {
@@ -205,7 +205,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
           if (!hasFetched) {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
-              final data = await _getNonFriends(username); // Fetch non-friends
+              final data = await getNonFriends(username); // Fetch non-friends
               if (context.mounted) {
                 setState(() {
                   nonFriends = data;
@@ -328,7 +328,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                                     ),
                                     onPressed: () {
                                       // Send friend request when button is pressed
-                                      _sendFriendRequest(
+                                      sendFriendRequest(
                                         filteredFriends[index]['username'],
                                       );
                                       // Remove the user from the filteredFriends list after sending the request
@@ -393,7 +393,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
               final data =
-                  await _getReceivedFriendRequests(); // Fetch friend requests from the API
+                  await getReceivedFriendRequests(); // Fetch friend requests from the API
               if (context.mounted) {
                 setState(() {
                   receivedRequests = List.from(
@@ -463,10 +463,10 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                                   ),
                                   onPressed: () {
                                     // Accept the friend request and delete the request
-                                    _acceptFriendRequest(
+                                    acceptFriendRequest(
                                       receivedRequests[index]['username'],
                                     );
-                                    _deleteFriendRequest(
+                                    deleteFriendRequest(
                                       receivedRequests[index]['username'],
                                     );
                                     setState(() {
@@ -480,7 +480,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                                   icon: Icon(Icons.close, color: Colors.red),
                                   onPressed: () {
                                     // Delete the friend request when declined
-                                    _deleteFriendRequest(
+                                    deleteFriendRequest(
                                       receivedRequests[index]['username'],
                                     );
                                     setState(() {
@@ -540,7 +540,7 @@ Future<void> showSentRequest(BuildContext context, String username) async {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
               final data =
-                  await _getSentFriendRequests(); // Fetch the sent friend requests from the API
+                  await getSentFriendRequests(); // Fetch the sent friend requests from the API
               if (context.mounted) {
                 setState(() {
                   sentRequests = List.from(
@@ -605,7 +605,7 @@ Future<void> showSentRequest(BuildContext context, String username) async {
                                   icon: Icon(Icons.close, color: Colors.red),
                                   onPressed: () {
                                     // Delete the sent friend request
-                                    _deleteSentFriendRequest(
+                                    deleteSentFriendRequest(
                                       sentRequests[index]['username'],
                                     );
                                     setState(() {
@@ -649,7 +649,7 @@ Future<void> showSentRequest(BuildContext context, String username) async {
 
 /// Function to get a list of users who are neither friends, nor users to whom a friend request has been sent,
 /// and excluding the specified username
-Future<List<Map<String, dynamic>>> _getNonFriends(String username) async {
+Future<List<Map<String, dynamic>>> getNonFriends(String username) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Fetch all users from the API
@@ -660,12 +660,12 @@ Future<List<Map<String, dynamic>>> _getNonFriends(String username) async {
 
     // Fetch the list of friend requests that the user has sent
     final sentRequestsResponse = await dioClient.dio.get(
-      '/auth/sent_friendship_requests',
+      '/auth/sentfriendshiprequests',
     );
 
     // Fetch the list of friend requests received by the authenticated user
     final receivedRequestsResponse = await dioClient.dio.get(
-      '/auth/received_friendship_requests',
+      '/auth/receivedfriendshiprequests',
     );
 
     // If the API responses are successful, process the data
@@ -685,7 +685,7 @@ Future<List<Map<String, dynamic>>> _getNonFriends(String username) async {
 
       // Extract a list of usernames to whom friend requests have been sent
       List<String> sentRequests = List<String>.from(
-        (sentRequestsResponse.data['sent_friendship_requests'] as List?)?.map(
+        (sentRequestsResponse.data['sentfriendshiprequests'] as List?)?.map(
               (request) => request['username'] as String,
             ) ??
             [], // Handle null and return an empty list if null
@@ -693,7 +693,7 @@ Future<List<Map<String, dynamic>>> _getNonFriends(String username) async {
 
       // Extract a list of usernames who have sent friend requests to the user
       List<String> receivedRequests = List<String>.from(
-        (receivedRequestsResponse.data['received_friendship_requests'] as List?)
+        (receivedRequestsResponse.data['receivedfriendshiprequests'] as List?)
                 ?.map((request) => request['username'] as String) ??
             [], // Handle null and return an empty list if null
       );
@@ -722,7 +722,7 @@ Future<List<Map<String, dynamic>>> _getNonFriends(String username) async {
 }
 
 /// Function to send a friend request to a specific user
-Future<void> _sendFriendRequest(String friendUsername) async {
+Future<void> sendFriendRequest(String friendUsername) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a POST request to the API to send a friend request
@@ -749,17 +749,17 @@ Future<void> _sendFriendRequest(String friendUsername) async {
 }
 
 /// Function to fetch the list of received friend requests
-Future<List<Map<String, dynamic>>> _getReceivedFriendRequests() async {
+Future<List<Map<String, dynamic>>> getReceivedFriendRequests() async {
   final dioClient = DioClient();
   try {
     final response = await dioClient.dio.get(
-      '/auth/received_friendship_requests', // API endpoint to get the requests
+      '/auth/receivedfriendshiprequests', // API endpoint to get the requests
     );
 
     if (response.statusCode == 200) {
       // Extract and return the list of usernames who sent friend requests to the authenticated user
       return List<Map<String, dynamic>>.from(
-        (response.data['received_friendship_requests'] ?? [])
+        (response.data['receivedfriendshiprequests'] ?? [])
             as List, // If null, return an empty list
       );
     }
@@ -772,7 +772,7 @@ Future<List<Map<String, dynamic>>> _getReceivedFriendRequests() async {
 }
 
 /// Function to accept a friend request and add a friend
-Future<void> _acceptFriendRequest(String friendUsername) async {
+Future<void> acceptFriendRequest(String friendUsername) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a POST request to the API to add a friend
@@ -800,12 +800,12 @@ Future<void> _acceptFriendRequest(String friendUsername) async {
 }
 
 /// Function to delete a received friend request after accepting it
-Future<void> _deleteFriendRequest(String friendUsername) async {
+Future<void> deleteFriendRequest(String friendUsername) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a DELETE request to remove the received friendship request
     final response = await dioClient.dio.delete(
-      '/auth/received_friendship_request/$friendUsername',
+      '/auth/receivedfriendshiprequest/$friendUsername',
     );
 
     if (response.statusCode == 200) {
@@ -821,7 +821,7 @@ Future<void> _deleteFriendRequest(String friendUsername) async {
 }
 
 /// Function to fetch the list of friends of the current user
-Future<List<Map<String, dynamic>>> _getFriendsList() async {
+Future<List<Map<String, dynamic>>> getFriendsList() async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     final response = await dioClient.dio.get(
@@ -841,7 +841,7 @@ Future<List<Map<String, dynamic>>> _getFriendsList() async {
 }
 
 /// Function to delete a friend
-Future<void> _deleteFriend(String friendUsername) async {
+Future<void> deleteFriend(String friendUsername) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     final response = await dioClient.dio.delete(
@@ -859,17 +859,17 @@ Future<void> _deleteFriend(String friendUsername) async {
 }
 
 /// Function to fetch the list of my sent friend requests
-Future<List<Map<String, dynamic>>> _getSentFriendRequests() async {
+Future<List<Map<String, dynamic>>> getSentFriendRequests() async {
   final dioClient = DioClient();
   try {
     final response = await dioClient.dio.get(
-      '/auth/sent_friendship_requests', // Correct endpoint to get sent requests
+      '/auth/sentfriendshiprequests', // Correct endpoint to get sent requests
     );
 
     if (response.statusCode == 200) {
       // Extract and return the list of usernames who I sent friend requests
       return List<Map<String, dynamic>>.from(
-        (response.data['sent_friendship_requests'] ?? [])
+        (response.data['sentfriendshiprequests'] ?? [])
             as List, // Correct access to the field
       );
     }
@@ -882,12 +882,12 @@ Future<List<Map<String, dynamic>>> _getSentFriendRequests() async {
 }
 
 /// Function to delete a sent friend request
-Future<void> _deleteSentFriendRequest(String friendUsername) async {
+Future<void> deleteSentFriendRequest(String friendUsername) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a DELETE request to remove the sent friendship request
     final response = await dioClient.dio.delete(
-      '/auth/sent_friendship_request/$friendUsername',
+      '/auth/sentfriendshiprequest/$friendUsername',
     );
 
     if (response.statusCode == 200) {
