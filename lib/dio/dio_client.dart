@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Singleton class for managing HTTP requests with Dio.
 /// This ensures that the same Dio instance is used across the entire application.
@@ -7,7 +8,8 @@ class DioClient {
   static final DioClient _instance =
       DioClient._internal(); // Singleton instance
   late final Dio dio; // Dio instance for making API requests
-  String? _jwtToken; // JWT token to be used for authentication
+  final FlutterSecureStorage _storage =
+      FlutterSecureStorage(); // Secure storage instance
 
   /// Factory constructor that returns the same instance every time.
   factory DioClient() {
@@ -31,12 +33,8 @@ class DioClient {
     // Add an interceptor to handle JWT authentication and logging
     dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
-          // Interceptor for requests
-          if (_jwtToken != null) {
-            // Add JWT token to Authorization header
-            options.headers['Authorization'] = 'Bearer $_jwtToken';
-          }
+        onRequest: (options, handler) async {
+          await _addTokenToRequest(options); // Add token to request
           debugPrint("🚀 Sending Request: ${options.method} ${options.path}");
           return handler.next(options); // Continue with the request
         },
@@ -62,16 +60,34 @@ class DioClient {
   /// Sets the JWT token for authentication.
   ///
   /// This method should be called after the user logs in successfully.
-  void setToken(String token) {
-    _jwtToken = token;
+  Future<void> setToken(String token) async {
+    await _storage.write(key: 'session_token', value: token); // Save the token securely
     debugPrint("🔑 JWT Token Set");
   }
 
   /// Clears the JWT token when the user logs out.
   ///
   /// This ensures that the authorization header is no longer included in requests.
-  void clearToken() {
-    _jwtToken = null;
+  // Clear the token on logout
+  Future<void> clearToken() async {
+    await _storage.delete(key: 'session_token'); // Remove token securely
     debugPrint("🚪 User logged out. Token cleared.");
   }
+
+  /// Retrieve the token from secure storage
+  Future<String?> getToken() async {
+    return await _storage.read(key: 'session_token');
+  }
+
+  /// Add the JWT token to the request header
+  Future<void> _addTokenToRequest(RequestOptions options) async {
+    final token = await getToken();
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+      debugPrint("🛠 Added Token to Request: $token");
+    } else {
+      debugPrint("⚠ No token found, request sent without authorization.");
+    }
+  }
+
 }

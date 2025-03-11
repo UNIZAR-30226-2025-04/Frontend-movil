@@ -11,11 +11,17 @@ Future<void> checkSessionAndNavigate(
   final dioClient = DioClient();
 
   try {
-    final response = await dioClient.dio.get('/auth/me');
-
-    if (response.statusCode == 200) {
-      // If session is valid, call onSessionValid
-      onSessionValid();
+    final token = await dioClient.getToken(); // Retrieve the session token
+    if (token != null) {
+      final response = await dioClient.dio.get('/auth/me');
+      if (response.statusCode == 200) {
+        // If session is valid, call onSessionValid
+        onSessionValid();
+      } else {
+        onSessionInvalid();
+      }
+    } else {
+      onSessionInvalid(); // If no token, consider the session invalid
     }
   } on DioException catch (e) {
     if (e.response?.statusCode == 401) {
