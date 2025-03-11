@@ -2,6 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
 import 'package:dio/dio.dart';
 
+/// Method to check session status and navigate accordingly
+Future<void> checkSessionAndNavigate(
+  BuildContext context, // Pass the context to navigate
+  Function() onSessionValid, // Callback for valid session
+  Function() onSessionInvalid, // Callback for invalid session
+) async {
+  final dioClient = DioClient();
+
+  try {
+    final response = await dioClient.dio.get('/auth/me');
+
+    if (response.statusCode == 200) {
+      // If session is valid, call onSessionValid
+      onSessionValid();
+    }
+  } on DioException catch (e) {
+    if (e.response?.statusCode == 401) {
+      // If session is invalid (401), call onSessionInvalid
+      onSessionInvalid();
+    } else {
+      // Handle other errors (network issues, etc.)
+      debugPrint("❌ Error checking session: ${e.message}");
+      onSessionInvalid();
+    }
+  }
+}
+
 /// Method to load user profile information from the API
 Future<void> loadUserProfile(Function(String, int) onProfileLoaded) async {
   final dioClient = DioClient();

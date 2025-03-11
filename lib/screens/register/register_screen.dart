@@ -36,7 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    // Call the login function from auth_api.dart
+    // Call the register function from auth_api.dart
     registerUser(
       _usernameController.text,
       _emailController.text,

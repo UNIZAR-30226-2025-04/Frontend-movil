@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/data/api/users_api.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/screens/login/login_screen.dart';
 import 'package:nogler/screens/info/info_screen.dart';
 import 'package:nogler/utils/app_styles.dart';
-import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:dio/dio.dart';
 
-// This is the first screen that the user sees when opening the app
+
+/// This is the first screen that the user sees when opening the app
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key}); // Constructor for the class
 
@@ -16,39 +16,10 @@ class WelcomeScreen extends StatefulWidget {
   State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-// State class for WelcomeScreen
+/// State class for WelcomeScreen
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final DioClient _dioClient = DioClient(); // Use the DioClient singleton
 
-  // Method to check session status
-  Future<void> _checkSessionAndNavigate() async {
-    try {
-      final response = await _dioClient.dio.get('/auth/me');
-
-      if (response.statusCode == 200) {
-        // If session is valid, navigate to HomeScreen
-        if (mounted) {
-          Navigator.push(
-            context,
-            PageTransition(
-              type: PageTransitionType.fade,
-              child: const HomeScreen(),
-            ),
-          );
-        }
-      }
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        debugPrint("🔒 No active session found. Redirecting to LoginScreen.");
-        _navigateToLogin(); // If session is invalid, go to login
-      } else {
-        debugPrint("❌ Error checking session: ${e.message}");
-        _navigateToLogin();
-      }
-    }
-  }
-
-  // Method to navigate to LoginScreen
+  /// Method to navigate to LoginScreen
   void _navigateToLogin() {
     if (mounted) {
       Navigator.push(
@@ -99,8 +70,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       foregroundColor: Colors.white, // Button text color
                     ),
                     onPressed: () {
-                      // Check session before navigating
-                      _checkSessionAndNavigate();
+                      // Call checkSessionAndNavigate to check session status and navigate
+                      checkSessionAndNavigate(
+                        context,
+                        () {
+                          // If session is valid, navigate to HomeScreen
+                          if (mounted) {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.fade,
+                                child: const HomeScreen(),
+                              ),
+                            );
+                          }
+                        },
+                        () {
+                          // If session is invalid, navigate to LoginScreen
+                          _navigateToLogin();
+                        },
+                      );
                     },
                     child: const Text('Start playing'), // Button label
                   ),
