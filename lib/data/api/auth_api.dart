@@ -39,6 +39,49 @@ Future<void> loginUser(
   }
 }
 
+/// Method to handle user register
+Future<void> registerUser(
+  String username,
+  String email,
+  String password,
+  Function(String?) onError, // Callback to handle errors
+  Function(String) onSuccess, // Callback to handle success
+) async {
+  final dioClient = DioClient();
+
+  // Make a POST request to the register endpoint
+  try {
+    final response = await dioClient.dio.post(
+      // Use the Dio instance to make a POST request
+      '/signup',
+      data: {
+        'username': username,
+        'email': email,
+        'password': password,
+        'icono': 1,
+      },
+      options: Options(
+        // Options for the request
+        contentType: Headers.formUrlEncodedContentType, // Set the content type
+        responseType: ResponseType.json, // Set the response type
+      ),
+    );
+
+    if (response.statusCode == 201) {
+      // Registration successful
+      onSuccess('Registration successful!'); // Notify success
+    }
+  } on DioException catch (e) {
+    if (e.response != null) {
+      onError(e.response!.data['error'] ?? 'Error during register.');
+    } else {
+      onError('Network error. Please check your connection.');
+    }
+  } catch (e) {
+    onError('Unexpected error occurred. Please try again.');
+  }
+}
+
 /// **Logs out the user by calling the `/auth/logout` API endpoint**
 /// - Clears session cookies and redirects the user to the `WelcomeScreen`.
 Future<void> logout(BuildContext context) async {
