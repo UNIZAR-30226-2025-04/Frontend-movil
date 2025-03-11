@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nogler/dio/dio_client.dart';
+//import 'package:nogler/dio/dio_client.dart';
 //import 'package:flutter/services.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:nogler/widgets/lobbie_box.dart';
 import 'package:page_transition/page_transition.dart';
 
 class JoinLobbyScreen extends StatefulWidget {
@@ -92,26 +93,58 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
                     ),
                   ],
                 ),
+                //Add some space between
+                SizedBox(height: 10),
 
-                //TODO, lobbies list
+                //lobbies list
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.all(12.5),
+                    itemCount: lobbyUsers.length,
+                    itemBuilder: (context, index) {
+                      return LobbieBox(
+                        playerName: lobbyUsers[index],
+                        playerIcon: 6,
+                        lobbyOcupation: 4,
+                      );
+                    },
+                  ),
+                ),
+                //Add some space between
+                SizedBox(height: 10),
 
                 //Back button
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.fade,
-                        child: const HomeScreen(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 25,
+                          vertical: 12,
+                        ),
                       ),
-                    );
-                  },
-                  child: Text("Back", style: TextStyle(color: Colors.black)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: const HomeScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Back",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    //Add some space between
+                    SizedBox(width: 12.5),
+                  ],
                 ),
+                //Add some space between
+                SizedBox(height: 10),
               ],
             ),
           ),

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 
@@ -23,34 +21,47 @@ class LobbieBox extends StatelessWidget {
         //final boxHeight = 50;
         final boxWidth = 100;
         return Container(
+          width: 100,
+          height: 50,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black, width: 1),
+            color: Colors.indigo,
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              //make some space between
-              SizedBox(width: boxWidth * 0.1),
+              Row(
+                children: [
+                  //make some space between
+                  SizedBox(width: boxWidth * 0.15),
 
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: Colors.white,
-                child: buildAvatarImage(playerIcon),
-              ),
-              //make some space between
-              SizedBox(width: boxWidth * 0.1),
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.white,
+                    child: buildAvatarImage(playerIcon),
+                  ),
+                  //make some space between
+                  SizedBox(width: boxWidth * 0.15),
 
-              //Name of the host of the lobby
-              Text(
-                playerName,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  //Name of the host of the lobby
+                  Text(
+                    playerName,
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              //make some space between
-              SizedBox(width: boxWidth * 1),
 
               //Number of people currently in a lobby
-              Text(
-                "JOIN $lobbyOcupation/8",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              Row(
+                //TODO, hacerlo como un boton
+                children: [
+                  Text(
+                    "JOIN  $lobbyOcupation/8",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  //make some space between
+                  SizedBox(width: boxWidth * 0.15),
+                ],
               ),
             ],
           ),
