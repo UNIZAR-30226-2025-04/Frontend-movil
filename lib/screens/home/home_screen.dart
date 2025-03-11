@@ -1,6 +1,6 @@
+import 'package:nogler/data/api/users_api.dart';
 import 'package:nogler/dialogs/friends_dialogs.dart';
 import 'package:nogler/dialogs/profile_dialog.dart';
-import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
 
@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-// Home screen of the application
+/// Home screen of the application
 class _HomeScreenState extends State<HomeScreen> {
   String _username = "Loading...";
   int _avatar = 1;
@@ -28,22 +28,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Method to load the user profile information
   Future<void> _loadUserProfile() async {
-    final dioClient = DioClient();
-
-    try {
-      final response = await dioClient.dio.get('/auth/me');
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _username = response.data['username'];
-          _avatar = response.data['icon'];
-        });
-      } else {
-        debugPrint("❌ Error getting profile: ${response.data}");
-      }
-    } catch (e) {
-      debugPrint("❌ Network error while getting profile: $e");
-    }
+    // Pass a callback to loadUserProfile
+    loadUserProfile((String username, int avatar) {
+      setState(() {
+        _username = username; // Update the username
+        _avatar = avatar; // Update the avatar
+      });
+    });
   }
 
   @override
@@ -132,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Widget to create a menu button
+  /// Widget to create a menu button
   Widget _buildMenuButton(
     BuildContext context,
     String title,
@@ -160,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Widget to create the profile button
+  /// Widget to create the profile button
   Widget _buildProfileButton(BuildContext context, String username) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(

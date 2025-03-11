@@ -2,6 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
 import 'package:dio/dio.dart';
 
+/// Method to load user profile information from the API
+Future<void> loadUserProfile(Function(String, int) onProfileLoaded) async {
+  final dioClient = DioClient();
+
+  try {
+    final response = await dioClient.dio.get('/auth/me');
+
+    if (response.statusCode == 200) {
+      // Call the callback with the username and avatar
+      onProfileLoaded(response.data['username'], response.data['icon']);
+    } else {
+      debugPrint("❌ Error getting profile: ${response.data}");
+    }
+  } catch (e) {
+    debugPrint("❌ Network error while getting profile: $e");
+  }
+}
+
 /// **Updates the user's profile information**
 /// - Checks if `newPassword` and `repeatPassword` match before sending the request.
 /// - If passwords don't match, it displays an error message.
