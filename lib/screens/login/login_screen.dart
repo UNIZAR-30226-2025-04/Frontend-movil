@@ -1,6 +1,5 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:nogler/dio/dio_client.dart';
+import 'package:nogler/data/api/auth_api.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/screens/register/register_screen.dart';
 import 'package:nogler/utils/app_styles.dart';
@@ -8,7 +7,7 @@ import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/input_field_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
-// Screen for the login
+/// Screen for the login
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -17,93 +16,44 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-// The state of the login screen
+/// The state of the login screen
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController =
       TextEditingController(); // Controller for the email input
   final _passwordController =
       TextEditingController(); // Controller for the password input
   String? _errorMessage; // Error message to show if the login fails
-  final DioClient _dioClient = DioClient(); // DioClient instance
-
-  // Method to login the user
+  
+  /// Method to login the user
   Future<void> _login() async {
     // Unfocus the text fields to hide the keyboard
     FocusScope.of(context).unfocus();
 
-    // Simple validation
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter email and password';
-      });
-      return;
-    }
-
-    // Make a POST request to the login endpoint
-    try {
-      final response = await _dioClient.dio.post(
-        // Use the Dio instance to make a POST request
-        '/login',
-        data: {
-          // Data to send in the request
-          'email': _emailController.text,
-          'password': _passwordController.text,
-        },
-        options: Options(
-          // Options for the request
-          contentType:
-              Headers.formUrlEncodedContentType, // Set the content type
-          responseType: ResponseType.json, // Set the response type
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        final token = response.data["token"]; // Get the token from the response
-        _dioClient.setToken(token); // Set the token in the DioClient
-        // If the response status code is 200 navigate to the home screen after successful login
+    // Call the login function from auth_api.dart
+    loginUser(
+      _emailController.text,
+      _passwordController.text,
+      (String? error) {
+        // Handle error
+        setState(() {
+          _errorMessage = error ?? 'An unknown error occurred.';
+        });
+      },
+      (String successMessage) {
+        // On success, navigate to the HomeScreen
         if (mounted) {
-          // Check if the widget is still mounted before navigating
           Navigator.pushReplacement(
             context,
             PageTransition(
-              duration: const Duration(
-                milliseconds: 300,
-              ), // Set the duration of the transition
+              duration: const Duration(milliseconds: 300),
               type: PageTransitionType.fade,
               child: const HomeScreen(),
             ),
           );
         }
-      }
-    } on DioException catch (e) {
-      // Catch DioException to handle network errors
-      setState(() {
-        if (e.response != null) {
-          // Check if the response is not null
-          if (e.response!.statusCode == 400) {
-            // Handle bad request error
-            _errorMessage = 'Bad request. Please check your input.';
-          } else if (e.response!.statusCode == 401) {
-            // Handle unauthorized error
-            _errorMessage =
-                e.response!.data['error'] ??
-                'Unauthorized. Please check your credentials.';
-          } else {
-            // Handle other errors
-            _errorMessage = 'An error occurred during login.';
-          }
-        } else {
-          // Handle network errors
-          _errorMessage =
-              'Network error. Please check your internet connection.';
-        }
-      });
-    } catch (e) {
-      // Catch all other exceptions
-      setState(() {
-        _errorMessage = 'An unexpected error occurred. Please try again.';
-      });
-    }
+      },
+    );
+
   }
 
   @override

@@ -1,7 +1,43 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/screens/welcome/welcome_screen.dart';
 import 'package:page_transition/page_transition.dart';
+
+/// Method to handle user login
+Future<void> loginUser(
+  String email,
+  String password,
+  Function(String?) onError, // Callback to handle errors
+  Function(String) onSuccess, // Callback to handle success
+) async {
+  final dioClient = DioClient();
+
+  try {
+    final response = await dioClient.dio.post(
+      '/login',
+      data: {'email': email, 'password': password},
+      options: Options(
+        contentType: Headers.formUrlEncodedContentType,
+        responseType: ResponseType.json,
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final token = response.data["token"];
+      dioClient.setToken(token); // Save the token to DioClient
+      onSuccess('Login successful!'); // Notify success
+    }
+  } on DioException catch (e) {
+    if (e.response != null) {
+      onError(e.response!.data['error'] ?? 'Error during login.');
+    } else {
+      onError('Network error. Please check your connection.');
+    }
+  } catch (e) {
+    onError('Unexpected error occurred. Please try again.');
+  }
+}
 
 /// **Logs out the user by calling the `/auth/logout` API endpoint**
 /// - Clears session cookies and redirects the user to the `WelcomeScreen`.
