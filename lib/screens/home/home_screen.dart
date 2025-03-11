@@ -1,7 +1,7 @@
 import 'package:nogler/dialogs/friends_dialogs.dart';
+import 'package:nogler/dialogs/profile_dialog.dart';
 import 'package:nogler/dio/dio_client.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
-import 'package:nogler/screens/home/profile_screen.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
 
 import 'package:flutter/material.dart';
