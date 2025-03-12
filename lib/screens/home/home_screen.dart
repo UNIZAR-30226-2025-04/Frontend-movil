@@ -98,15 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }),
                       _buildMenuButton(context, 'HOST', () {
-                        /*
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.fade,
-                            child: const LobbyScreen(),
-                          ),
-                        );
-                        */
                         showCreateLobbyButton(context);
                       }),
                       _buildMenuButton(context, 'PARTY', () {

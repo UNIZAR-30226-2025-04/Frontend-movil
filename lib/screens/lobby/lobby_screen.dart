@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/player_box.dart';
 import 'package:page_transition/page_transition.dart';
 
 class LobbyScreen extends StatefulWidget {
-  const LobbyScreen({super.key, required this.lobbyState});
+  const LobbyScreen({
+    super.key,
+    required this.lobbyState,
+    required this.lobbyCode,
+  });
 
   final bool lobbyState; // true = private, false = public
+  final String lobbyCode;
 
   @override
   State<LobbyScreen> createState() => _LobbyScreen();
@@ -27,7 +33,6 @@ class _LobbyScreen extends State<LobbyScreen> {
   ];
 
   String publicPrivateButton = "Public";
-  String lobbyCode = "1234";
 
   @override
   void initState() {
@@ -99,7 +104,7 @@ class _LobbyScreen extends State<LobbyScreen> {
 
                     //Code of the lobby
                     Text(
-                      'Code: $lobbyCode',
+                      'Code: ${widget.lobbyCode}',
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                     //Add some space between
@@ -116,7 +121,9 @@ class _LobbyScreen extends State<LobbyScreen> {
                       ),
                       //copies on clipboard the lobbies code
                       onPressed: () async {
-                        await Clipboard.setData(ClipboardData(text: lobbyCode));
+                        await Clipboard.setData(
+                          ClipboardData(text: widget.lobbyCode),
+                        );
                       },
                       child: Text(
                         "Copy",
@@ -313,12 +320,22 @@ Future<void> showCreateLobbyButton(BuildContext context) async {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.fade,
-                              child: LobbyScreen(lobbyState: isSwitched),
-                            ),
+                          createLobby(
+                            (String? error) {
+                              //TODO, error massage
+                            },
+                            (String code) {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.fade,
+                                  child: LobbyScreen(
+                                    lobbyState: isSwitched,
+                                    lobbyCode: code,
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         },
                         child: Text(
