@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
-import 'package:dio/dio.dart';
 
 ///Method to create a lobby
 Future<void> createLobby(

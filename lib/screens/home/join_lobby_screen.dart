@@ -153,14 +153,3 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
     );
   }
 }
-
-//TODO, hacer cuando este la conexion con el backend
-/* 
-Future<List<Map<String, dynamic>>> _getPublicLobbies() async {
-  final dioClient = DioClient();
-  try {
-    final response = await dioClient.dio.get();
-  }
-  return [];
-}
-*/

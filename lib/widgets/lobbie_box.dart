@@ -53,11 +53,27 @@ class LobbieBox extends StatelessWidget {
 
               //Number of people currently in a lobby
               Row(
-                //TODO, hacerlo como un boton
                 children: [
-                  Text(
-                    "JOIN  $lobbyOcupation/8",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          (lobbyOcupation == 8) ? Colors.red : Colors.green,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          8,
+                        ), // Button rounded edges
+                        side: const BorderSide(
+                          color: Colors.black,
+                          width: 2,
+                        ), // Black border
+                      ),
+                    ),
+                    onPressed: () {
+                      //TODO, hacer la funcionalidad
+                      // Action to join the lobby
+                    },
+                    child: Text("JOIN $lobbyOcupation/8"),
                   ),
                   //make some space between
                   SizedBox(width: boxWidth * 0.15),
