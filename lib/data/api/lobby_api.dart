@@ -9,17 +9,7 @@ Future<void> createLobby(
 ) async {
   final dioClient = DioClient();
   try {
-    final response = await dioClient.dio.post(
-      '/auth/CreateLobby',
-      /*
-      options: Options(
-        contentType:
-            Headers
-                .formUrlEncodedContentType, // Set content type to 'application/x-www-form-urlencoded'
-        responseType: ResponseType.json, // Expect JSON response
-      ),
-      */
-    );
+    final response = await dioClient.dio.post('/auth/CreateLobby');
 
     if (response.statusCode == 200) {
       // Lobby created succesfully

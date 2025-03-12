@@ -50,117 +50,125 @@ class _LobbyScreen extends State<LobbyScreen> {
               children: [
                 SizedBox(height: 10),
                 Row(
-                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    //Add some space between
-                    SizedBox(width: 15),
+                    Row(
+                      children: [
+                        //Add some space between
+                        SizedBox(width: 15),
 
-                    //Title of page, lobby
-                    Text(
-                      'LOBBY',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    //Add some space between
-                    SizedBox(width: 15),
-
-                    //Number of participants
-                    Text(
-                      '8 / 8',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                    //Add some space between
-                    SizedBox(width: 20),
-
-                    //TODO, boton de public para poder cambiar entre private y public
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 25,
-                          vertical: 12,
+                        //Title of page, lobby
+                        Text(
+                          'LOBBY',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      onPressed: () {
-                        //TODO, que implica que sean privadas y publicas -> cambiar especificaciones lobby en base de datos, etc
-                        setState(() {
-                          if (publicPrivateButton == 'Public') {
-                            publicPrivateButton = 'Private';
-                          } else {
-                            publicPrivateButton = 'Public';
-                          }
-                        });
-                      },
-                      child: Text(
-                        publicPrivateButton,
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    //Add some space between
-                    SizedBox(width: 25),
+                        //Add some space between
+                        SizedBox(width: 15),
 
-                    //Code of the lobby
-                    Text(
-                      'Code: ${widget.lobbyCode}',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                    //Add some space between
-                    SizedBox(width: 25),
-
-                    //Copy button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 25,
-                          vertical: 12,
+                        //Number of participants
+                        Text(
+                          '8 / 8',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
-                      ),
-                      //copies on clipboard the lobbies code
-                      onPressed: () async {
-                        await Clipboard.setData(
-                          ClipboardData(text: widget.lobbyCode),
-                        );
-                      },
-                      child: Text(
-                        "Copy",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    //Add some space between
-                    SizedBox(width: 25),
+                        //Add some space between
+                        SizedBox(width: 20),
 
-                    //Share button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 25,
-                          vertical: 12,
+                        //TODO, boton de public para poder cambiar entre private y public
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 25,
+                              vertical: 12,
+                            ),
+                          ),
+                          onPressed: () {
+                            //TODO, que implica que sean privadas y publicas -> cambiar especificaciones lobby en base de datos, etc
+                            setState(() {
+                              if (publicPrivateButton == 'Public') {
+                                publicPrivateButton = 'Private';
+                              } else {
+                                publicPrivateButton = 'Public';
+                              }
+                            });
+                          },
+                          child: Text(
+                            publicPrivateButton,
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
-                      ),
-                      onPressed: () {},
-                      child: Text(
-                        "Share",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    //Add some space between
-                    SizedBox(width: 110),
+                        //Add some space between
+                        SizedBox(width: 25),
 
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
+                        //Code of the lobby
+                        Text(
+                          'Code: ${widget.lobbyCode}',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
-                      ),
-                      onPressed: () {},
-                      child: Icon(Icons.chat_bubble, color: Colors.black),
+                        //Add some space between
+                        SizedBox(width: 25),
+
+                        //Copy button
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 25,
+                              vertical: 12,
+                            ),
+                          ),
+                          //copies on clipboard the lobbies code
+                          onPressed: () async {
+                            await Clipboard.setData(
+                              ClipboardData(text: widget.lobbyCode),
+                            );
+                          },
+                          child: Text(
+                            "Copy",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        //Add some space between
+                        SizedBox(width: 25),
+
+                        //Share button
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 25,
+                              vertical: 12,
+                            ),
+                          ),
+                          onPressed: () {},
+                          child: Text(
+                            "Share",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                          ),
+                          onPressed: () {},
+                          child: Icon(Icons.chat_bubble, color: Colors.black),
+                        ),
+                        //Add some space between
+                        SizedBox(width: 15),
+                      ],
                     ),
                   ],
                 ),
