@@ -9,10 +9,14 @@ import 'package:page_transition/page_transition.dart';
 class LobbyScreen extends StatefulWidget {
   const LobbyScreen({
     super.key,
+    required this.hostName,
+    required this.hostAvatar,
     required this.lobbyState,
     required this.lobbyCode,
   });
 
+  final String hostName;
+  final int hostAvatar;
   final bool lobbyState; // true = private, false = public
   final String lobbyCode;
 
@@ -203,13 +207,20 @@ class _LobbyScreen extends State<LobbyScreen> {
                               ),
                           itemCount: lobbyUsers.length,
                           itemBuilder: (context, index) {
-                            return PlayerBox(
-                              playerName: lobbyUsers[index],
-                              playerIcon: 1, //TODO, conexion con base de datos
-                              isHost:
-                                  lobbyUsers[index] ==
-                                  'Jogue', //TODO, conexion con base de datos
-                            );
+                            if (index == 0) {
+                              return PlayerBox(
+                                playerName: widget.hostName,
+                                playerIcon: widget.hostAvatar,
+                                isHost: true,
+                              );
+                            } else {
+                              return PlayerBox(
+                                playerName: lobbyUsers[index],
+                                playerIcon:
+                                    1, //TODO, conexion con base de datos
+                                isHost: false,
+                              );
+                            }
                           },
                         ),
                       ],
@@ -258,7 +269,11 @@ class _LobbyScreen extends State<LobbyScreen> {
   }
 }
 
-Future<void> showCreateLobbyButton(BuildContext context) async {
+Future<void> showCreateLobbyButton(
+  BuildContext context,
+  String username,
+  int avatar,
+) async {
   bool isSwitched = false;
 
   showDialog(
@@ -338,6 +353,8 @@ Future<void> showCreateLobbyButton(BuildContext context) async {
                                 PageTransition(
                                   type: PageTransitionType.fade,
                                   child: LobbyScreen(
+                                    hostName: username,
+                                    hostAvatar: avatar,
                                     lobbyState: isSwitched,
                                     lobbyCode: code,
                                   ),

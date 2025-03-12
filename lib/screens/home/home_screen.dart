@@ -98,7 +98,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }),
                       _buildMenuButton(context, 'HOST', () {
-                        showCreateLobbyButton(context);
+                        showCreateLobbyButton(
+                          context,
+                          _username,
+                          _avatar,
+                        ); //TODO, decision de hacerlo por parametro o por peticion a back
                       }),
                       _buildMenuButton(context, 'PARTY', () {
                         showPartyList(context);
