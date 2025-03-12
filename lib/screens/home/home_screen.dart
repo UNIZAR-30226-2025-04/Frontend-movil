@@ -1,5 +1,6 @@
 import 'package:nogler/data/api/users_api.dart';
 import 'package:nogler/dialogs/friends_dialogs.dart';
+import 'package:nogler/dialogs/party_dialog.dart';
 import 'package:nogler/dialogs/profile_dialog.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
@@ -108,7 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         */
                         showCreateLobbyButton(context);
                       }),
-                      _buildMenuButton(context, 'PARTY', () {}),
+                      _buildMenuButton(context, 'PARTY', () {
+                        showPartyList(context);
+                      }),
                       _buildMenuButton(context, 'FRIENDS', () {
                         showFriendsList(context, _username);
                       }),
