@@ -46,7 +46,7 @@ class PlayerBox extends StatelessWidget {
                 children: [
                   if (isHost)
                     Icon(
-                      Icons.pregnant_woman,
+                      Icons.star_border,
                       color: Colors.yellow,
                     ), //TODO, cambiar el icono con una corona, pero me hace gracia y se queda como una embarazada
                   Text(
