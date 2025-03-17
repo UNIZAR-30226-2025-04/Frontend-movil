@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
 
-// Screen that shows the rules of the card system
+/// Screen that shows the rules of the card system
 class InfoCardsScreen extends StatelessWidget {
   const InfoCardsScreen({super.key});
 
-  // The build method is used to describe how to display the widget on the screen
+  /// The build method is used to describe how to display the widget on the screen
   @override
   Widget build(BuildContext context) {
     return Scaffold(

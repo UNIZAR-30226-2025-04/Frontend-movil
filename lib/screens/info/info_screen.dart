@@ -6,7 +6,7 @@ import 'package:nogler/screens/info/info_shop_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
-// The screen that the user goes when they click on the "How to play" button
+/// The screen that the user goes when they click on the "How to play" button
 class InfoScreen extends StatelessWidget {
   const InfoScreen({super.key});
 
@@ -23,8 +23,6 @@ class InfoScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
             child: Column(
               // Column widget to stack elements vertically
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Centers all elements vertically
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -111,7 +109,7 @@ class InfoScreen extends StatelessWidget {
     return SizedBox(
       // SizedBox widget to set the size of the button
       width: MediaQuery.of(context).size.width * 0.4,
-      height: 80, //
+      height: 100, //
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white, // Background color of the button
