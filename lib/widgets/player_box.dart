@@ -35,7 +35,7 @@ class PlayerBox extends StatelessWidget {
                 children: [
                   //make some space between
                   SizedBox(width: boxWidth * 1.28),
-                  _buildAvatarImage(playerIcon),
+                  _buildAvatarImage(playerIcon - 1),
                 ],
               ),
               //make some space between
@@ -75,10 +75,16 @@ Widget _buildAvatarImage(int iconId) {
     'images/pixelTrebol.png',
     'images/pixelSoyi.png',
     'images/pixelBrat.png',
+    'images/pixelSinoc.png',
     'images/pixelBarb.png',
     'images/pixelBard.png',
   ];
 
+    // Check if the iconId exceeds the size of the list or is negative, if so, default to index 0
+  if (iconId >= avatarPaths.length || iconId < 0) {
+    iconId = 0; // Default to the first avatar if the id exceeds the list size
+  }
+  
   return Image.asset(
     avatarPaths[iconId],
     height: 50,

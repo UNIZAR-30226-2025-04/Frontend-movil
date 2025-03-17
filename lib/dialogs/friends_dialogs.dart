@@ -61,7 +61,7 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                             leading: CircleAvatar(
                               // Display the avatar image based on the 'icon' ID
                               child: buildAvatarImage(
-                                friendsList[index]['icon'],
+                                friendsList[index]['icon'] - 1,
                               ),
                             ),
                             title: Text(friendsList[index]['username']),
@@ -314,7 +314,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                                   leading: CircleAvatar(
                                     // Display the avatar image based on the 'icon' ID
                                     child: buildAvatarImage(
-                                      filteredFriends[index]['icon'],
+                                      filteredFriends[index]['icon'] - 1,
                                     ),
                                   ),
                                   title: Text(
@@ -444,7 +444,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                             leading: CircleAvatar(
                               // Display the avatar image based on the 'icon' ID
                               child: buildAvatarImage(
-                                receivedRequests[index]['icon'],
+                                receivedRequests[index]['icon'] - 1,
                               ),
                             ),
                             title: Text(
@@ -591,7 +591,7 @@ Future<void> showSentRequest(BuildContext context, String username) async {
                             leading: CircleAvatar(
                               // Display the avatar image based on the 'icon' ID
                               child: buildAvatarImage(
-                                sentRequests[index]['icon'],
+                                sentRequests[index]['icon'] - 1,
                               ),
                             ),
                             title: Text(

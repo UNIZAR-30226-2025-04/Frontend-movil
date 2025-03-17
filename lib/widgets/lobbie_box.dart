@@ -38,7 +38,7 @@ class LobbieBox extends StatelessWidget {
                   CircleAvatar(
                     radius: 20,
                     backgroundColor: Colors.white,
-                    child: buildAvatarImage(playerIcon),
+                    child: buildAvatarImage(playerIcon - 1),
                   ),
                   //make some space between
                   SizedBox(width: boxWidth * 0.15),

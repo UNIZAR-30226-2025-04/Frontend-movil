@@ -122,7 +122,7 @@ Future<void> showPartyList(BuildContext context) async {
                                     // Avatar image (with icon ID)
                                     CircleAvatar(
                                       child: buildAvatarImage(
-                                        iconId,
+                                        iconId - 1,
                                       ), // Use custom avatar function
                                     ),
                                     const SizedBox(width: 10),

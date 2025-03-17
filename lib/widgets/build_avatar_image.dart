@@ -10,11 +10,12 @@ Widget buildAvatarImage(int iconId) {
     'images/pixelTrebol.png',
     'images/pixelSoyi.png',
     'images/pixelBrat.png',
+    'images/pixelSinoc.png',
     'images/pixelBarb.png',
     'images/pixelBard.png',
   ];
-  // Check if the iconId exceeds the size of the list, if so, default to index 0
-  if (iconId >= avatarPaths.length) {
+  // Check if the iconId exceeds the size of the list or is negative, if so, default to index 0
+  if (iconId >= avatarPaths.length || iconId < 0) {
     iconId = 0; // Default to the first avatar if the id exceeds the list size
   }
 
