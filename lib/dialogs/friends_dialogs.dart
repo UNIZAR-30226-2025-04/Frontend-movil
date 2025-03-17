@@ -37,7 +37,7 @@ Future<void> showFriendsList(BuildContext context, String username) async {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             content: SizedBox(
-              width: double.maxFinite, // uses the max width of the pop-up
+              width: 550, // uses the max width of the pop-up
               height: 300, // pop-up height
               child:
                   // Show loading indicator while data is being fetched
@@ -68,10 +68,6 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                IconButton(
-                                  icon: Icon(Icons.message, color: Colors.blue),
-                                  onPressed: () {},
-                                ),
                                 IconButton(
                                   icon: Icon(Icons.close, color: Colors.red),
                                   onPressed: () {
@@ -247,124 +243,127 @@ Future<void> showAddFriend(BuildContext context, String username) async {
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-              child: Stack(
-                children: [
-                  Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      const Text(
-                        "Add friends",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+              child: SizedBox(
+                width: 595,
+                height: 330,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Add friends",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: TextField(
-                          controller:
-                              searchController, // Controller for the search input
-                          decoration: InputDecoration(
-                            hintText: "Search user...", // Search hint
-                            hintStyle: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            prefixIcon: Icon(Icons.search), // Search icon
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                    ),
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: TextField(
+                        controller:
+                            searchController, // Controller for the search input
+                        decoration: InputDecoration(
+                          hintText: "Search user...", // Search hint
+                          hintStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          prefixIcon: Icon(Icons.search), // Search icon
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onChanged:
+                            filterSearchResults, // Trigger filtering on text change
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+                    // Show loading indicator while data is being fetched
+                    isLoading
+                        ? SizedBox(
+                          width: 550,
+                          height: 140,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: CircularProgressIndicator(),
                             ),
                           ),
-                          onChanged:
-                              filterSearchResults, // Trigger filtering on text change
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-                      // Show loading indicator while data is being fetched
-                      isLoading
-                          ? const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(20.0),
-                              child:
-                                  CircularProgressIndicator(), // Loading spinner while data is being fetched
-                            ),
-                          )
-                          : filteredFriends
-                              .isEmpty // Check if the list is empty
-                          ? Center(
+                        )
+                        : filteredFriends
+                            .isEmpty // Check if the list is empty
+                        ? SizedBox(
+                          width: 550,
+                          height: 140,
+                          child: Center(
                             child: Text(
                               "No users available to add", // Message when no requests are present
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          )
-                          : SizedBox(
-                            width: double.maxFinite,
-                            height: 170,
-                            child: ListView.builder(
-                              itemCount:
-                                  filteredFriends
-                                      .length, // Show the filtered friends
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    // Display the avatar image based on the 'icon' ID
-                                    child: buildAvatarImage(
-                                      filteredFriends[index]['icon'] - 1,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    filteredFriends[index]['username'], // Display username
-                                  ),
-                                  trailing: IconButton(
-                                    icon: const Icon(
-                                      Icons.person_add,
-                                      color: Colors.green,
-                                    ),
-                                    onPressed: () {
-                                      // Send friend request when button is pressed
-                                      sendFriendRequest(
-                                        filteredFriends[index]['username'],
-                                      );
-                                      // Remove the user from the filteredFriends list after sending the request
-                                      setState(() {
-                                        filteredFriends.removeAt(
-                                          index,
-                                        ); // Remove the user at the given index
-                                      });
-                                    },
-                                  ),
-                                );
-                              },
+                              style: TextStyle(fontSize: 16, color: Colors.grey),
                             ),
                           ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          // Back button to close the dialog
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              showFriendsList(
-                                context,
-                                username,
-                              ); // Show friends list
+                        )
+                        : SizedBox(
+                          width: 550,
+                          height: 140,
+                          child: ListView.builder(
+                            itemCount:
+                                filteredFriends
+                                    .length, // Show the filtered friends
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  // Display the avatar image based on the 'icon' ID
+                                  child: buildAvatarImage(
+                                    filteredFriends[index]['icon'] - 1,
+                                  ),
+                                ),
+                                title: Text(
+                                  filteredFriends[index]['username'], // Display username
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(
+                                    Icons.person_add,
+                                    color: Colors.green,
+                                  ),
+                                  onPressed: () {
+                                    // Send friend request when button is pressed
+                                    sendFriendRequest(
+                                      filteredFriends[index]['username'],
+                                    );
+                                    // Remove the user from the filteredFriends list after sending the request
+                                    setState(() {
+                                      filteredFriends.removeAt(
+                                        index,
+                                      ); // Remove the user at the given index
+                                    });
+                                  },
+                                ),
+                              );
                             },
-                            child: const Text(
-                              "Back",
-                              style: TextStyle(fontSize: 16),
-                            ),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                        ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        // Back button to close the dialog
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            showFriendsList(
+                              context,
+                              username,
+                            ); // Show friends list
+                          },
+                          child: const Text(
+                            "Back",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -417,7 +416,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
             ),
 
             content: SizedBox(
-              width: double.maxFinite, // Uses the max width of the pop-up
+              width: 550, // Uses the max width of the pop-up
               child:
                   // Show loading indicator while data is being fetched
                   isLoading
@@ -564,7 +563,7 @@ Future<void> showSentRequest(BuildContext context, String username) async {
             ),
 
             content: SizedBox(
-              width: double.maxFinite, // Uses the max width of the pop-up
+              width: 550, // Uses the max width of the pop-up
               child:
                   // Show loading indicator while data is being fetched
                   isLoading
@@ -645,4 +644,3 @@ Future<void> showSentRequest(BuildContext context, String username) async {
     },
   );
 }
-
