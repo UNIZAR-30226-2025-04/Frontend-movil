@@ -6,7 +6,7 @@ class AppStyles {
   static const Color secondaryColor = Color(0xFFFF006E);
   static const Color accentColor = Color(0xFF8338EC);
   static const Color backgroundColor = Colors.white;
-  static const Color errorColor = Color.fromARGB(255, 212, 32, 19);
+  static const Color errorColor = Color(0xFFFFEB3B);
   static const Color successColor = Color(0xFF3DD598);
 
   // Text Styles
@@ -32,7 +32,7 @@ class AppStyles {
   );
 
   static final ButtonStyle cancelButtonStyle = ElevatedButton.styleFrom(
-    backgroundColor: errorColor,
+    backgroundColor: const Color.fromARGB(255, 217, 15, 15),
     foregroundColor: const Color.fromARGB(255, 11, 0, 0),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

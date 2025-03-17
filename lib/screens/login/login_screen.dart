@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController =
       TextEditingController(); // Controller for the password input
   String? _errorMessage; // Error message to show if the login fails
-  
+
   /// Method to login the user
   Future<void> _login() async {
     // Unfocus the text fields to hide the keyboard
@@ -53,7 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
     );
-
   }
 
   @override
@@ -114,9 +113,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ), // Reduced vertical padding
                         decoration: BoxDecoration(
                           // BoxDecoration widget to add decoration to the container
-                          // ignore: deprecated_member_use
-                          color: Colors.grey.withOpacity(
-                            0.5,
+                          color: Color.fromARGB(
+                            127,
+                            128,
+                            128,
+                            128,
                           ), // Sets a semi-transparent background
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.black),
@@ -151,7 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   _errorMessage!, // Show the error message
                                   style: const TextStyle(
                                     color: AppStyles.errorColor,
-                                    fontSize: 14,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,                         
                                   ),
                                 ),
                               ),
@@ -205,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   // ElevatedButton widget to create a button with elevation
                                   style: AppStyles.acceptButtonStyle,
                                   onPressed: _login,
-                                  child: const Text('Accept'),
+                                  child: const Text('Login'),
                                 ),
                               ],
                             ),

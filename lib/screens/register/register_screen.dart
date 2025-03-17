@@ -25,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController(); // Controller for username input
 
   String? _errorMessage; // Stores error message if registration fails
-  
+
   /// Method to register the user
   Future<void> _registerUser() async {
     // Simple validation
@@ -114,8 +114,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             vertical: 15,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(
-                              0.5,
+                            color: Color.fromARGB(
+                              127,
+                              128,
+                              128,
+                              128,
                             ), // Sets a semi-transparent background
                             borderRadius: BorderRadius.circular(
                               12,
@@ -146,7 +149,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     _errorMessage!,
                                     style: const TextStyle(
                                       color: AppStyles.errorColor,
-                                      fontSize: 14,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold, 
                                     ),
                                   ),
                                 ),
@@ -202,7 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     // ElevatedButton widget to create a button
                                     style: AppStyles.acceptButtonStyle,
                                     onPressed: _registerUser,
-                                    child: const Text('Accept'),
+                                    child: const Text('Register'),
                                   ),
                                 ],
                               ),
