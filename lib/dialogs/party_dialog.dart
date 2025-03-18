@@ -25,8 +25,7 @@ Future<void> showPartyList(BuildContext context) async {
               borderRadius: BorderRadius.circular(20), // Rounded pop-up border
             ),
             content: SizedBox(
-              width: double.maxFinite,
-              height: 300,
+              width: 550, // pop-up width
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -84,77 +83,56 @@ Future<void> showPartyList(BuildContext context) async {
                         String username = lobbyUsers[index]['username'];
                         int iconId = lobbyUsers[index]['icon'];
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 5,
-                            horizontal: 10,
-                          ),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                10,
-                              ), // Rounded borders
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 2,
-                              ), // Black border
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    // Remove user button (X)
-                                    IconButton(
-                                      icon: const Icon(Icons.close),
-                                      onPressed: () {
-                                        // Remove this user from the list
-                                        setState(() {
-                                          lobbyUsers.removeAt(index);
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(width: 10),
-                                    // Avatar image (with icon ID)
-                                    CircleAvatar(
-                                      child: buildAvatarImage(
-                                        iconId - 1,
-                                      ), // Use custom avatar function
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      username, // Display username dynamically
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                                // "JOIN X/8" button
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    foregroundColor: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        8,
-                                      ), // Button rounded edges
-                                      side: const BorderSide(
-                                        color: Colors.black,
-                                        width: 2,
-                                      ), // Black border
-                                    ),
-                                  ),
+                                // Remove user button (X)
+                                IconButton(
+                                  icon: const Icon(Icons.close),
                                   onPressed: () {
-                                    // Action to join the party
+                                    // Remove this user from the list
+                                    setState(() {
+                                      lobbyUsers.removeAt(index);
+                                    });
                                   },
-                                  child: Text("JOIN ${index + 1}/8"),
+                                ),
+                                const SizedBox(width: 10),
+                                // Avatar image (with icon ID)
+                                CircleAvatar(
+                                  child: buildAvatarImage(
+                                    iconId - 1,
+                                  ), // Use custom avatar function
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  username, // Display username dynamically
+                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ],
                             ),
-                          ),
+                            // "JOIN X/8" button
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    8,
+                                  ), // Button rounded edges
+                                  side: const BorderSide(
+                                    color: Colors.black,
+                                    width: 2,
+                                  ), // Black border
+                                ),
+                              ),
+                              onPressed: () {
+                                // Action to join the party
+                              },
+                              child: Text("JOIN ${index + 1}/8"),
+                            ),
+                          ],
                         );
                       },
                     ),

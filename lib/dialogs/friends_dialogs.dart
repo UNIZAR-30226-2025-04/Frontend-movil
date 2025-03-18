@@ -37,7 +37,7 @@ Future<void> showFriendsList(BuildContext context, String username) async {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             content: SizedBox(
-              width: 550, // uses the max width of the pop-up
+              width: 550, // pop-up width
               height: 300, // pop-up height
               child:
                   // Show loading indicator while data is being fetched
@@ -245,7 +245,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
               ),
               child: SizedBox(
                 width: 595,
-                height: 330,
+                height: 360,
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
@@ -282,8 +282,8 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                     // Show loading indicator while data is being fetched
                     isLoading
                         ? SizedBox(
-                          width: 550,
-                          height: 140,
+                          width: 550, // pop-up width
+                          height: 175,
                           child: Center(
                             child: Padding(
                               padding: const EdgeInsets.all(20.0),
@@ -294,8 +294,8 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                         : filteredFriends
                             .isEmpty // Check if the list is empty
                         ? SizedBox(
-                          width: 550,
-                          height: 140,
+                          width: 550, // pop-up width
+                          height: 175,
                           child: Center(
                             child: Text(
                               "No users available to add", // Message when no requests are present
@@ -304,8 +304,8 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                           ),
                         )
                         : SizedBox(
-                          width: 550,
-                          height: 140,
+                          width: 550, // pop-up width
+                          height: 175,
                           child: ListView.builder(
                             itemCount:
                                 filteredFriends
@@ -360,6 +360,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
+                        const SizedBox(width: 20),
                       ],
                     ),
                   ],
@@ -416,7 +417,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
             ),
 
             content: SizedBox(
-              width: 550, // Uses the max width of the pop-up
+              width: 550, // pop-up width
               child:
                   // Show loading indicator while data is being fetched
                   isLoading
@@ -563,7 +564,7 @@ Future<void> showSentRequest(BuildContext context, String username) async {
             ),
 
             content: SizedBox(
-              width: 550, // Uses the max width of the pop-up
+              width: 550, // pop-up width
               child:
                   // Show loading indicator while data is being fetched
                   isLoading
