@@ -33,6 +33,7 @@ Future<bool> showProfile(
           void Function(void Function()) setState,
         ) {
           return Dialog(
+            backgroundColor: Color(0xFFF5F5F5),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20), // Pop up border
             ),
@@ -101,11 +102,13 @@ Future<bool> showProfile(
                           ),
                         ],
                       ),
+                      SizedBox(height: 10),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Save changes button
-                          ElevatedButton(
+                          TextButton(
                             onPressed: () async {
                               // Try updating the profile with new data
                               bool success = await updateProfile(
@@ -130,20 +133,14 @@ Future<bool> showProfile(
                             child: const Text('Save Changes'),
                           ),
                           // Log off button
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange,
-                            ),
+                          TextButton(
                             onPressed: () async {
                               await logout(context);
                             },
                             child: const Text('Log off'),
                           ),
                           // Cancel button
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                            ),
+                          TextButton(
                             onPressed: () {
                               // Close the dialog without making any changes
                               if (context.mounted) {
@@ -232,18 +229,18 @@ Widget _buildTextField(
   return TextField(
     controller: controller,
     obscureText: isPassword,
-    style: const TextStyle(color: Colors.white),
+    style: const TextStyle(color: Colors.black),
     decoration: InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(color: Colors.grey),
       filled: true,
-      fillColor: const Color(0xFF353A50),
+      fillColor: const Color(0xFFF5F5F5),
       enabledBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.transparent),
+        borderSide: const BorderSide(color: Colors.black, width: 1.5),
         borderRadius: BorderRadius.circular(8),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.blueAccent),
+        borderSide: const BorderSide(color: Colors.blueAccent, width: 1.5),
         borderRadius: BorderRadius.circular(8),
       ),
     ),
