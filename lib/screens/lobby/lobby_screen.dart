@@ -213,6 +213,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                                 playerName: widget.hostName,
                                 playerIcon: widget.hostAvatar,
                                 isHost: true,
+                                kickUser: (String playerNameKick) {},
                               );
                             } else {
                               return PlayerBox(
@@ -220,6 +221,11 @@ class _LobbyScreen extends State<LobbyScreen> {
                                 playerIcon:
                                     1, //TODO, conexion con base de datos
                                 isHost: false,
+                                kickUser: (String playerNameKick) {
+                                  setState(() {
+                                    lobbyUsers.remove(playerNameKick);
+                                  });
+                                },
                               );
                             }
                           },

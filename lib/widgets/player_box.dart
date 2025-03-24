@@ -6,11 +6,13 @@ class PlayerBox extends StatelessWidget {
     required this.playerName,
     required this.playerIcon,
     required this.isHost,
+    required this.kickUser,
   });
 
   final String playerName;
   final int playerIcon;
   final bool isHost;
+  final Function(String) kickUser;
 
   @override
   Widget build(BuildContext context) {
@@ -20,28 +22,43 @@ class PlayerBox extends StatelessWidget {
         final boxWidth = 50.0;
         return GestureDetector(
           //Show player menu actions for host
+          //details added to show the "showMenu" in the finger position
           onLongPressStart: (details) {
             final RenderBox renderBox = context.findRenderObject() as RenderBox;
             final offset = renderBox.localToGlobal(details.localPosition);
-            showMenu(
-              context: context,
-              position: RelativeRect.fromLTRB(
-                offset.dx,
-                offset.dy,
-                offset.dx + boxWidth,
-                offset.dy + boxHeight,
-              ),
-              items: [
-                PopupMenuItem(
-                  child: TextButton(
-                    onPressed: () {
-                      // Lógica para expulsar
-                    },
-                    child: const Text("Kick from lobby"),
-                  ),
+            if (!isHost) {
+              showMenu(
+                context: context,
+                //show menu in finger position
+                position: RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy,
+                  offset.dx + boxWidth,
+                  offset.dy + boxHeight,
                 ),
-              ],
-            );
+                items: [
+                  PopupMenuItem(
+                    child: TextButton(
+                      onPressed: () {
+                        //Kicks selected user from table
+                        kickUser(playerName);
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Kick from lobby"),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    child: TextButton(
+                      onPressed: () {
+                        //TODO, en caso de que lo hagamos
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Give host privileges"),
+                    ),
+                  ),
+                ],
+              );
+            }
           },
 
           child: Container(
