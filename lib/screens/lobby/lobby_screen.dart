@@ -157,6 +157,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                       ],
                     ),
 
+                    //Chat button
                     Row(
                       children: [
                         ElevatedButton(
@@ -186,7 +187,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                       alignment: Alignment.topLeft,
                       children: [
                         GridView.builder(
-                          shrinkWrap: true,
+                          shrinkWrap: false,
 
                           padding: EdgeInsets.only(
                             left: 15,

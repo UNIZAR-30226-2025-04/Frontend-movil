@@ -16,48 +16,73 @@ class PlayerBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        //TODO, medidas de la caja con constraints??
-        final boxHeight = 50;
-        final boxWidth = 50;
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(color: Colors.black, width: 2),
-            //If its the host in another color
-            color: isHost ? Colors.red : Colors.blueAccent,
-          ),
-          child: Column(
-            children: [
-              //make some space between
-              SizedBox(height: boxHeight * 0.1),
-              //Icon iamge of the player as a Row
-              Row(
-                children: [
-                  //make some space between
-                  SizedBox(width: boxWidth * 1.28),
-                  _buildAvatarImage(playerIcon - 1),
-                ],
+        final boxHeight = 50.0;
+        final boxWidth = 50.0;
+        return GestureDetector(
+          //Show player menu actions for host
+          onLongPressStart: (details) {
+            final RenderBox renderBox = context.findRenderObject() as RenderBox;
+            final offset = renderBox.localToGlobal(details.localPosition);
+            showMenu(
+              context: context,
+              position: RelativeRect.fromLTRB(
+                offset.dx,
+                offset.dy,
+                offset.dx + boxWidth,
+                offset.dy + boxHeight,
               ),
-              //make some space between
-              SizedBox(height: boxHeight * 0.15),
-              //players name
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (isHost)
-                    Icon(
-                      Icons.star_border,
-                      color: Colors.yellow,
-                    ), //TODO, cambiar el icono con una corona, pero me hace gracia y se queda como una embarazada
-                  Text(
-                    playerName,
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              items: [
+                PopupMenuItem(
+                  child: TextButton(
+                    onPressed: () {
+                      // Lógica para expulsar
+                    },
+                    child: const Text("Kick from lobby"),
                   ),
-                ],
-              ),
-              //make some space between
-              SizedBox(height: boxHeight * 0.1),
-            ],
+                ),
+              ],
+            );
+          },
+
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.black, width: 2),
+              //If its the host in another color
+              color: isHost ? Colors.red : Colors.blueAccent,
+            ),
+            child: Column(
+              children: [
+                //make some space between
+                SizedBox(height: boxHeight * 0.1),
+                //Icon iamge of the player as a Row
+                Row(
+                  children: [
+                    //make some space between
+                    SizedBox(width: boxWidth * 1.28),
+                    _buildAvatarImage(playerIcon - 1),
+                  ],
+                ),
+                //make some space between
+                SizedBox(height: boxHeight * 0.15),
+                //players name
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (isHost) Icon(Icons.star_border, color: Colors.yellow),
+                    Text(
+                      playerName,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                //make some space between
+                SizedBox(height: boxHeight * 0.1),
+              ],
+            ),
           ),
         );
       },
@@ -80,11 +105,11 @@ Widget _buildAvatarImage(int iconId) {
     'images/pixelBard.png',
   ];
 
-    // Check if the iconId exceeds the size of the list or is negative, if so, default to index 0
+  // Check if the iconId exceeds the size of the list or is negative, if so, default to index 0
   if (iconId >= avatarPaths.length || iconId < 0) {
     iconId = 0; // Default to the first avatar if the id exceeds the list size
   }
-  
+
   return Image.asset(
     avatarPaths[iconId],
     height: 50,
