@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/data/api/party_apy.dart';
+import 'package:nogler/screens/lobby/lobby_screen.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
+import 'package:page_transition/page_transition.dart';
 
 /// Function to show the list of game invitations
-Future<void> showPartyList(BuildContext context) async {
+Future<void> showPartyList(BuildContext context, String myusername) async {
   List<Map<String, dynamic>> invitationsList = [];
   bool hasFetched = false; // To ensure the data is fetched only once
   bool isLoading = true; // Flag to track loading state
@@ -139,8 +141,8 @@ Future<void> showPartyList(BuildContext context) async {
                                                   // Remove this user from the list
                                                   setState(() {
                                                     deleteLobbyInvitation(
-                                                      invitationsList[index]['lobby_id'],
-                                                      invitationsList[index]['username'],
+                                                      lobbyId,
+                                                      username,
                                                     );
                                                     invitationsList.removeAt(
                                                       index,
@@ -181,7 +183,26 @@ Future<void> showPartyList(BuildContext context) async {
                                               ),
                                             ),
                                             onPressed: () {
-                                              // Join game logic here
+                                              acceptLobbyInvitation(lobbyId);
+                                              setState(() {
+                                                deleteLobbyInvitation(
+                                                  lobbyId,
+                                                  username,
+                                                );
+                                                invitationsList.removeAt(index);
+                                              });
+                                              Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                  type: PageTransitionType.fade,
+                                                  child: LobbyScreen(
+                                                    hostName: myusername,
+                                                    hostAvatar: iconId - 1,
+                                                    lobbyState: true,
+                                                    lobbyCode: lobbyId,
+                                                  ),
+                                                ),
+                                              );
                                             },
                                             child: Text(
                                               "JOIN $numberOfPlayers/8",

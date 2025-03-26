@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ); //TODO, decision de hacerlo por parametro o por peticion a back
                       }),
                       _buildMenuButton(context, 'PARTY', () {
-                        showPartyList(context);
+                        showPartyList(context, _username);
                       }),
                       _buildMenuButton(context, 'FRIENDS', () {
                         showFriendsList(context, _username);

@@ -33,7 +33,7 @@ Future<void> acceptLobbyInvitation(String lobbyId) async {
   try {
     // Send a POST request to the API to add the user to the lobby
     final response = await dioClient.dio.post(
-      '/auth/user-lobby/$lobbyId', // API endpoint to add the user to the specified lobby
+      '/auth/joinLobby/$lobbyId', // API endpoint to add the user to the specified lobby
     );
     if (response.statusCode == 200) {
       // Print success message if the user is successfully added to the lobby
