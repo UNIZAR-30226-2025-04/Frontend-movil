@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/data/api/party_apy.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 
 /// Function to show the list of game invitations
 Future<void> showPartyList(BuildContext context) async {
-  // Example list of invited players with avatars
-  List<Map<String, dynamic>> lobbyUsers = [
-    {"username": "Jogue", "icon": 0},
-    {"username": "Emilliano", "icon": 1},
-    {"username": "Nicock", "icon": 2},
-    {"username": "YagoAndTheYagos", "icon": 3},
-    {"username": "Victor Bodrios", "icon": 4},
-    {"username": "Ruben", "icon": 5},
-    {"username": "Jota", "icon": 6},
-    {"username": "Josemi", "icon": 7},
-  ];
+  List<Map<String, dynamic>> invitationsList = [];
+  bool hasFetched = false; // To ensure the data is fetched only once
+  bool isLoading = true; // Flag to track loading state
 
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          if (!hasFetched) {
+            hasFetched = true;
+            Future.delayed(Duration.zero, () async {
+              // Fetch the friends list from the API
+              final data = await getReceivedGameLobbyInvitations(); // Function to fetch friends
+              if (context.mounted) {
+                setState(() {
+                  invitationsList = List.from(data);
+                  isLoading =
+                      false; // Set loading to false once data is fetched
+                });
+              }
+            });
+          }
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20), // Rounded pop-up border
@@ -77,11 +84,24 @@ Future<void> showPartyList(BuildContext context) async {
                   const SizedBox(height: 10), // Space before list
                   // Scrollable List of Users
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: lobbyUsers.length, // Number of users
+                    child: // Show loading indicator while data is being fetched
+                  isLoading
+                      ? const Center(
+                        child:
+                            CircularProgressIndicator(), // Show loading spinner
+                      )
+                      : invitationsList.isEmpty
+                      ? Center(
+                        child: Text(
+                          'No game invitations available', // Message when no data is available
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      )
+                      :ListView.builder(
+                      itemCount: invitationsList.length, // Number of users
                       itemBuilder: (context, index) {
-                        String username = lobbyUsers[index]['username'];
-                        int iconId = lobbyUsers[index]['icon'];
+                        String username = invitationsList[index]['username'];
+                        int iconId = invitationsList[index]['icon'];
 
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,7 +114,7 @@ Future<void> showPartyList(BuildContext context) async {
                                   onPressed: () {
                                     // Remove this user from the list
                                     setState(() {
-                                      lobbyUsers.removeAt(index);
+                                      invitationsList.removeAt(index);
                                     });
                                   },
                                 ),
