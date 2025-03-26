@@ -8,11 +8,13 @@ class LobbieBox extends StatelessWidget {
     required this.playerName,
     required this.playerIcon,
     required this.lobbyOcupation,
+    required this.lobbyCode,
   });
 
   final String playerName;
   final int playerIcon;
   final int lobbyOcupation;
+  final String lobbyCode;
 
   @override
   Widget build(BuildContext context) {

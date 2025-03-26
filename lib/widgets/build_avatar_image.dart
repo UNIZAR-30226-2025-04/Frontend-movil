@@ -8,9 +8,9 @@ Widget buildAvatarImage(int iconId) {
     'images/pixelPica.png',
     'images/pixelDiamond.png',
     'images/pixelTrebol.png',
+    'images/pixelSinoc.png',
     'images/pixelSoyi.png',
     'images/pixelBrat.png',
-    'images/pixelSinoc.png',
     'images/pixelBarb.png',
     'images/pixelBard.png',
   ];

@@ -12,7 +12,7 @@ Future<bool> showProfile(
   int currentAvatar,
 ) async {
   // List of available icon options (avatars)
-  final List<int> iconOptions = List.generate(8, (index) => index);
+  final List<int> iconOptions = List.generate(9, (index) => index);
 
   // Text controllers for managing input fields for username and passwords
   final usernameController = TextEditingController(text: currentUsername);
@@ -197,7 +197,7 @@ Future<int?> showIconPickerDialog(
                         CircleAvatar(
                           radius: 30,
                           backgroundColor: Colors.white,
-                          child: buildAvatarImage(iconIndex - 1),
+                          child: buildAvatarImage(iconIndex),
                         ),
                         const SizedBox(height: 5),
                         Text("Icon $iconIndex"),
