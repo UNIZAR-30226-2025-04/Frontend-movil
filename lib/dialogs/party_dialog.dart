@@ -17,7 +17,8 @@ Future<void> showPartyList(BuildContext context) async {
             hasFetched = true;
             Future.delayed(Duration.zero, () async {
               // Fetch the friends list from the API
-              final data = await getReceivedGameLobbyInvitations(); // Function to fetch friends
+              final data =
+                  await getReceivedGameLobbyInvitations(); // Function to fetch friends
               if (context.mounted) {
                 setState(() {
                   invitationsList = List.from(data);
@@ -85,77 +86,87 @@ Future<void> showPartyList(BuildContext context) async {
                   // Scrollable List of Users
                   Expanded(
                     child: // Show loading indicator while data is being fetched
-                  isLoading
-                      ? const Center(
-                        child:
-                            CircularProgressIndicator(), // Show loading spinner
-                      )
-                      : invitationsList.isEmpty
-                      ? Center(
-                        child: Text(
-                          'No game invitations available', // Message when no data is available
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      )
-                      :ListView.builder(
-                      itemCount: invitationsList.length, // Number of users
-                      itemBuilder: (context, index) {
-                        String username = invitationsList[index]['username'];
-                        int iconId = invitationsList[index]['icon'];
-
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                // Remove user button (X)
-                                IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () {
-                                    // Remove this user from the list
-                                    setState(() {
-                                      invitationsList.removeAt(index);
-                                    });
-                                  },
-                                ),
-                                const SizedBox(width: 10),
-                                // Avatar image (with icon ID)
-                                CircleAvatar(
-                                  child: buildAvatarImage(
-                                    iconId - 1,
-                                  ), // Use custom avatar function
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  username, // Display username dynamically
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ],
-                            ),
-                            // "JOIN X/8" button
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    8,
-                                  ), // Button rounded edges
-                                  side: const BorderSide(
-                                    color: Colors.black,
-                                    width: 2,
-                                  ), // Black border
+                        isLoading
+                            ? const Center(
+                              child:
+                                  CircularProgressIndicator(), // Show loading spinner
+                            )
+                            : invitationsList.isEmpty
+                            ? Center(
+                              child: Text(
+                                'No game invitations available', // Message when no data is available
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
                                 ),
                               ),
-                              onPressed: () {
-                                // Action to join the party
+                            )
+                            : ListView.builder(
+                              itemCount:
+                                  invitationsList.length, // Number of users
+                              itemBuilder: (context, index) {
+                                String username =
+                                    invitationsList[index]['username'];
+                                int iconId = invitationsList[index]['icon'];
+
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        // Remove user button (X)
+                                        IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () {
+                                            // Remove this user from the list
+                                            setState(() {
+                                              deleteLobbyInvitation(
+                                                invitationsList[index]['lobby_id'],
+                                                invitationsList[index]['username']
+                                              );
+                                              invitationsList.removeAt(index);
+                                            });
+                                          },
+                                        ),
+                                        const SizedBox(width: 10),
+                                        // Avatar image (with icon ID)
+                                        CircleAvatar(
+                                          child: buildAvatarImage(
+                                            iconId - 1,
+                                          ), // Use custom avatar function
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          username, // Display username dynamically
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      ],
+                                    ),
+                                    // "JOIN X/8" button
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.black,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ), // Button rounded edges
+                                          side: const BorderSide(
+                                            color: Colors.black,
+                                            width: 2,
+                                          ), // Black border
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        // Action to join the party
+                                      },
+                                      child: Text("JOIN ${index + 1}/8"),
+                                    ),
+                                  ],
+                                );
                               },
-                              child: Text("JOIN ${index + 1}/8"),
                             ),
-                          ],
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
