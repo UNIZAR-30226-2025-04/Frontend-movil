@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/data/api/party_api.dart';
+import 'package:nogler/screens/lobby/lobby_screen.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
+import 'package:page_transition/page_transition.dart';
 
 ///Widget to show the information of a public lobby in the JOIN LOBBY screen
 class LobbieBox extends StatelessWidget {
@@ -72,9 +75,22 @@ class LobbieBox extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      //TODO, hacer la funcionalidad
-                      // Action to join the lobby
+                      acceptLobbyInvitation(lobbyCode);
+
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: LobbyScreen(
+                            hostName: playerName,
+                            hostAvatar: playerIcon,
+                            lobbyState: true,
+                            lobbyCode: lobbyCode,
+                          ),
+                        ),
+                      );
                     },
+
                     child: Text("JOIN $lobbyOcupation/8"),
                   ),
                   //make some space between
