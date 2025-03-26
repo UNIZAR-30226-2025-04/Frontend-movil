@@ -108,62 +108,91 @@ Future<void> showPartyList(BuildContext context) async {
                                 String username =
                                     invitationsList[index]['username'];
                                 int iconId = invitationsList[index]['icon'];
+                                String lobbyId =
+                                    invitationsList[index]['lobby_id'];
 
-                                return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        // Remove user button (X)
-                                        IconButton(
-                                          icon: const Icon(Icons.close),
-                                          onPressed: () {
-                                            // Remove this user from the list
-                                            setState(() {
-                                              deleteLobbyInvitation(
-                                                invitationsList[index]['lobby_id'],
-                                                invitationsList[index]['username']
-                                              );
-                                              invitationsList.removeAt(index);
-                                            });
-                                          },
+                                return FutureBuilder<Map<String, dynamic>?>(
+                                  future: getLobbyInfo(lobbyId),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Center(
+                                        child: Text(
+                                          'Error fetching lobby info.',
                                         ),
-                                        const SizedBox(width: 10),
-                                        // Avatar image (with icon ID)
-                                        CircleAvatar(
-                                          child: buildAvatarImage(
-                                            iconId - 1,
-                                          ), // Use custom avatar function
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          username, // Display username dynamically
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                      ],
-                                    ),
-                                    // "JOIN X/8" button
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        foregroundColor: Colors.black,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ), // Button rounded edges
-                                          side: const BorderSide(
-                                            color: Colors.black,
-                                            width: 2,
-                                          ), // Black border
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        // Action to join the party
-                                      },
-                                      child: Text("JOIN ${index + 1}/8"),
-                                    ),
-                                  ],
+                                      );
+                                    }
+
+                                    if (snapshot.hasData) {
+                                      var lobbyData = snapshot.data!;
+                                      int numberOfPlayers =
+                                          lobbyData['number_players'] ?? 0;
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              // Remove user button (X)
+                                              IconButton(
+                                                icon: const Icon(Icons.close),
+                                                onPressed: () {
+                                                  // Remove this user from the list
+                                                  setState(() {
+                                                    deleteLobbyInvitation(
+                                                      invitationsList[index]['lobby_id'],
+                                                      invitationsList[index]['username'],
+                                                    );
+                                                    invitationsList.removeAt(
+                                                      index,
+                                                    );
+                                                  });
+                                                },
+                                              ),
+                                              const SizedBox(width: 10),
+                                              // Avatar image (with icon ID)
+                                              CircleAvatar(
+                                                child: buildAvatarImage(
+                                                  iconId - 1,
+                                                ), // Use custom avatar function
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                username, // Display username dynamically
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          // "JOIN X/8" button
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white,
+                                              foregroundColor: Colors.black,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      8,
+                                                    ), // Button rounded edges
+                                                side: const BorderSide(
+                                                  color: Colors.black,
+                                                  width: 2,
+                                                ), // Black border
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              // Join game logic here
+                                            },
+                                            child: Text(
+                                              "JOIN $numberOfPlayers/8",
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    }
+
+                                    return const SizedBox();
+                                  },
                                 );
                               },
                             ),

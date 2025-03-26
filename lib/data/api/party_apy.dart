@@ -66,4 +66,24 @@ Future<void> deleteLobbyInvitation(String lobbyId, String senderUsername) async 
   }
 }
 
+/// Function to fetch the information of a lobby by its ID
+Future<Map<String, dynamic>?> getLobbyInfo(String lobbyId) async {
+  final dioClient = DioClient(); // Create a new Dio client instance
+  try {
+    final response = await dioClient.dio.get(
+      '/auth/lobbyInfo/$lobbyId', // API endpoint to get lobby info
+    );
+
+    if (response.statusCode == 200) {
+      // Extract and return the lobby information as a Map
+      return response.data as Map<String, dynamic>;
+    }
+  } catch (e) {
+    // Handle any error that occurs while fetching the lobby info
+    debugPrint("❌ Error fetching lobby info: $e");
+  }
+  // Return null if there is any error or the response is empty
+  return null;
+}
+
 
