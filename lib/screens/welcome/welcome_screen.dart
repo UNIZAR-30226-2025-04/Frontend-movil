@@ -7,7 +7,6 @@ import 'package:nogler/utils/app_styles.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
-
 /// This is the first screen that the user sees when opening the app
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key}); // Constructor for the class
@@ -18,7 +17,6 @@ class WelcomeScreen extends StatefulWidget {
 
 /// State class for WelcomeScreen
 class _WelcomeScreenState extends State<WelcomeScreen> {
-
   /// Method to navigate to LoginScreen
   void _navigateToLogin() {
     if (mounted) {

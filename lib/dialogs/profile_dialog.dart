@@ -23,6 +23,9 @@ Future<bool> showProfile(
   int selectedIcon = currentAvatar;
   bool changesMade = false;
 
+  double popUpWidth = 595;
+  double popUpHeight = 360;
+
   // Display the dialog and wait for the result
   final result = await showDialog<bool>(
     context: context,
@@ -38,75 +41,101 @@ Future<bool> showProfile(
               borderRadius: BorderRadius.circular(20), // Pop up border
             ),
             child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: SizedBox(
+                width: popUpWidth, // pop-up width
+                //sets max height as 80% of pop-up
+                height: popUpHeight.clamp(
+                  0,
+                  MediaQuery.of(context).size.height * 0.8,
+                ), // pop-up height
                 child: Center(
                   child: Column(
                     children: [
-                      Row(
-                        //spacing: 50,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          // Avatar selection (gesture to pick new avatar)
-                          GestureDetector(
-                            onTap: () async {
-                              // Hide the keyboard
-                              FocusScope.of(context).unfocus();
-                              // Show the icon picker dialog
-                              final newIcon = await showIconPickerDialog(
-                                context,
-                                iconOptions,
-                                selectedIcon,
-                              );
-                              if (newIcon != null) {
-                                setState(() {
-                                  selectedIcon = newIcon;
-                                  changesMade = true;
-                                });
-                              }
-                            },
-                            child: CircleAvatar(
-                              radius: 75,
-                              backgroundColor: Colors.white,
-                              child: buildAvatarImage(
-                                selectedIcon - 1,
-                              ), // Display selected avatar
+                      Container(
+                        padding: EdgeInsets.only(
+                          //top: popUpHeight * 0.05,
+                          left: popUpWidth * 0.05,
+                          right: popUpWidth * 0.05,
+                        ),
+                        child: Row(
+                          //spacing: 50,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            // Avatar selection (gesture to pick new avatar)
+                            GestureDetector(
+                              onTap: () async {
+                                // Hide the keyboard
+                                FocusScope.of(context).unfocus();
+                                // Show the icon picker dialog
+                                final newIcon = await showIconPickerDialog(
+                                  context,
+                                  iconOptions,
+                                  selectedIcon,
+                                );
+                                if (newIcon != null) {
+                                  setState(() {
+                                    selectedIcon = newIcon;
+                                    changesMade = true;
+                                  });
+                                }
+                              },
+                              child: CircleAvatar(
+                                radius: 75,
+                                backgroundColor: Colors.white,
+                                child: buildAvatarImage(
+                                  selectedIcon - 1,
+                                ), // Display selected avatar
+                              ),
                             ),
-                          ),
 
-                          // Add space between avatar and text fields
-                          SizedBox(width: 20),
+                            // Add space between avatar and text fields
+                            SizedBox(width: 20),
 
-                          Expanded(
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 8),
-                                // Text field for username
-                                _buildTextField('Username', usernameController),
-                                const SizedBox(height: 8),
-                                // Text field for password
-                                _buildTextField(
-                                  'Password',
-                                  passwordController,
-                                  isPassword: true,
-                                ),
-                                const SizedBox(height: 8),
-                                // Text field for repeat password
-                                _buildTextField(
-                                  'Repeat password',
-                                  repeatPasswordController,
-                                  isPassword: true,
-                                ),
-                              ],
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 5),
+                                  // Text field for username
+                                  Text("Username"),
+                                  _buildTextField(
+                                    'Username',
+                                    usernameController,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  // Text field for password
+                                  Text("Password"),
+                                  _buildTextField(
+                                    'Password',
+                                    passwordController,
+                                    isPassword: true,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  // Text field for repeat password
+                                  Text("Repeat password"),
+                                  _buildTextField(
+                                    'Repeat password',
+                                    repeatPasswordController,
+                                    isPassword: true,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       SizedBox(height: 10),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          SizedBox(width: 1),
+                          SizedBox(width: 1),
+                          SizedBox(width: 1),
+                          SizedBox(width: 1),
+
                           // Save changes button
                           TextButton(
                             onPressed: () async {
@@ -152,6 +181,7 @@ Future<bool> showProfile(
                             },
                             child: const Text('Cancel'),
                           ),
+                          SizedBox(width: 1),
                         ],
                       ),
                     ],
@@ -231,8 +261,6 @@ Widget _buildTextField(
     obscureText: isPassword,
     style: const TextStyle(color: Colors.black),
     decoration: InputDecoration(
-      labelText: label,
-      labelStyle: const TextStyle(color: Colors.grey),
       filled: true,
       fillColor: const Color(0xFFF5F5F5),
       enabledBorder: OutlineInputBorder(
