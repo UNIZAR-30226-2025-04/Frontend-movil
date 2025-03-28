@@ -116,3 +116,22 @@ Future<void> sendInvitation(String lobbyCode, String friendUsername) async {
     debugPrint('❌ Failed to send invitation: $e');
   }
 }
+
+/// Function to delete an invitation sent to a friend
+Future<void> deleteInvitation(String lobbyCode, String friendUsername) async {
+  final dioClient = DioClient();
+  try {
+    // Send delete request to remove invitation
+    final response = await dioClient.dio.delete(
+      '/auth/sent_lobby_invitation/$lobbyCode/$friendUsername',
+    );
+
+    if (response.statusCode == 200) {
+      debugPrint(
+        '✅ Invitation request to $friendUsername in lobby $lobbyCode deleted successfully',
+      );
+    }
+  } catch (e) {
+    debugPrint('❌ Error deleting invitation: $e');
+  }
+}

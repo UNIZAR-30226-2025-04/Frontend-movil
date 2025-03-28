@@ -16,6 +16,7 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          // Get info of non invited users
           if (!hasFetchedNonInvitedFriends) {
             hasFetchedNonInvitedFriends = true;
             Future.delayed(Duration.zero, () async {
@@ -29,6 +30,7 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
               }
             });
           }
+          // Get info of invited users
           if (!hasFetchedInvitedFriends) {
             hasFetchedInvitedFriends = true;
             Future.delayed(Duration.zero, () async {
@@ -104,7 +106,21 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                             Icons.check,
                                             color: Colors.green,
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            sendInvitation(
+                                              lobbyCode,
+                                              nonInvitedFriends[index]['username'],
+                                            );
+                                            // Move friend to invitedFriends and delete it in nonInvitedFriends
+                                            setState(() {
+                                              //TODO, entiendo que esto en cuanto a integracion le falta algo,
+                                              // ya que hace falta comunicar a los demas usuarios de la sala
+                                              invitedFriends.add(
+                                                nonInvitedFriends[index],
+                                              );
+                                              nonInvitedFriends.removeAt(index);
+                                            });
+                                          },
                                         ),
                                       ],
                                     ),
@@ -161,7 +177,21 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                             Icons.cancel,
                                             color: Colors.red,
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            deleteInvitation(
+                                              lobbyCode,
+                                              invitedFriends[index]['username'],
+                                            );
+                                            // Move friend to NonInvitedFriends and delete it in invitedFriends
+                                            setState(() {
+                                              //TODO, entiendo que esto en cuanto a integracion le falta algo,
+                                              // ya que hace falta comunicar a los demas usuarios de la sala
+                                              nonInvitedFriends.add(
+                                                invitedFriends[index],
+                                              );
+                                              invitedFriends.removeAt(index);
+                                            });
+                                          },
                                         ),
                                       ],
                                     ),
