@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nogler/data/api/lobby_api.dart';
+import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/player_box.dart';
@@ -37,6 +38,7 @@ class _LobbyScreen extends State<LobbyScreen> {
   ];
 
   String publicPrivateButton = "Public";
+  bool hasFetched = false;
 
   @override
   void initState() {
@@ -148,7 +150,9 @@ class _LobbyScreen extends State<LobbyScreen> {
                               vertical: 12,
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            showInvitationLists(context, widget.lobbyCode);
+                          },
                           child: Text(
                             "Share",
                             style: TextStyle(color: Colors.black),
