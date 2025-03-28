@@ -112,23 +112,9 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                 int iconId = invitationsList[index]['icon'];
                                 String lobbyId =
                                     invitationsList[index]['lobby_id'];
-
-                                return FutureBuilder<Map<String, dynamic>?>(
-                                  future: getLobbyInfo(lobbyId),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasError) {
-                                      return Center(
-                                        child: Text(
-                                          'Error fetching lobby info.',
-                                        ),
-                                      );
-                                    }
-
-                                    if (snapshot.hasData) {
-                                      var lobbyData = snapshot.data!;
-                                      int numberOfPlayers =
-                                          lobbyData['number_players'] ?? 0;
-                                      return Row(
+                                int numberOfPlayers =
+                                    invitationsList[index]['player_count'];
+                                return Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
@@ -210,11 +196,10 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                           ),
                                         ],
                                       );
-                                    }
+                                  
 
-                                    return const SizedBox();
-                                  },
-                                );
+                              
+                                
                               },
                             ),
                   ),

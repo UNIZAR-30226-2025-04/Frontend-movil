@@ -33,6 +33,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       // Scaffold widget to create the screen
       body: BackgroundWidget(
         // Background image for the screen

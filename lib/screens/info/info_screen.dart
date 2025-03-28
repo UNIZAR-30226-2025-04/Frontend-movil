@@ -37,7 +37,7 @@ class InfoScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 30), // Adds spacing between elements
+                
                 Wrap(
                   // Wrap widget to align elements in a grid
                   spacing: 16, // Horizontal spacing between buttons

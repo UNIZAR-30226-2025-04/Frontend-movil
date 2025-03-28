@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.fade,
-                            child: const JoinLobbyScreen(),
+                            child: JoinLobbyScreen(hostName: _username, hostAvatar: _avatar),
                           ),
                         );
                       }),
