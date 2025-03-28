@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/dio/dio_client.dart';
-//import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 
 Future<List<Map<String, dynamic>>> getAllNonInvitedFriends() async {
   final dioClient = DioClient();
@@ -31,7 +31,7 @@ Future<List<Map<String, dynamic>>> getAllNonInvitedFriends() async {
       // Extract a list of usernames who have been sent an invitation by the user
       List<String> sentInvitations = List<String>.from(
         (invitationsResponse.data['sent_game_lobby_invitations'] as List?)?.map(
-              (request) => request['username'] as String,
+              (user) => user['username'] as String,
             ) ??
             [], // Handle null and return an empty list if null
       );
@@ -50,4 +50,30 @@ Future<List<Map<String, dynamic>>> getAllNonInvitedFriends() async {
   }
 
   return [];
+}
+
+/// Function to send an invitation to a friend
+Future<void> sendInvitation(String lobbyCode, String friendUsername) async {
+  final dioClient = DioClient();
+  try {
+    final response = await dioClient.dio.post(
+      '/auth/sendLobbyInvitation',
+      data: {
+        'lobby_id': lobbyCode,
+        'friendUsername': friendUsername,
+      }, // Send the friend's username as form data
+      options: Options(
+        contentType:
+            Headers
+                .formUrlEncodedContentType, // Set content type to 'application/x-www-form-urlencoded'
+        responseType: ResponseType.json, // Expect JSON response
+      ),
+    );
+    if (response.statusCode == 200) {
+      // Print success message if the request was sent successfully
+      debugPrint('✅ Invitation sent to $friendUsername');
+    }
+  } catch (e) {
+    debugPrint('❌ Failed to send invitation: $e');
+  }
 }
