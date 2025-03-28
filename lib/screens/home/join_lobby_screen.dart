@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/data/api/join_lobby_api.dart';
 import 'package:nogler/dialogs/code_dialog.dart';
+import 'package:nogler/dialogs/matchmaking_dialog.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/lobbie_box.dart';
@@ -96,7 +97,7 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
                             vertical: 12,
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () => showMatchmakingDialog(context),
                         child: Text(
                           "Matchmaking",
                           style: TextStyle(color: Colors.black),
