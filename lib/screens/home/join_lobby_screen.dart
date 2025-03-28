@@ -41,7 +41,7 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
           });
         }
         return Scaffold(
-          resizeToAvoidBottomInset: true,
+          resizeToAvoidBottomInset: false,
           body: GestureDetector(
             onTap: () {
               // Dismiss the keyboard when tapping outside
@@ -73,7 +73,12 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
                             vertical: 12,
                           ),
                         ),
-                        onPressed: () => showCodeDialog(context, widget.hostName, widget.hostAvatar),
+                        onPressed:
+                            () => showCodeDialog(
+                              context,
+                              widget.hostName,
+                              widget.hostAvatar,
+                            ),
                         child: Text(
                           "Insert Code",
                           style: TextStyle(color: Colors.black),
@@ -100,30 +105,6 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
 
                       //Add some space between
                       SizedBox(width: 20),
-
-                      //Matchmaking button
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 25,
-                            vertical: 12,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.fade,
-                              child: const HomeScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          "Back",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
                     ],
                   ),
                   //Add some space between
@@ -164,7 +145,39 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
                             ),
                   ),
                   //Add some space between
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
+                  //Back button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 12,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.fade,
+                              child: const HomeScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Back",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                      //Add some space between
+                      SizedBox(width: 20),
+                    ],
+                  ),
+                  //Add some space between
+                  SizedBox(height: 10),
                 ],
               ),
             ),
