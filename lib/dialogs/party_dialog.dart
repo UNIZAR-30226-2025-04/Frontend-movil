@@ -163,8 +163,8 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                           ), // Black border
                                         ),
                                       ),
-                                      onPressed: () {
-                                        joinLobby(lobbyId);
+                                      onPressed: () async {
+                                        await joinLobby(lobbyId);
                                         setState(() {
                                           deleteLobbyInvitation(
                                             lobbyId,
@@ -172,18 +172,20 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                           );
                                           invitationsList.removeAt(index);
                                         });
-                                        Navigator.push(
-                                          context,
-                                          PageTransition(
-                                            type: PageTransitionType.fade,
-                                            child: LobbyScreen(
-                                              hostName: myusername,
-                                              hostAvatar: iconId - 1,
-                                              lobbyState: true,
-                                              lobbyCode: lobbyId,
+                                        if (context.mounted) {
+                                          Navigator.push(
+                                            context,
+                                            PageTransition(
+                                              type: PageTransitionType.fade,
+                                              child: LobbyScreen(
+                                                hostName: myusername,
+                                                hostAvatar: iconId - 1,
+                                                lobbyState: true,
+                                                lobbyCode: lobbyId,
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       },
                                       child: Text("JOIN $numberOfPlayers/8"),
                                     ),

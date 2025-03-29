@@ -25,7 +25,7 @@ Future<void> loginUser(
 
     if (response.statusCode == 200) {
       final token = response.data["token"];
-      dioClient.setToken(token); // Save the token to DioClient
+      await dioClient.setToken(token); // Save the token to DioClient
       onSuccess('Login successful!'); // Notify success
     }
   } on DioException catch (e) {
