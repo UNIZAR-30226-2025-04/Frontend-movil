@@ -38,10 +38,28 @@ class _LobbyScreen extends State<LobbyScreen> {
     "Josemi",
   ];
 
+  List<Map<String, dynamic>> chatMessages = [];
+
   String _publicPrivateButton = "Public";
 
   // Needed to define which Scaffold we are refering
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void addMessage(
+    String username,
+    int avatarImage,
+    String message,
+    String time,
+  ) {
+    setState(() {
+      chatMessages.add({
+        'username': username,
+        'avatarImage': avatarImage,
+        'message': message,
+        'time': time,
+      });
+    });
+  }
 
   @override
   void initState() {
@@ -57,7 +75,13 @@ class _LobbyScreen extends State<LobbyScreen> {
           // Key needed to refer to the scaffold
           key: _scaffoldKey,
           // Chat drawer definition
-          endDrawer: ChatWidget(),
+          endDrawer: ChatWidget(
+            myUsername: widget.hostName,
+            myAvatarImage: widget.hostAvatar,
+            chatMessages: chatMessages,
+            onSend: addMessage,
+          ),
+
           body: BackgroundWidget(
             child: Column(
               children: [

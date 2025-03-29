@@ -20,6 +20,7 @@ class ChatMessageWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Show the user's avatar image
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 5.0, 5.0, 0),
           child: Align(
