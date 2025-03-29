@@ -38,9 +38,7 @@ class _LobbyScreen extends State<LobbyScreen> {
     "Josemi",
   ];
 
-  // Initial lobby state
-  String publicPrivateButton = "Public";
-  bool hasFetched = false;
+  String _publicPrivateButton = "Public";
 
   // Needed to define which Scaffold we are refering
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -48,7 +46,7 @@ class _LobbyScreen extends State<LobbyScreen> {
   @override
   void initState() {
     super.initState();
-    publicPrivateButton = widget.lobbyState ? "Private" : "Public";
+    _publicPrivateButton = widget.lobbyState ? "Private" : "Public";
   }
 
   @override
@@ -56,8 +54,10 @@ class _LobbyScreen extends State<LobbyScreen> {
     return StatefulBuilder(
       builder: (context, setState) {
         return Scaffold(
+          // Key needed to refer to the scaffold
           key: _scaffoldKey,
-          endDrawer: buildChatDrawer(),
+          // Chat drawer definition
+          endDrawer: ChatWidget(),
           body: BackgroundWidget(
             child: Column(
               children: [
@@ -102,15 +102,15 @@ class _LobbyScreen extends State<LobbyScreen> {
                           onPressed: () {
                             //TODO, que implica que sean privadas y publicas -> cambiar especificaciones lobby en base de datos, etc
                             setState(() {
-                              if (publicPrivateButton == 'Public') {
-                                publicPrivateButton = 'Private';
+                              if (_publicPrivateButton == 'Public') {
+                                _publicPrivateButton = 'Private';
                               } else {
-                                publicPrivateButton = 'Public';
+                                _publicPrivateButton = 'Public';
                               }
                             });
                           },
                           child: Text(
-                            publicPrivateButton,
+                            _publicPrivateButton,
                             style: TextStyle(color: Colors.black),
                           ),
                         ),
@@ -180,6 +180,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                             ),
                           ),
                           onPressed: () {
+                            // Open Drawer using the key previously mentioned
                             _scaffoldKey.currentState?.openEndDrawer();
                           },
                           child: Icon(Icons.chat_bubble, color: Colors.black),
@@ -289,6 +290,7 @@ class _LobbyScreen extends State<LobbyScreen> {
   }
 }
 
+//TODO, moverlo a otro lado?
 /// Function to create the pop-up in home_screen in order to create a lobby
 Future<void> showCreateLobbyButton(
   BuildContext context,
