@@ -27,9 +27,12 @@ class MainCardsState extends State<MainCards> {
   /// Builds a single card widget.
   Widget _buildCard(String label, Color color) {
     return Container(
-      width: 60,
-      height: 90,
-      color: color,
+      width: 50,
+      height: 70,
+      decoration: BoxDecoration(
+          color: color,
+          border: Border.all(color: Colors.black, width: 2),
+      ),
       alignment: Alignment.center,
       child: Text(
         label,

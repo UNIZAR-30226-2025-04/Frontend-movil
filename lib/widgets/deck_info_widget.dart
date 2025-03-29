@@ -24,7 +24,7 @@ class DeckInfoState extends State<DeckInfo> {
       },
       child: SizedBox(
         width: 60, // Width of the container
-        height: 85, // Height of the container
+        height: 70, // Height of the container
         child: Stack(
           children: [
             // Bottom layer of the card stack
@@ -58,8 +58,8 @@ class DeckInfoState extends State<DeckInfo> {
   /// Builds a single card with a white background and a black border.
   Widget _buildCard() {
     return Container(
-      width: 50,
-      height: 60,
+      width: 40,
+      height: 50,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),

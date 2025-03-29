@@ -44,8 +44,8 @@ class JokerCardsState extends State<JokerCards> {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Container(
-        width: 60,
-        height: 90,
+        width: 50,
+        height: 70,
         decoration: BoxDecoration(
           color: color,
           border: Border.all(color: Colors.black, width: 2),

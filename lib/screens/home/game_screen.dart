@@ -64,9 +64,9 @@ class GameScreenState extends State<GameScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(width: 120),
+                            SizedBox(width: 75),
                             ActionButtons(), // Game action buttons
-                            SizedBox(width: 60),
+                            SizedBox(width: 15),
                             DeckInfo(), // Displays deck-related information
                           ],
                         ),

@@ -27,7 +27,6 @@ class SidebarState extends State<Sidebar> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 5),
 
           /// Displays the label for active consumables.
           Align(
@@ -182,8 +181,8 @@ class SidebarState extends State<Sidebar> {
   /// Builds a simple rectangular card.
   Widget _buildCard(String label, Color color) {
     return Container(
-      width: 50,
-      height: 70,
+      width: 40,
+      height: 60,
       decoration: BoxDecoration(
         color: color,
         border: Border.all(color: Colors.black, width: 2),
@@ -200,7 +199,7 @@ class SidebarState extends State<Sidebar> {
   Widget _buildLabelAndValue(String label, String value) {
     return Container(
       width: 100,
-      height: 60,
+      height: 50,
       padding: EdgeInsets.all(1),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -218,7 +217,7 @@ class SidebarState extends State<Sidebar> {
 
           Container(
             width: 80,
-            height: 30,
+            height: 20,
             padding: EdgeInsets.all(1),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -231,7 +230,7 @@ class SidebarState extends State<Sidebar> {
               children: [
                 Text(
                   value,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
