@@ -4,6 +4,7 @@ import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/player_box.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -37,8 +38,12 @@ class _LobbyScreen extends State<LobbyScreen> {
     "Josemi",
   ];
 
+  // Initial lobby state
   String publicPrivateButton = "Public";
   bool hasFetched = false;
+
+  // Needed to define which Scaffold we are refering
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -51,6 +56,8 @@ class _LobbyScreen extends State<LobbyScreen> {
     return StatefulBuilder(
       builder: (context, setState) {
         return Scaffold(
+          key: _scaffoldKey,
+          endDrawer: buildChatDrawer(),
           body: BackgroundWidget(
             child: Column(
               children: [
@@ -172,7 +179,9 @@ class _LobbyScreen extends State<LobbyScreen> {
                               vertical: 12,
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
                           child: Icon(Icons.chat_bubble, color: Colors.black),
                         ),
                         //Add some space between
@@ -280,6 +289,7 @@ class _LobbyScreen extends State<LobbyScreen> {
   }
 }
 
+/// Function to create the pop-up in home_screen in order to create a lobby
 Future<void> showCreateLobbyButton(
   BuildContext context,
   String username,
