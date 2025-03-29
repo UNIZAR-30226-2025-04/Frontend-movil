@@ -292,13 +292,10 @@ Future<void> showCreateLobbyButton(
                           ),
                         ),
                         onPressed: () {
-                          createLobby(
-                            (String? error) {
-                              //TODO, error massage
-                            },
-                            (String code) {
-                              // Join the lobby created previously
-                              joinLobby(code);
+                          createLobby((String code) async {
+                            // Join the lobby created previously
+                            await joinLobby(code);
+                            if (context.mounted) {
                               Navigator.push(
                                 context,
                                 PageTransition(
@@ -311,8 +308,8 @@ Future<void> showCreateLobbyButton(
                                   ),
                                 ),
                               );
-                            },
-                          );
+                            }
+                          });
                         },
                         child: Text(
                           "Create",

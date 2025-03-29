@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
@@ -302,7 +301,12 @@ class _LobbyScreen extends State<LobbyScreen> {
                           ),
                         ),
                         onPressed: () {
-                          exitLobby(widget.lobbyCode);
+                          // Exit lobby in WebSocket
+                          wsClient.sendMessage("exit_lobby", {
+                            widget.lobbyCode,
+                            widget.hostName,
+                          });
+
                           Navigator.push(
                             context,
                             PageTransition(
