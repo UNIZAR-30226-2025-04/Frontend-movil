@@ -32,10 +32,10 @@ Future<List<Map<String, dynamic>>> getAllNonInvitedFriends(
       );
 
       // Extract a list of usernames who have been sent an invitation by the user
-      List<Map<String, dynamic>> sentInvitations =
+      List<String> sentInvitations =
           List<Map<String, dynamic>>.from(
             invitationsResponse.data['sent_game_lobby_invitations'] ?? [],
-          );
+          ).map((inv) => inv['username'].toString()).toList();
 
       // Return a filtered list of users who aren't yet invited to the lobby
       return friends
