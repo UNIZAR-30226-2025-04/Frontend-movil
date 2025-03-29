@@ -75,7 +75,7 @@ class LobbieBox extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      acceptLobbyInvitation(lobbyCode);
+                      joinLobby(lobbyCode);
 
                       Navigator.push(
                         context,

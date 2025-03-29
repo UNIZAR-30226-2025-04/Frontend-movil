@@ -7,6 +7,7 @@ import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
 
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -22,10 +23,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String _username = "Loading...";
   int _avatar = 1;
 
+  // WebSocket
+  final WebSocketClient wsClient = WebSocketClient();
+
   @override
   void initState() {
     super.initState();
     _loadUserProfile(); // Obtain user profile information
+    wsClient.initialize(); // ✅ Auto-connect when screen loads
   }
 
   /// Method to load the user profile information

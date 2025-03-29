@@ -81,11 +81,6 @@ class WebSocketClient {
         }
       });
 
-      // Event: Handle WebSocket errors.
-      socket.on("error", (data) {
-        debugPrint('⚠ WebSocket error: $data');
-      });
-
       // Event: Authentication failure (log out user).
       socket.on("error", (data) {
         debugPrint('❌ WebSocket Server Error: $data');
@@ -134,12 +129,12 @@ class WebSocketClient {
   /// Send a message to the WebSocket server.
   void sendMessage(String event, dynamic data) {
     if (socket.connected) {
+      socket.emit(event, data);
       debugPrint("📤 Sent message to event '$event': $data");
     } else {
       debugPrint("⚠ Cannot send message, WebSocket is disconnected.");
     }
   }
-
 
   /// Disconnect from the WebSocket server.
   void disconnect() {

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/player_box.dart';
@@ -37,9 +39,13 @@ class _LobbyScreen extends State<LobbyScreen> {
     "Josemi",
   ];
 
+  // WebSocket
+  final WebSocketClient wsClient = WebSocketClient();
+
   List<Map<String, dynamic>> chatMessages = [];
 
   String _publicPrivateButton = "Public";
+  bool hasFetched = false;
 
   // Needed to define which Scaffold we are refering
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -64,6 +70,12 @@ class _LobbyScreen extends State<LobbyScreen> {
   void initState() {
     super.initState();
     _publicPrivateButton = widget.lobbyState ? "Private" : "Public";
+    wsClient.sendMessage("join_lobby", widget.lobbyCode);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -290,6 +302,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                           ),
                         ),
                         onPressed: () {
+                          exitLobby(widget.lobbyCode);
                           Navigator.push(
                             context,
                             PageTransition(

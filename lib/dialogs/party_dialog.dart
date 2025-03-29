@@ -115,91 +115,80 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                 int numberOfPlayers =
                                     invitationsList[index]['player_count'];
                                 return Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              // Remove user button (X)
-                                              IconButton(
-                                                icon: const Icon(Icons.close),
-                                                onPressed: () {
-                                                  // Remove this user from the list
-                                                  setState(() {
-                                                    deleteLobbyInvitation(
-                                                      lobbyId,
-                                                      username,
-                                                    );
-                                                    invitationsList.removeAt(
-                                                      index,
-                                                    );
-                                                  });
-                                                },
-                                              ),
-                                              const SizedBox(width: 10),
-                                              // Avatar image (with icon ID)
-                                              CircleAvatar(
-                                                child: buildAvatarImage(
-                                                  iconId - 1,
-                                                ), // Use custom avatar function
-                                              ),
-                                              const SizedBox(width: 10),
-                                              Text(
-                                                username, // Display username dynamically
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          // "JOIN X/8" button
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.white,
-                                              foregroundColor: Colors.black,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      8,
-                                                    ), // Button rounded edges
-                                                side: const BorderSide(
-                                                  color: Colors.black,
-                                                  width: 2,
-                                                ), // Black border
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              acceptLobbyInvitation(lobbyId);
-                                              setState(() {
-                                                deleteLobbyInvitation(
-                                                  lobbyId,
-                                                  username,
-                                                );
-                                                invitationsList.removeAt(index);
-                                              });
-                                              Navigator.push(
-                                                context,
-                                                PageTransition(
-                                                  type: PageTransitionType.fade,
-                                                  child: LobbyScreen(
-                                                    hostName: myusername,
-                                                    hostAvatar: iconId - 1,
-                                                    lobbyState: true,
-                                                    lobbyCode: lobbyId,
-                                                  ),
-                                                ),
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        // Remove user button (X)
+                                        IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () {
+                                            // Remove this user from the list
+                                            setState(() {
+                                              deleteLobbyInvitation(
+                                                lobbyId,
+                                                username,
                                               );
-                                            },
-                                            child: Text(
-                                              "JOIN $numberOfPlayers/8",
+                                              invitationsList.removeAt(index);
+                                            });
+                                          },
+                                        ),
+                                        const SizedBox(width: 10),
+                                        // Avatar image (with icon ID)
+                                        CircleAvatar(
+                                          child: buildAvatarImage(
+                                            iconId - 1,
+                                          ), // Use custom avatar function
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          username, // Display username dynamically
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      ],
+                                    ),
+                                    // "JOIN X/8" button
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.black,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ), // Button rounded edges
+                                          side: const BorderSide(
+                                            color: Colors.black,
+                                            width: 2,
+                                          ), // Black border
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        joinLobby(lobbyId);
+                                        setState(() {
+                                          deleteLobbyInvitation(
+                                            lobbyId,
+                                            username,
+                                          );
+                                          invitationsList.removeAt(index);
+                                        });
+                                        Navigator.push(
+                                          context,
+                                          PageTransition(
+                                            type: PageTransitionType.fade,
+                                            child: LobbyScreen(
+                                              hostName: myusername,
+                                              hostAvatar: iconId - 1,
+                                              lobbyState: true,
+                                              lobbyCode: lobbyId,
                                             ),
                                           ),
-                                        ],
-                                      );
-                                  
-
-                              
-                                
+                                        );
+                                      },
+                                      child: Text("JOIN $numberOfPlayers/8"),
+                                    ),
+                                  ],
+                                );
                               },
                             ),
                   ),

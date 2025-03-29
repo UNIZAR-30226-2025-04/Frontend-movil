@@ -28,7 +28,7 @@ Future<List<Map<String, dynamic>>> getReceivedGameLobbyInvitations() async {
 }
 
 /// Function to add the user to the user-lobby relation
-Future<void> acceptLobbyInvitation(String lobbyId) async {
+Future<void> joinLobby(String lobbyId) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a POST request to the API to add the user to the lobby
@@ -46,7 +46,10 @@ Future<void> acceptLobbyInvitation(String lobbyId) async {
 }
 
 /// Function to delete a received game lobby invitation after accepting it
-Future<void> deleteLobbyInvitation(String lobbyId, String senderUsername) async {
+Future<void> deleteLobbyInvitation(
+  String lobbyId,
+  String senderUsername,
+) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a DELETE request to remove the received game lobby invitation
@@ -85,5 +88,3 @@ Future<Map<String, dynamic>?> getLobbyInfo(String lobbyId) async {
   // Return null if there is any error or the response is empty
   return null;
 }
-
-

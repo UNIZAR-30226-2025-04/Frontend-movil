@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/data/api/invitation_api.dart';
 import 'package:nogler/data/api/lobby_api.dart';
+import 'package:nogler/data/api/party_api.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 import 'package:page_transition/page_transition.dart';
@@ -296,6 +297,8 @@ Future<void> showCreateLobbyButton(
                               //TODO, error massage
                             },
                             (String code) {
+                              // Join the lobby created previously
+                              joinLobby(code);
                               Navigator.push(
                                 context,
                                 PageTransition(
