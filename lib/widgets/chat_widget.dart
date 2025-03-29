@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/chat_message_widget.dart';
 
 class ChatWidget extends StatefulWidget {
@@ -6,12 +7,14 @@ class ChatWidget extends StatefulWidget {
     super.key,
     required this.myUsername,
     required this.myAvatarImage,
+    required this.lobbyCode,
     required this.chatMessages,
     required this.onSend,
   });
 
   final String myUsername;
   final int myAvatarImage;
+  final String lobbyCode;
   final List<Map<String, dynamic>> chatMessages;
   final Function(String username, int avatarImage, String message, String time)
   onSend;
@@ -21,10 +24,30 @@ class ChatWidget extends StatefulWidget {
 }
 
 class _ChatWidgetState extends State<ChatWidget> {
+  final WebSocketClient wsClient = WebSocketClient();
   // Controller for the chat
   final TextEditingController _controller = TextEditingController();
   // Controller to scroll automaticly to the new message sent
   final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen for chat messages
+    wsClient.addEventListener("new_lobby_message", (data) {
+      if (data["username"] != widget.myUsername) {
+        setState(() {
+          widget.chatMessages.add({
+            'username': data["username"] ?? "Unknown",
+            'avatarImage': data["user_icon"] ?? 0,
+            'message': data["message"] ?? "",
+            'time': TimeOfDay.now().format(context),
+          });
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +108,13 @@ class _ChatWidgetState extends State<ChatWidget> {
                           text,
                           TimeOfDay.now().format(context),
                         );
+
+                        // Send message to WebSocket
+                        wsClient.sendMessage("broadcast_to_lobby", {
+                          widget.lobbyCode,
+                          text,
+                        });
+
                         // Clear the textfield
                         _controller.clear();
 

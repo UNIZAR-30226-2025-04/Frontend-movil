@@ -90,6 +90,7 @@ class _LobbyScreen extends State<LobbyScreen> {
           endDrawer: ChatWidget(
             myUsername: widget.hostName,
             myAvatarImage: widget.hostAvatar,
+            lobbyCode: widget.lobbyCode,
             chatMessages: chatMessages,
             onSend: addMessage,
           ),

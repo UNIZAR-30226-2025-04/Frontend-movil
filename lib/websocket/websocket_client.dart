@@ -7,13 +7,15 @@ class WebSocketClient {
   static final WebSocketClient _instance = WebSocketClient._internal();
   late io.Socket socket;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  // Map to store dynamic event handlers
+  final Map<String, Function(dynamic)> _eventHandlers = {};
 
-  /// Factory constructor to always return the same instance.
+  /// Factory constructor to always return the same instance
   factory WebSocketClient() {
     return _instance;
   }
 
-  /// Private constructor for Singleton.
+  // Private constructor for Singleton
   WebSocketClient._internal();
 
   /// Initialize and connect to the WebSocket server.
@@ -50,6 +52,11 @@ class WebSocketClient {
       // Log any event received for debugging.
       socket.onAny((event, data) {
         debugPrint("📡 Received Event: '$event' | Data: $data");
+
+        // If a handler exists for this event, execute it.
+        if (_eventHandlers.containsKey(event)) {
+          _eventHandlers[event]?.call(data);
+        }
       });
 
       // Event: Connected to the WebSocket server.
@@ -90,27 +97,6 @@ class WebSocketClient {
         }
       });
 
-      // Event: Lobby-related actions.
-      socket.on("join_lobby", (data) {
-        debugPrint("🏠 Lobby Joined: $data");
-      });
-
-      socket.on("exit_lobby", (data) {
-        debugPrint("🚪 Lobby Exit Response: $data");
-      });
-
-      socket.on("kick_from_lobby", (data) {
-        debugPrint("🥾 Kicked from Lobby: $data");
-      });
-
-      socket.on("broadcast_to_lobby", (data) {
-        debugPrint("📢 Broadcast Message: $data");
-      });
-
-      socket.on("play_hand", (data) {
-        debugPrint("🎲 Play Hand Response: $data");
-      });
-
       // Start listening to events.
       socket.connect(); // 🔥 Event-driven connection.
     } catch (e) {
@@ -124,6 +110,20 @@ class WebSocketClient {
     await _storage.delete(key: 'session_token');
     await _storage.delete(key: 'username');
     disconnect();
+  }
+
+  /// Add a dynamic event listener.
+  void addEventListener(String event, Function(dynamic) callback) {
+    _eventHandlers[event] = callback;
+    socket.on(event, callback);
+    debugPrint("✅ Added listener for event: $event");
+  }
+
+  /// Remove a specific event listener.
+  void removeEventListener(String event) {
+    _eventHandlers.remove(event);
+    socket.off(event);
+    debugPrint("❌ Removed listener for event: $event");
   }
 
   /// Send a message to the WebSocket server.
