@@ -77,7 +77,7 @@ class PlayerBox extends StatelessWidget {
                   children: [
                     //make some space between
                     SizedBox(width: boxWidth * 1.28),
-                    _buildAvatarImage(playerIcon - 1),
+                    _buildAvatarImage(playerIcon),
                   ],
                 ),
                 //make some space between

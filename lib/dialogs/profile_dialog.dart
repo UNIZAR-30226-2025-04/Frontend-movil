@@ -90,7 +90,7 @@ Future<bool> showProfile(
                                 radius: 75,
                                 backgroundColor: Colors.white,
                                 child: buildAvatarImage(
-                                  selectedIcon - 1,
+                                  selectedIcon,
                                 ), // Display selected avatar
                               ),
                             ),
