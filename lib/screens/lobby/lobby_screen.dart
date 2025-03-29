@@ -4,6 +4,7 @@ import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/player_box.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -37,13 +38,33 @@ class _LobbyScreen extends State<LobbyScreen> {
     "Josemi",
   ];
 
-  String publicPrivateButton = "Public";
-  bool hasFetched = false;
+  List<Map<String, dynamic>> chatMessages = [];
+
+  String _publicPrivateButton = "Public";
+
+  // Needed to define which Scaffold we are refering
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void addMessage(
+    String username,
+    int avatarImage,
+    String message,
+    String time,
+  ) {
+    setState(() {
+      chatMessages.add({
+        'username': username,
+        'avatarImage': avatarImage,
+        'message': message,
+        'time': time,
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    publicPrivateButton = widget.lobbyState ? "Private" : "Public";
+    _publicPrivateButton = widget.lobbyState ? "Private" : "Public";
   }
 
   @override
@@ -51,6 +72,16 @@ class _LobbyScreen extends State<LobbyScreen> {
     return StatefulBuilder(
       builder: (context, setState) {
         return Scaffold(
+          // Key needed to refer to the scaffold
+          key: _scaffoldKey,
+          // Chat drawer definition
+          endDrawer: ChatWidget(
+            myUsername: widget.hostName,
+            myAvatarImage: widget.hostAvatar,
+            chatMessages: chatMessages,
+            onSend: addMessage,
+          ),
+
           body: BackgroundWidget(
             child: Column(
               children: [
@@ -95,15 +126,15 @@ class _LobbyScreen extends State<LobbyScreen> {
                           onPressed: () {
                             //TODO, que implica que sean privadas y publicas -> cambiar especificaciones lobby en base de datos, etc
                             setState(() {
-                              if (publicPrivateButton == 'Public') {
-                                publicPrivateButton = 'Private';
+                              if (_publicPrivateButton == 'Public') {
+                                _publicPrivateButton = 'Private';
                               } else {
-                                publicPrivateButton = 'Public';
+                                _publicPrivateButton = 'Public';
                               }
                             });
                           },
                           child: Text(
-                            publicPrivateButton,
+                            _publicPrivateButton,
                             style: TextStyle(color: Colors.black),
                           ),
                         ),
@@ -172,7 +203,10 @@ class _LobbyScreen extends State<LobbyScreen> {
                               vertical: 12,
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            // Open Drawer using the key previously mentioned
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
                           child: Icon(Icons.chat_bubble, color: Colors.black),
                         ),
                         //Add some space between
@@ -280,6 +314,8 @@ class _LobbyScreen extends State<LobbyScreen> {
   }
 }
 
+//TODO, moverlo a otro lado?
+/// Function to create the pop-up in home_screen in order to create a lobby
 Future<void> showCreateLobbyButton(
   BuildContext context,
   String username,
