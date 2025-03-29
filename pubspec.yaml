@@ -37,6 +37,7 @@ dependencies:
   page_transition: ^2.0.9
   dio: ^5.8.0+1
   flutter_secure_storage: ^9.2.4
+  socket_io_client: ^3.1.1
 
 dev_dependencies:
   flutter_test:
