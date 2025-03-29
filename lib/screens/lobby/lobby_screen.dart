@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/background_widget.dart';
@@ -72,6 +71,8 @@ class _LobbyScreen extends State<LobbyScreen> {
     return StatefulBuilder(
       builder: (context, setState) {
         return Scaffold(
+          // Dont redimension page if keyboard on
+          resizeToAvoidBottomInset: false,
           // Key needed to refer to the scaffold
           key: _scaffoldKey,
           // Chat drawer definition
@@ -312,136 +313,4 @@ class _LobbyScreen extends State<LobbyScreen> {
       },
     );
   }
-}
-
-//TODO, moverlo a otro lado?
-/// Function to create the pop-up in home_screen in order to create a lobby
-Future<void> showCreateLobbyButton(
-  BuildContext context,
-  String username,
-  int avatar,
-) async {
-  bool isSwitched = false;
-
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20), // Pop up border
-            ),
-            //Pop-up title
-            title: const Text(
-              "Create a lobby",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            content: SizedBox(
-              width: 300,
-              height: 200,
-              child: Column(
-                children: [
-                  //Text explaining creating the lobby
-                  Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  //Add some space between
-                  SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      //Add some space between
-                      SizedBox(width: 10),
-                      //Text private
-                      Text(
-                        'Private',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      //Add some space between
-                      SizedBox(width: 8),
-
-                      //Switch to select whether the lobby is private or public
-                      Switch(
-                        value: isSwitched,
-                        onChanged: (value) {
-                          setState(() {
-                            isSwitched = value;
-                          });
-                        },
-                      ),
-                      //Add some space between
-                      SizedBox(width: 10),
-
-                      //Create lobby button
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 50,
-                            vertical: 12,
-                          ),
-                        ),
-                        onPressed: () {
-                          createLobby(
-                            (String? error) {
-                              //TODO, error massage
-                            },
-                            (String code) {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.fade,
-                                  child: LobbyScreen(
-                                    hostName: username,
-                                    hostAvatar: avatar,
-                                    lobbyState: isSwitched,
-                                    lobbyCode: code,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: Text(
-                          "Create",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ],
-                  ),
-                  //Add some space between
-                  SizedBox(height: 10),
-
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 120,
-                        vertical: 12,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context); // Close the confirmation dialog
-                    },
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    },
-  );
 }

@@ -1,10 +1,10 @@
 import 'package:nogler/data/api/users_api.dart';
 import 'package:nogler/dialogs/friends_dialogs.dart';
+import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/dialogs/party_dialog.dart';
 import 'package:nogler/dialogs/profile_dialog.dart';
 import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
-import 'package:nogler/screens/lobby/lobby_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
