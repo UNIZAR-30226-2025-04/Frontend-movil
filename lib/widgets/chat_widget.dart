@@ -26,12 +26,6 @@ class _ChatWidgetState extends State<ChatWidget> {
   // Controller to scroll automaticly to the new message sent
   final ScrollController _scrollController = ScrollController();
 
-  /*
-  List<Map<String, String>> chatMessages = [
-    // formato: {username, message, time}
-    {"username": "hola", "message": "Hola", "time": "13:14"}, //example
-  ]; */
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -118,62 +112,3 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 }
-
-/*
-//TODO, chatgptmade de momento
-Widget buildChatDrawer(List<Map<String, String>> chatMessages) {
-  return Drawer(
-    backgroundColor: const Color(0xFF27384C), // azul oscuro del fondo
-    child: Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.all(10),
-            itemCount: chatMessages.length,
-            itemBuilder: (context, index) {
-              final msg = chatMessages[index];
-              return ChatMessageWidget(
-                username: msg['username'] ?? "",
-                message: msg['message'] ?? "",
-                time: msg['time'] ?? "",
-              );
-            },
-          ),
-        ),
-        Divider(color: Colors.white54),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: 'Write a message...',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    filled: true,
-                    fillColor: const Color(0xFF1C2B3A),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                  ),
-                ),
-              ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                child: Text("Send"),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-*/
