@@ -100,7 +100,6 @@ class _LobbyScreen extends State<LobbyScreen> {
 
     // Listen for player who left the lobby
     wsClient.addEventListener("player_left", (data) {
-
       final username = data['username'];
       final lobbyId = data['lobby_id'];
 
@@ -108,6 +107,60 @@ class _LobbyScreen extends State<LobbyScreen> {
         setState(() {
           lobbyUsers.removeWhere((user) => user['username'] == username);
         });
+      }
+    });
+
+    // Listen for kick success
+    wsClient.addEventListener("kick_success", (data) {
+      final kickedUser = data['kicked_user'];
+      final lobbyId = data['lobby_id'];
+
+      if (kickedUser == widget.hostName && lobbyId == widget.lobbyCode) {
+        // Clean up WebSocket listeners
+        wsClient.removeEventListener("new_lobby_message");
+        wsClient.removeEventListener("lobby_info");
+        wsClient.removeEventListener("new_user_in_lobby");
+        wsClient.removeEventListener("kick_success");
+        wsClient.removeEventListener("you_were_kicked");
+        wsClient.removeEventListener("player_left");
+
+        // Go back to home screen or show a dialog
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: const HomeScreen(),
+          ),
+        );
+      } else if (kickedUser != widget.hostName && lobbyId == widget.lobbyCode) {
+        setState(() {
+          lobbyUsers.removeWhere((p) => p['username'] == kickedUser);
+        });
+      }
+    });
+
+    // Listen for player kicked event
+    wsClient.addEventListener("you_were_kicked", (data) {
+      final lobbyId = data['lobby_id'];
+
+      // Remove the kicked user from the lobbyUsers list
+      if (lobbyId == widget.lobbyCode) {
+        // Clean up WebSocket listeners
+        wsClient.removeEventListener("new_lobby_message");
+        wsClient.removeEventListener("lobby_info");
+        wsClient.removeEventListener("new_user_in_lobby");
+        wsClient.removeEventListener("kick_success");
+        wsClient.removeEventListener("you_were_kicked");
+        wsClient.removeEventListener("player_left");
+
+        // Go back to home screen or show a dialog
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: const HomeScreen(),
+          ),
+        );
       }
     });
   }
@@ -300,19 +353,21 @@ class _LobbyScreen extends State<LobbyScreen> {
                           itemBuilder: (context, index) {
                             final player = lobbyUsers[index];
                             final isHost = player['username'] == lobbyCreator;
+                            final iAmHost = lobbyCreator == widget.hostName;
                             return PlayerBox(
                               playerName: player['username'],
                               playerIcon: player['avatarImage'],
                               isHost: isHost,
-                              kickUser: (String playerNameKick) {
-                                if (widget.hostName == lobbyCreator) {
-                                  setState(() {
-                                    lobbyUsers.removeWhere(
-                                      (p) => p['username'] == playerNameKick,
-                                    );
-                                  });
-                                }
-                              },
+                              iAmHost: iAmHost,
+                              kickUser:
+                                  iAmHost
+                                      ? (String playerNameKick) {
+                                        wsClient.sendMessage(
+                                          "kick_from_lobby",
+                                          {widget.lobbyCode, playerNameKick},
+                                        );
+                                      }
+                                      : (_) {},
                             );
                           },
                         ),
@@ -342,9 +397,14 @@ class _LobbyScreen extends State<LobbyScreen> {
                             widget.lobbyCode,
                             widget.hostName,
                           });
+
+                          // Remoeve all listeners
                           wsClient.removeEventListener("new_lobby_message");
                           wsClient.removeEventListener("lobby_info");
                           wsClient.removeEventListener("new_user_in_lobby");
+                          wsClient.removeEventListener("kick_success");
+                          wsClient.removeEventListener("you_were_kicked");
+                          wsClient.removeEventListener("player_left");
                           Navigator.push(
                             context,
                             PageTransition(

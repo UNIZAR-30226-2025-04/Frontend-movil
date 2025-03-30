@@ -6,12 +6,14 @@ class PlayerBox extends StatelessWidget {
     required this.playerName,
     required this.playerIcon,
     required this.isHost,
+    required this.iAmHost,
     required this.kickUser,
   });
 
   final String playerName;
   final int playerIcon;
   final bool isHost;
+  final bool iAmHost;
   final Function(String) kickUser;
 
   @override
@@ -26,7 +28,7 @@ class PlayerBox extends StatelessWidget {
           onLongPressStart: (details) {
             final RenderBox renderBox = context.findRenderObject() as RenderBox;
             final offset = renderBox.localToGlobal(details.localPosition);
-            if (!isHost) {
+            if (iAmHost) {
               showMenu(
                 context: context,
                 //show menu in finger position
