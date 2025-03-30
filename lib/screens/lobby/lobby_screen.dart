@@ -41,7 +41,7 @@ class _LobbyScreen extends State<LobbyScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _publicPrivateButton = widget.lobbyState ? "Private" : "Public";
     wsClient.sendMessage("join_lobby", widget.lobbyCode);
@@ -96,6 +96,19 @@ class _LobbyScreen extends State<LobbyScreen> {
       });
 
       debugPrint("🟩 Total messages: ${chatMessages.length}");
+    });
+
+    // Listen for player who left the lobby
+    wsClient.addEventListener("player_left", (data) {
+
+      final username = data['username'];
+      final lobbyId = data['lobby_id'];
+
+      if (username != null && lobbyId == widget.lobbyCode) {
+        setState(() {
+          lobbyUsers.removeWhere((user) => user['username'] == username);
+        });
+      }
     });
   }
 
