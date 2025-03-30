@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/auth_api.dart';
 import 'package:nogler/data/api/users_api.dart';
 import 'package:nogler/websocket/websocket_client.dart';
@@ -153,6 +154,14 @@ Future<bool> showProfile(
                               );
 
                               if (success) {
+                                // Save the new username in secure storage
+                                await const FlutterSecureStorage().write(
+                                  key: 'username',
+                                  value: usernameController.text,
+                                );
+                                WebSocketClient()
+                                    .disconnect(); // Close the current WebSocket connection
+                                await WebSocketClient().initialize(); // Reconnect to the WebSocket server
                                 changesMade =
                                     true; // Mark changes as successful
                                 if (context.mounted) {

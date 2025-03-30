@@ -294,7 +294,7 @@ Future<void> showCreateLobbyButton(
                         onPressed: () {
                           createLobby((String code) async {
                             // Join the lobby created previously
-                            await joinLobby(code);
+                            await joinLobby(code);                        
                             if (context.mounted) {
                               Navigator.push(
                                 context,
