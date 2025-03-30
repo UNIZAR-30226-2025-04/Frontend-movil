@@ -283,7 +283,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                     isLoading
                         ? SizedBox(
                           width: 550, // pop-up width
-                          height: 175,
+                          height: 130,
                           child: Center(
                             child: Padding(
                               padding: const EdgeInsets.all(20.0),
@@ -295,7 +295,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                             .isEmpty // Check if the list is empty
                         ? SizedBox(
                           width: 550, // pop-up width
-                          height: 175,
+                          height: 130,
                           child: Center(
                             child: Text(
                               "No users available to add", // Message when no requests are present
@@ -305,7 +305,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                         )
                         : SizedBox(
                           width: 550, // pop-up width
-                          height: 175,
+                          height: 130,
                           child: ListView.builder(
                             itemCount:
                                 filteredFriends
