@@ -48,28 +48,27 @@ class _LobbyScreen extends State<LobbyScreen> {
 
   // Needed to define which Scaffold we are refering
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  void addMessage(
-    String username,
-    int avatarImage,
-    String message,
-    String time,
-  ) {
-    setState(() {
-      chatMessages.add({
-        'username': username,
-        'avatarImage': avatarImage,
-        'message': message,
-        'time': time,
-      });
-    });
-  }
-
+  
   @override
   void initState() {
     super.initState();
     _publicPrivateButton = widget.lobbyState ? "Private" : "Public";
     wsClient.sendMessage("join_lobby", widget.lobbyCode);
+    wsClient.removeEventListener("new_lobby_message");
+    // Listen for new lobby messages
+    wsClient.addEventListener("new_lobby_message", (data) {
+      debugPrint("🟨 Mensaje recibido -> ejecutando setState");
+      setState(() {
+        chatMessages.add({
+          'username': data["username"] ?? "Unknown",
+          'avatarImage': data["user_icon"] ?? 0,
+          'message': data["message"] ?? "",
+          'time': TimeOfDay.now().format(context),
+        });
+      });
+      
+      debugPrint("🟩 Total mensajes en chat: ${chatMessages.length}");
+    });
   }
 
   @override
@@ -92,7 +91,6 @@ class _LobbyScreen extends State<LobbyScreen> {
             myAvatarImage: widget.hostAvatar,
             lobbyCode: widget.lobbyCode,
             chatMessages: chatMessages,
-            onSend: addMessage,
           ),
 
           body: BackgroundWidget(
@@ -307,7 +305,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                             widget.lobbyCode,
                             widget.hostName,
                           });
-
+                          wsClient.removeEventListener("new_lobby_message");
                           Navigator.push(
                             context,
                             PageTransition(

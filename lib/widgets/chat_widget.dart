@@ -9,15 +9,14 @@ class ChatWidget extends StatefulWidget {
     required this.myAvatarImage,
     required this.lobbyCode,
     required this.chatMessages,
-    required this.onSend,
+    
   });
 
   final String myUsername;
   final int myAvatarImage;
   final String lobbyCode;
   final List<Map<String, dynamic>> chatMessages;
-  final Function(String username, int avatarImage, String message, String time)
-  onSend;
+  
 
   @override
   State<ChatWidget> createState() => _ChatWidgetState();
@@ -33,26 +32,20 @@ class _ChatWidgetState extends State<ChatWidget> {
   @override
   void initState() {
     super.initState();
-
-    // Listen for chat messages
-    wsClient.addEventListener("new_lobby_message", (data) {
-      if (data["username"] != widget.myUsername) {
-        setState(() {
-          widget.chatMessages.add({
-            'username': data["username"] ?? "Unknown",
-            'avatarImage': data["user_icon"] ?? 0,
-            'message': data["message"] ?? "",
-            'time': TimeOfDay.now().format(context),
-          });
-        });
-      }
+    // Auto-scroll to the latest message
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(0xFF27384C), // azul oscuro del fondo
+      backgroundColor: const Color(0xFF27384C),
       child: Column(
         children: [
           // List of messages in the chat
@@ -63,11 +56,13 @@ class _ChatWidgetState extends State<ChatWidget> {
               itemCount: widget.chatMessages.length,
               itemBuilder: (context, index) {
                 final msg = widget.chatMessages[index];
+                final isMine = msg['username'] == widget.myUsername;
                 return ChatMessageWidget(
                   username: msg['username'] ?? "",
                   avatarImage: msg['avatarImage'] ?? 0,
                   message: msg['message'] ?? "",
                   time: msg['time'] ?? "",
+                  isMine: isMine,
                 );
               },
             ),
@@ -101,32 +96,14 @@ class _ChatWidgetState extends State<ChatWidget> {
                   onPressed: () {
                     final text = _controller.text.trim();
                     if (text.isNotEmpty) {
-                      setState(() {
-                        widget.onSend(
-                          widget.myUsername,
-                          widget.myAvatarImage,
-                          text,
-                          TimeOfDay.now().format(context),
-                        );
-
-                        // Send message to WebSocket
-                        wsClient.sendMessage("broadcast_to_lobby", {
-                          widget.lobbyCode,
-                          text,
-                        });
-
-                        // Clear the textfield
-                        _controller.clear();
-
-                        // Scrolls to the latest message sent
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scrollController.animateTo(
-                            _scrollController.position.maxScrollExtent,
-                            duration: Duration(milliseconds: 200),
-                            curve: Curves.easeOut,
-                          );
-                        });
+                      // Send message to WebSocket
+                      wsClient.sendMessage("broadcast_to_lobby", {
+                        widget.lobbyCode,
+                        text,
                       });
+
+                      // Clear the textfield
+                      _controller.clear();
                     }
                   },
                   style: ElevatedButton.styleFrom(

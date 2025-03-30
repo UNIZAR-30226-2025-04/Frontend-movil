@@ -52,11 +52,6 @@ class WebSocketClient {
       // Log any event received for debugging.
       socket.onAny((event, data) {
         debugPrint("📡 Received Event: '$event' | Data: $data");
-
-        // If a handler exists for this event, execute it.
-        if (_eventHandlers.containsKey(event)) {
-          _eventHandlers[event]?.call(data);
-        }
       });
 
       // Event: Connected to the WebSocket server.
@@ -121,9 +116,11 @@ class WebSocketClient {
 
   /// Remove a specific event listener.
   void removeEventListener(String event) {
-    _eventHandlers.remove(event);
-    socket.off(event);
-    debugPrint("❌ Removed listener for event: $event");
+    if (_eventHandlers.containsKey(event)) {
+      socket.off(event, _eventHandlers[event]);
+      _eventHandlers.remove(event);
+      debugPrint("❌ Removed listener for event: $event");
+    }
   }
 
   /// Send a message to the WebSocket server.
