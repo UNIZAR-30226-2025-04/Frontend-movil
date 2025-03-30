@@ -124,7 +124,7 @@ class WebSocketClient {
   }
 
   /// Send a message to the WebSocket server.
-  void sendMessage(String event, dynamic data) {
+  Future<void> sendMessage(String event, dynamic data) async {
     if (socket.connected) {
       socket.emit(event, data);
       debugPrint("📤 Sent message to event '$event': $data");
@@ -132,7 +132,7 @@ class WebSocketClient {
       debugPrint("⚠ Cannot send message, WebSocket is disconnected.");
     }
   }
-
+  
   /// Disconnect from the WebSocket server.
   void disconnect() {
     socket.disconnect();

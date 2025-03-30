@@ -27,17 +27,8 @@ class LobbyScreen extends StatefulWidget {
 }
 
 class _LobbyScreen extends State<LobbyScreen> {
-  List<String> lobbyUsers = [
-    "Jogue",
-    "Emilliano",
-    "Nicock",
-    "YagoAndTheYagos",
-    "Victor Bodrios",
-    "Ruben",
-    "Jota",
-    "Josemi",
-  ];
-
+  List<Map<String, dynamic>> lobbyUsers = [];
+  String? lobbyCreator;
   // WebSocket
   final WebSocketClient wsClient = WebSocketClient();
 
@@ -48,16 +39,53 @@ class _LobbyScreen extends State<LobbyScreen> {
 
   // Needed to define which Scaffold we are refering
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  
+
   @override
-  void initState() {
+  void initState(){
     super.initState();
     _publicPrivateButton = widget.lobbyState ? "Private" : "Public";
     wsClient.sendMessage("join_lobby", widget.lobbyCode);
-    wsClient.removeEventListener("new_lobby_message");
+    wsClient.sendMessage("get_lobby_info", widget.lobbyCode);
+
+    // Listen for lobby info
+    wsClient.addEventListener("lobby_info", (data) {
+      debugPrint("📡 Received lobby info: $data");
+
+      final players = data['players'] as List<dynamic>;
+      setState(() {
+        lobbyCreator = data['creator']['username'];
+        lobbyUsers =
+            players.map<Map<String, dynamic>>((player) {
+              return {
+                'username': player['username'] ?? 'Unknown',
+                'avatarImage': player['user_icon'] ?? 0,
+              };
+            }).toList();
+      });
+    });
+
+    // Listen for when a new user joins the lobby
+    wsClient.addEventListener("new_user_in_lobby", (data) {
+      debugPrint("👤 New user joined: $data");
+
+      final username = data['username'] ?? 'Unknown';
+
+      // Check if the user is already in the lobby
+      if (!lobbyUsers.any((user) => user['username'] == username)) {
+        final newUser = {
+          'username': username,
+          'avatarImage': data['icon'] ?? 0,
+        };
+
+        setState(() {
+          lobbyUsers.add(newUser);
+        });
+      }
+    });
+
     // Listen for new lobby messages
     wsClient.addEventListener("new_lobby_message", (data) {
-      debugPrint("🟨 Mensaje recibido -> ejecutando setState");
+      debugPrint("🟨 Message received");
       setState(() {
         chatMessages.add({
           'username': data["username"] ?? "Unknown",
@@ -66,8 +94,8 @@ class _LobbyScreen extends State<LobbyScreen> {
           'time': TimeOfDay.now().format(context),
         });
       });
-      
-      debugPrint("🟩 Total mensajes en chat: ${chatMessages.length}");
+
+      debugPrint("🟩 Total messages: ${chatMessages.length}");
     });
   }
 
@@ -119,7 +147,7 @@ class _LobbyScreen extends State<LobbyScreen> {
 
                         //Number of participants
                         Text(
-                          '8 / 8',
+                          '${lobbyUsers.length} / 8',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                         //Add some space between
@@ -257,26 +285,22 @@ class _LobbyScreen extends State<LobbyScreen> {
                               ),
                           itemCount: lobbyUsers.length,
                           itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return PlayerBox(
-                                playerName: widget.hostName,
-                                playerIcon: widget.hostAvatar,
-                                isHost: true,
-                                kickUser: (String playerNameKick) {},
-                              );
-                            } else {
-                              return PlayerBox(
-                                playerName: lobbyUsers[index],
-                                playerIcon:
-                                    1, //TODO, conexion con base de datos
-                                isHost: false,
-                                kickUser: (String playerNameKick) {
+                            final player = lobbyUsers[index];
+                            final isHost = player['username'] == lobbyCreator;
+                            return PlayerBox(
+                              playerName: player['username'],
+                              playerIcon: player['avatarImage'],
+                              isHost: isHost,
+                              kickUser: (String playerNameKick) {
+                                if (widget.hostName == lobbyCreator) {
                                   setState(() {
-                                    lobbyUsers.remove(playerNameKick);
+                                    lobbyUsers.removeWhere(
+                                      (p) => p['username'] == playerNameKick,
+                                    );
                                   });
-                                },
-                              );
-                            }
+                                }
+                              },
+                            );
                           },
                         ),
                       ],
@@ -306,6 +330,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                             widget.hostName,
                           });
                           wsClient.removeEventListener("new_lobby_message");
+                          wsClient.removeEventListener("lobby_info");
+                          wsClient.removeEventListener("new_user_in_lobby");
                           Navigator.push(
                             context,
                             PageTransition(
