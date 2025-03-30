@@ -9,14 +9,12 @@ class ChatWidget extends StatefulWidget {
     required this.myAvatarImage,
     required this.lobbyCode,
     required this.chatMessages,
-    
   });
 
   final String myUsername;
   final int myAvatarImage;
   final String lobbyCode;
   final List<Map<String, dynamic>> chatMessages;
-  
 
   @override
   State<ChatWidget> createState() => _ChatWidgetState();
@@ -28,7 +26,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   final TextEditingController _controller = TextEditingController();
   // Controller to scroll automaticly to the new message sent
   final ScrollController _scrollController = ScrollController();
-
+  int _previousMessageCount = 0;
   @override
   void initState() {
     super.initState();
@@ -50,19 +48,35 @@ class _ChatWidgetState extends State<ChatWidget> {
         children: [
           // List of messages in the chat
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.all(10),
-              itemCount: widget.chatMessages.length,
-              itemBuilder: (context, index) {
-                final msg = widget.chatMessages[index];
-                final isMine = msg['username'] == widget.myUsername;
-                return ChatMessageWidget(
-                  username: msg['username'] ?? "",
-                  avatarImage: msg['avatarImage'] ?? 0,
-                  message: msg['message'] ?? "",
-                  time: msg['time'] ?? "",
-                  isMine: isMine,
+            child: Builder(
+              builder: (context) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (_scrollController.hasClients &&
+                      widget.chatMessages.length > _previousMessageCount) {
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                    );
+                    _previousMessageCount = widget.chatMessages.length;
+                  }
+                });
+
+                return ListView.builder(
+                  controller: _scrollController,
+                  padding: EdgeInsets.all(10),
+                  itemCount: widget.chatMessages.length,
+                  itemBuilder: (context, index) {
+                    final msg = widget.chatMessages[index];
+                    final isMine = msg['username'] == widget.myUsername;
+                    return ChatMessageWidget(
+                      username: msg['username'] ?? "",
+                      avatarImage: msg['avatarImage'] ?? 0,
+                      message: msg['message'] ?? "",
+                      time: msg['time'] ?? "",
+                      isMine: isMine,
+                    );
+                  },
                 );
               },
             ),
