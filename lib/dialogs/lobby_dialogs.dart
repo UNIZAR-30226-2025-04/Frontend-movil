@@ -95,7 +95,7 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                   return ListTile(
                                     leading: CircleAvatar(
                                       child: buildAvatarImage(
-                                        nonInvitedFriends[index]['icon'] - 1,
+                                        nonInvitedFriends[index]['icon'],
                                       ),
                                     ),
                                     title: Text(
@@ -166,7 +166,7 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                   return ListTile(
                                     leading: CircleAvatar(
                                       child: buildAvatarImage(
-                                        invitedFriends[index]['icon'] - 1,
+                                        invitedFriends[index]['icon'],
                                       ),
                                     ),
                                     title: Text(
@@ -294,7 +294,7 @@ Future<void> showCreateLobbyButton(
                         onPressed: () {
                           createLobby((String code) async {
                             // Join the lobby created previously
-                            await joinLobby(code);                        
+                            await joinLobby(code);
                             if (context.mounted) {
                               Navigator.push(
                                 context,

@@ -138,7 +138,7 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                         // Avatar image (with icon ID)
                                         CircleAvatar(
                                           child: buildAvatarImage(
-                                            iconId - 1,
+                                            iconId,
                                           ), // Use custom avatar function
                                         ),
                                         const SizedBox(width: 10),

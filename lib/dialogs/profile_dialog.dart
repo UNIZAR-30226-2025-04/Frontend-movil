@@ -129,7 +129,7 @@ Future<bool> showProfile(
                           ],
                         ),
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 2),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

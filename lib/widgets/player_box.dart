@@ -113,6 +113,7 @@ class PlayerBox extends StatelessWidget {
 //TODO, hacerlo de otra forma cuando tengamos la base de datos
 Widget _buildAvatarImage(int iconId) {
   final List<String> avatarPaths = [
+    '', // index 0 left void in order to have same index in fronted web and mobile
     'images/pixelHeart.png',
     'images/pixelPica.png',
     'images/pixelDiamond.png',
@@ -123,10 +124,9 @@ Widget _buildAvatarImage(int iconId) {
     'images/pixelBarb.png',
     'images/pixelBard.png',
   ];
-
   // Check if the iconId exceeds the size of the list or is negative, if so, default to index 0
   if (iconId >= avatarPaths.length || iconId < 0) {
-    iconId = 0; // Default to the first avatar if the id exceeds the list size
+    iconId = 1; // Default to the first avatar if the id exceeds the list size
   }
 
   return Image.asset(

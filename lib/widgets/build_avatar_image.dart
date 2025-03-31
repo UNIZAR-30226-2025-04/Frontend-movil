@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 /// **Displays the correct avatar image based on the icon ID**
 /// - Uses an integer index to select an avatar from the available images.
 Widget buildAvatarImage(int iconId) {
-  iconId = iconId;
   final List<String> avatarPaths = [
     '', // index 0 left void in order to have same index in fronted web and mobile
     'images/pixelHeart.png',
