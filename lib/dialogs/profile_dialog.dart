@@ -109,7 +109,6 @@ Future<bool> showProfile(
                                     'Username',
                                     usernameController,
                                   ),
-                                  const SizedBox(height: 5),
                                   // Text field for password
                                   Text("Password"),
                                   _buildTextField(
@@ -117,7 +116,6 @@ Future<bool> showProfile(
                                     passwordController,
                                     isPassword: true,
                                   ),
-                                  const SizedBox(height: 5),
                                   // Text field for repeat password
                                   Text("Repeat password"),
                                   _buildTextField(
@@ -161,7 +159,8 @@ Future<bool> showProfile(
                                 );
                                 WebSocketClient()
                                     .disconnect(); // Close the current WebSocket connection
-                                await WebSocketClient().initialize(); // Reconnect to the WebSocket server
+                                await WebSocketClient()
+                                    .initialize(); // Reconnect to the WebSocket server
                                 changesMade =
                                     true; // Mark changes as successful
                                 if (context.mounted) {
@@ -245,7 +244,7 @@ Future<int?> showIconPickerDialog(
                           child: buildAvatarImage(iconIndex),
                         ),
                         const SizedBox(height: 5),
-                        Text("Icon $iconIndex"),
+                        Text("Icon ${iconIndex + 1}"),
                       ],
                     ),
                   );
