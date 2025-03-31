@@ -109,7 +109,6 @@ Future<bool> showProfile(
                                     'Username',
                                     usernameController,
                                   ),
-                                  const SizedBox(height: 5),
                                   // Text field for password
                                   Text("Password"),
                                   _buildTextField(
@@ -117,7 +116,6 @@ Future<bool> showProfile(
                                     passwordController,
                                     isPassword: true,
                                   ),
-                                  const SizedBox(height: 5),
                                   // Text field for repeat password
                                   Text("Repeat password"),
                                   _buildTextField(
