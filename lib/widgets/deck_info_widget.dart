@@ -2,26 +2,15 @@ import 'package:flutter/material.dart';
 
 /// A widget that displays deck information with a stack of cards and the card count.
 /// The count updates when the widget is tapped.
-class DeckInfo extends StatefulWidget {
-  const DeckInfo({super.key});
+class DeckInfo extends StatelessWidget {
+  final int remainingCards;
 
-  @override
-  DeckInfoState createState() => DeckInfoState();
-}
-
-class DeckInfoState extends State<DeckInfo> {
-  // Stores the current number of cards in the deck
-  String deckCount = "41/52";
+  const DeckInfo({super.key, required this.remainingCards});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // Updates the deck count when tapped (example update)
-        setState(() {
-          deckCount = "40/52";
-        });
-      },
+
       child: SizedBox(
         width: 60, // Width of the container
         height: 70, // Height of the container
@@ -41,7 +30,7 @@ class DeckInfoState extends State<DeckInfo> {
               bottom: -5,
               left: 15,
               child: Text(
-                deckCount,
+                "$remainingCards / 52",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

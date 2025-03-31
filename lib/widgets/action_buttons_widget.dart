@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/main_cards_widget.dart';
 import 'package:nogler/widgets/sort_options_widget.dart';
 
 /// A widget that provides action buttons for the game.
 /// It includes options to "Play Hand", "Sort Hand", and "Discard".
 class ActionButtons extends StatelessWidget {
-  const ActionButtons({super.key});
+  final VoidCallback onDiscard;
+  const ActionButtons({super.key, required this.onDiscard});
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +29,8 @@ class ActionButtons extends StatelessWidget {
 
         // Button to discard a card
         ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.black, // Set text color to black
-          ),
+          onPressed: onDiscard,
+          style: ElevatedButton.styleFrom(foregroundColor: Colors.black),
           child: Text("Discard"),
         ),
       ],

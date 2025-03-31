@@ -13,7 +13,7 @@ class SidebarState extends State<Sidebar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 230,
+      width: 200,
       padding: EdgeInsets.all(10),
       color: Colors.white,
       child: Column(
@@ -156,7 +156,7 @@ class SidebarState extends State<Sidebar> {
   /// Builds a labeled value box for game statistics.
   Widget _buildStatBox(String value) {
     return Container(
-      width: 85,
+      width: 60,
       height: 35,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: _boxDecoration(),
@@ -198,7 +198,7 @@ class SidebarState extends State<Sidebar> {
   /// Builds a labeled value box for game statistics.
   Widget _buildLabelAndValue(String label, String value) {
     return Container(
-      width: 100,
+      width: 85,
       height: 50,
       padding: EdgeInsets.all(1),
       decoration: BoxDecoration(

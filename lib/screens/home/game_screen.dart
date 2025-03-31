@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nogler/widgets/action_buttons_widget.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/deck_info_widget.dart';
-import 'package:nogler/widgets/hand_navigation_widget.dart';
 import 'package:nogler/widgets/joker_cards_widget.dart';
 import 'package:nogler/widgets/main_cards_widget.dart';
 import 'package:nogler/widgets/selected_cards_widget.dart';
@@ -19,6 +18,8 @@ class GameScreen extends StatefulWidget {
 }
 
 class GameScreenState extends State<GameScreen> {
+  final GlobalKey<MainCardsState> _mainCardsKey = GlobalKey();
+  int _remainingCards = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,40 +35,48 @@ class GameScreenState extends State<GameScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        SizedBox(height: 5),
                         // Section for the Joker cards at the top left
                         Padding(
                           padding: const EdgeInsets.only(left: 20),
                           child: Row(
                             mainAxisAlignment:
-                                MainAxisAlignment.start, // Aligns JokerCards to the left
+                                MainAxisAlignment
+                                    .start, // Aligns JokerCards to the left
                             children: [JokerCards()],
                           ),
                         ),
-                        
+
                         SelectedCards(), // Widget displaying selected cards
-                        SizedBox(height: 5),
-                        
+                        SizedBox(height: 15),
+
                         // MainCards widget in the center
-                        MainCards(),
-                        SizedBox(height: 5),
-                        
-                        // Navigation buttons for handling hand movement
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 10),
-                            HandNavigation(),
-                          ],
+                        MainCards(
+                          key: _mainCardsKey,
+                          onDeckUpdated: (value) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              setState(() {
+                                _remainingCards = value;
+                              });
+                            });
+                          },
                         ),
-                        
+
+                        SizedBox(height: 5),
+
                         // Action buttons and deck info at the bottom
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(width: 75),
-                            ActionButtons(), // Game action buttons
+                            ActionButtons(
+                              onDiscard: () {
+                                _mainCardsKey.currentState
+                                    ?.discardSelectedCards();
+                              },
+                            ),
                             SizedBox(width: 15),
-                            DeckInfo(), // Displays deck-related information
+                            DeckInfo(remainingCards: _remainingCards),
                           ],
                         ),
                       ],
@@ -86,4 +95,3 @@ class GameScreenState extends State<GameScreen> {
     );
   }
 }
-
