@@ -19,6 +19,7 @@ class GameScreen extends StatefulWidget {
 
 class GameScreenState extends State<GameScreen> {
   final GlobalKey<MainCardsState> _mainCardsKey = GlobalKey();
+  final GlobalKey<SelectedCardsState> _selectedCardsKey = GlobalKey();
   int _remainingCards = 0;
   @override
   Widget build(BuildContext context) {
@@ -36,6 +37,7 @@ class GameScreenState extends State<GameScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SizedBox(height: 5),
+
                         // Section for the Joker cards at the top left
                         Padding(
                           padding: const EdgeInsets.only(left: 20),
@@ -46,10 +48,11 @@ class GameScreenState extends State<GameScreen> {
                             children: [JokerCards()],
                           ),
                         ),
-
-                        SelectedCards(), // Widget displaying selected cards
-                        SizedBox(height: 15),
-
+                        SelectedCards(
+                          key: _selectedCardsKey,
+                        ), // Widget displaying selected cards
+                        
+                        const SizedBox(height: 5),
                         // MainCards widget in the center
                         MainCards(
                           key: _mainCardsKey,
@@ -60,9 +63,13 @@ class GameScreenState extends State<GameScreen> {
                               });
                             });
                           },
+                          onPlayCards: (playedCards) {
+                            _selectedCardsKey.currentState?.showCards(
+                              playedCards,
+                            );
+                          },
                         ),
 
-                        SizedBox(height: 5),
 
                         // Action buttons and deck info at the bottom
                         Row(
@@ -73,6 +80,9 @@ class GameScreenState extends State<GameScreen> {
                               onDiscard: () {
                                 _mainCardsKey.currentState
                                     ?.discardSelectedCards();
+                              },
+                              onPlayHand: () {
+                                _mainCardsKey.currentState?.playSelectedCards();
                               },
                             ),
                             SizedBox(width: 15),

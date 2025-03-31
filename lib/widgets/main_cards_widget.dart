@@ -5,7 +5,8 @@ import 'package:playing_cards/playing_cards.dart';
 /// A widget that displays a set of main cards with draggable behavior.
 class MainCards extends StatefulWidget {
   final Function(int)? onDeckUpdated;
-  const MainCards({super.key, this.onDeckUpdated});
+  final void Function(List<PlayingCard>)? onPlayCards;
+  const MainCards({super.key, this.onDeckUpdated, this.onPlayCards});
 
   @override
   MainCardsState createState() => MainCardsState();
@@ -69,29 +70,66 @@ class MainCardsState extends State<MainCards> {
     widget.onDeckUpdated?.call(remainingDeck.length);
   }
 
-  void discardSelectedCards() {
+  /// Discards selected cards and replaces them with new ones from the deck.
+  void discardSelectedCards() async {
     final selected = handCards.where((c) => c.isSelected).toList();
-    final newCards = <SelectableCard>[];
 
+    setState(() {
+      handCards.removeWhere((c) => c.isSelected);
+    });
     for (var i = 0; i < selected.length; i++) {
       if (remainingDeck.isNotEmpty) {
         final newCard = remainingDeck.removeAt(0);
-        newCards.add(
-          SelectableCard(
-            rank: newCard.value.toString().split('.').last,
-            suit: newCard.suit.toString().split('.').last,
-            card: newCard,
-          ),
+        final selectable = SelectableCard(
+          rank: newCard.value.toString().split('.').last,
+          suit: newCard.suit.toString().split('.').last,
+          card: newCard,
         );
+        setState(() {
+          handCards.add(selectable);
+        });
+        // Simulate a delay for the animation effect
+        await Future.delayed(const Duration(milliseconds: 500));
       }
     }
 
+    // Notify the parent widget about the updated deck size
+    widget.onDeckUpdated?.call(remainingDeck.length);
+  }
+
+  /// Plays selected cards and replaces them with new ones from the deck.
+  void playSelectedCards() async {
+    final selected = handCards.where((c) => c.isSelected).toList();
+    final selectedCards = selected.map((c) => c.card).toList();
+
+    // Notify the parent widget about the played cards
+    widget.onPlayCards?.call(selectedCards);
     setState(() {
-      // Deelete selected cards from handCards
       handCards.removeWhere((c) => c.isSelected);
-      handCards.addAll(newCards);
     });
 
+    // Simulate a delay for the animation effect
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Clear the played cards from the parent widget
+    widget.onPlayCards?.call([]);
+
+    // Add new cards to the hand
+    for (var i = 0; i < selected.length; i++) {
+      if (remainingDeck.isNotEmpty) {
+        final newCard = remainingDeck.removeAt(0);
+        final selectable = SelectableCard(
+          rank: newCard.value.toString().split('.').last,
+          suit: newCard.suit.toString().split('.').last,
+          card: newCard,
+        );
+        setState(() {
+          handCards.add(selectable);
+        });
+        // Simulate a delay for the animation effect
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+    }
     // Notify the parent widget about the updated deck size
     widget.onDeckUpdated?.call(remainingDeck.length);
   }
@@ -103,11 +141,9 @@ class MainCardsState extends State<MainCards> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(handCards.length, (index) {
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: _buildDraggableCard(index),
-            ),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: SizedBox(width: 65, child: _buildDraggableCard(index)),
           );
         }),
       ),

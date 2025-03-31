@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:playing_cards/playing_cards.dart';
 
-/// A widget that displays a row of selected cards.
-/// The number of cards is generated dynamically.
+/// A widget that displays a row of played cards temporarily.
 class SelectedCards extends StatefulWidget {
   const SelectedCards({super.key});
 
@@ -10,40 +10,35 @@ class SelectedCards extends StatefulWidget {
 }
 
 class SelectedCardsState extends State<SelectedCards> {
-  // List of selected cards to be displayed
-  final List<String> cards = List.generate(5, (index) => 'Card');
+  // Lista de cartas reales
+  List<PlayingCard> cards = [];
+
+  /// Show cards temporarily when a hand is played
+  void showCards(List<PlayingCard> newCards) {
+    setState(() {
+      cards = newCards;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children:
-          cards
-              .map(
-                (card) =>
-                    _buildCard(card, const Color.fromARGB(255, 54, 244, 149)),
-              )
-              .toList(),
+    if (cards.isEmpty) {
+      return const SizedBox(height: 97); // Espacio reservado para las cartas
+    }
+
+    return SizedBox(
+      height: 97,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: cards.map(_buildCard).toList(),
+      ),
     );
   }
 
-  /// Builds a single selected card widget
-  Widget _buildCard(String label, Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: Container(
-        width: 50,
-        height: 70,
-        decoration: BoxDecoration(
-          color: color,
-          border: Border.all(color: Colors.black, width: 2),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
+  Widget _buildCard(PlayingCard card) {
+    return AspectRatio(
+      aspectRatio: 65 / 90,
+      child: PlayingCardView(card: card, showBack: false),
     );
   }
 }
