@@ -241,7 +241,7 @@ Future<int?> showIconPickerDialog(
                         CircleAvatar(
                           radius: 30,
                           backgroundColor: Colors.white,
-                          child: buildAvatarImage(iconIndex),
+                          child: buildAvatarImage(iconIndex + 1),
                         ),
                         const SizedBox(height: 5),
                         Text("Icon ${iconIndex + 1}"),
