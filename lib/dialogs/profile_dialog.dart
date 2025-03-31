@@ -161,7 +161,8 @@ Future<bool> showProfile(
                                 );
                                 WebSocketClient()
                                     .disconnect(); // Close the current WebSocket connection
-                                await WebSocketClient().initialize(); // Reconnect to the WebSocket server
+                                await WebSocketClient()
+                                    .initialize(); // Reconnect to the WebSocket server
                                 changesMade =
                                     true; // Mark changes as successful
                                 if (context.mounted) {
@@ -245,7 +246,7 @@ Future<int?> showIconPickerDialog(
                           child: buildAvatarImage(iconIndex),
                         ),
                         const SizedBox(height: 5),
-                        Text("Icon $iconIndex"),
+                        Text("Icon ${iconIndex + 1}"),
                       ],
                     ),
                   );
