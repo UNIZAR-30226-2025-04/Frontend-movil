@@ -20,7 +20,7 @@ class ChatMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      // Alinea el mensaje a la derecha si es propio, a la izquierda si es de otro
+      // This widget is used to align the message to the left or right
       mainAxisAlignment:
           isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,

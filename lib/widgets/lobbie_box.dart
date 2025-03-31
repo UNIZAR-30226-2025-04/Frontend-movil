@@ -4,7 +4,7 @@ import 'package:nogler/screens/lobby/lobby_screen.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 import 'package:page_transition/page_transition.dart';
 
-///Widget to show the information of a public lobby in the JOIN LOBBY screen
+/// Widget to show the information of a public lobby in the JOIN LOBBY screen
 class LobbieBox extends StatelessWidget {
   const LobbieBox({
     super.key,

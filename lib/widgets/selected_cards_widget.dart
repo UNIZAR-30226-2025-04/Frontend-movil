@@ -10,7 +10,7 @@ class SelectedCards extends StatefulWidget {
 }
 
 class SelectedCardsState extends State<SelectedCards> {
-  // Lista de cartas reales
+  // / List of cards to be displayed temporarily
   List<PlayingCard> cards = [];
 
   /// Show cards temporarily when a hand is played
@@ -23,7 +23,7 @@ class SelectedCardsState extends State<SelectedCards> {
   @override
   Widget build(BuildContext context) {
     if (cards.isEmpty) {
-      return const SizedBox(height: 97); // Espacio reservado para las cartas
+      return const SizedBox(height: 97); 
     }
 
     return SizedBox(
