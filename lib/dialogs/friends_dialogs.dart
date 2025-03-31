@@ -61,7 +61,7 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                             leading: CircleAvatar(
                               // Display the avatar image based on the 'icon' ID
                               child: buildAvatarImage(
-                                friendsList[index]['icon'] - 1,
+                                friendsList[index]['icon'],
                               ),
                             ),
                             title: Text(friendsList[index]['username']),
@@ -299,7 +299,10 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                           child: Center(
                             child: Text(
                               "No users available to add", // Message when no requests are present
-                              style: TextStyle(fontSize: 16, color: Colors.grey),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
                         )
@@ -315,7 +318,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                                 leading: CircleAvatar(
                                   // Display the avatar image based on the 'icon' ID
                                   child: buildAvatarImage(
-                                    filteredFriends[index]['icon'] - 1,
+                                    filteredFriends[index]['icon'],
                                   ),
                                 ),
                                 title: Text(
@@ -444,7 +447,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                             leading: CircleAvatar(
                               // Display the avatar image based on the 'icon' ID
                               child: buildAvatarImage(
-                                receivedRequests[index]['icon'] - 1,
+                                receivedRequests[index]['icon'],
                               ),
                             ),
                             title: Text(
@@ -591,7 +594,7 @@ Future<void> showSentRequest(BuildContext context, String username) async {
                             leading: CircleAvatar(
                               // Display the avatar image based on the 'icon' ID
                               child: buildAvatarImage(
-                                sentRequests[index]['icon'] - 1,
+                                sentRequests[index]['icon'],
                               ),
                             ),
                             title: Text(

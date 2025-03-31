@@ -233,7 +233,7 @@ Future<int?> showIconPickerDialog(
                 icons.map((iconIndex) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.pop(context, iconIndex);
+                      Navigator.pop(context, iconIndex + 1);
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
