@@ -17,12 +17,16 @@ class SelectableCard {
   final String suit;
   final PlayingCard card;
   bool isSelected;
+  bool isDiscarding;
+  bool isNew;
 
   SelectableCard({
     required this.rank,
     required this.suit,
     required this.card,
     this.isSelected = false,
+    this.isDiscarding = false,
+    this.isNew = false,
   });
 }
 
@@ -33,6 +37,7 @@ class MainCardsState extends State<MainCards> {
   /// Stores the index of the dragged card
   int? _draggedIndex;
   int get remainingCards => remainingDeck.length;
+  bool hasMountedInitialHand = false;
 
   @override
   void initState() {
@@ -68,15 +73,30 @@ class MainCardsState extends State<MainCards> {
 
     // Notify the parent widget about the initial deck size
     widget.onDeckUpdated?.call(remainingDeck.length);
+    setState(() {
+      hasMountedInitialHand = true;
+    });
   }
 
   /// Discards selected cards and replaces them with new ones from the deck.
   void discardSelectedCards() async {
     final selected = handCards.where((c) => c.isSelected).toList();
-
+    // Notify the parent widget about the discarded cards
     setState(() {
-      handCards.removeWhere((c) => c.isSelected);
+      for (var c in selected) {
+        c.isDiscarding = true;
+      }
     });
+
+    // Simulate a delay for the animation effect
+    await Future.delayed(const Duration(milliseconds: 350));
+
+    // Notify the parent widget about the discarded cards
+    setState(() {
+      handCards.removeWhere((c) => c.isDiscarding);
+    });
+    await Future.delayed(const Duration(milliseconds: 300));
+
     for (var i = 0; i < selected.length; i++) {
       if (remainingDeck.isNotEmpty) {
         final newCard = remainingDeck.removeAt(0);
@@ -84,12 +104,18 @@ class MainCardsState extends State<MainCards> {
           rank: newCard.value.toString().split('.').last,
           suit: newCard.suit.toString().split('.').last,
           card: newCard,
+          isNew: true,
         );
         setState(() {
           handCards.add(selectable);
         });
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        setState(() {
+          selectable.isNew = false;
+        });
         // Simulate a delay for the animation effect
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 300));
       }
     }
 
@@ -101,15 +127,27 @@ class MainCardsState extends State<MainCards> {
   void playSelectedCards() async {
     final selected = handCards.where((c) => c.isSelected).toList();
     final selectedCards = selected.map((c) => c.card).toList();
+    final time = selectedCards.length + 1;
 
     // Notify the parent widget about the played cards
     widget.onPlayCards?.call(selectedCards);
+    // Notify the parent widget about the discarded cards
     setState(() {
-      handCards.removeWhere((c) => c.isSelected);
+      for (var c in selected) {
+        c.isDiscarding = true;
+      }
     });
 
     // Simulate a delay for the animation effect
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(milliseconds: 350));
+
+    // Notify the parent widget about the discarded cards
+    setState(() {
+      handCards.removeWhere((c) => c.isDiscarding);
+    });
+
+    // Simulate a delay for the animation effect
+    await Future.delayed(Duration(seconds: time));
 
     // Clear the played cards from the parent widget
     widget.onPlayCards?.call([]);
@@ -122,12 +160,23 @@ class MainCardsState extends State<MainCards> {
           rank: newCard.value.toString().split('.').last,
           suit: newCard.suit.toString().split('.').last,
           card: newCard,
+          isNew: true,
         );
+
+        // Notify the parent widget about the new card
         setState(() {
           handCards.add(selectable);
         });
+
         // Simulate a delay for the animation effect
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        // This will trigger the animation to show the card
+        setState(() {
+          selectable.isNew = false;
+        });
+        // Simulate a delay for the animation effect
+        await Future.delayed(const Duration(milliseconds: 300));
       }
     }
     // Notify the parent widget about the updated deck size
@@ -138,15 +187,30 @@ class MainCardsState extends State<MainCards> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(handCards.length, (index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: SizedBox(width: 65, child: _buildDraggableCard(index)),
-          );
-        }),
-      ),
+      child:
+          hasMountedInitialHand
+              ? Row(
+                key: ValueKey(
+                  handCards.map((c) => '${c.rank}_${c.suit}').join(),
+                ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(handCards.length, (index) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    width: 65,
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    child: _buildDraggableCard(index),
+                  );
+                }),
+              )
+              : Row(
+                // Versión sin key para que no haga animaciones en el primer render
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(handCards.length, (index) {
+                  return SizedBox(width: 65, child: _buildDraggableCard(index));
+                }),
+              ),
     );
   }
 
@@ -208,9 +272,30 @@ class MainCardsState extends State<MainCards> {
   Widget _buildCard(SelectableCard selectable) {
     return AspectRatio(
       aspectRatio: 65 / 90,
-      child: Transform.translate(
-        offset: selectable.isSelected ? const Offset(0, -10) : Offset.zero,
-        child: PlayingCardView(card: selectable.card, showBack: false),
+      child: AnimatedOpacity(
+        opacity: selectable.isDiscarding ? 0.0 : 1.0,
+        duration: const Duration(milliseconds: 300),
+        child: AnimatedSlide(
+          offset:
+              selectable.isDiscarding
+                  ? const Offset(0, 0.5)
+                  : selectable.isNew
+                  ? const Offset(0, 0.5)
+                  : (selectable.isSelected
+                      ? const Offset(0, -0.1)
+                      : Offset.zero),
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: selectable.isNew ? 0.8 : 1.0, end: 1.0),
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutBack,
+            builder: (context, scale, child) {
+              return Transform.scale(scale: scale, child: child);
+            },
+            child: PlayingCardView(card: selectable.card, showBack: false),
+          ),
+        ),
       ),
     );
   }

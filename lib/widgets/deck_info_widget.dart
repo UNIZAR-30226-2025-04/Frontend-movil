@@ -28,7 +28,7 @@ class DeckInfo extends StatelessWidget {
             // Displays the number of remaining cards
             Positioned(
               bottom: -5,
-              left: 15,
+              left: 10,
               child: Text(
                 "$remainingCards / 52",
                 style: TextStyle(
