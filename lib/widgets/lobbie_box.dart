@@ -74,21 +74,22 @@ class LobbieBox extends StatelessWidget {
                         ), // Black border
                       ),
                     ),
-                    onPressed: () {
-                      joinLobby(lobbyCode);
-
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.fade,
-                          child: LobbyScreen(
-                            hostName: playerName,
-                            hostAvatar: playerIcon,
-                            lobbyState: true,
-                            lobbyCode: lobbyCode,
+                    onPressed: () async {
+                      final public = await joinLobby(lobbyCode);
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: LobbyScreen(
+                              hostName: playerName,
+                              hostAvatar: playerIcon,
+                              lobbyState: !public,
+                              lobbyCode: lobbyCode,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
 
                     child: Text("JOIN $lobbyOcupation/8"),

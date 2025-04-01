@@ -97,7 +97,12 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
                             vertical: 12,
                           ),
                         ),
-                        onPressed: () => showMatchmakingDialog(context),
+                        onPressed:
+                            () => showMatchmakingDialog(
+                              context,
+                              widget.hostName,
+                              widget.hostAvatar,
+                            ),
                         child: Text(
                           "Matchmaking",
                           style: TextStyle(color: Colors.black),
@@ -133,12 +138,14 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
                               padding: EdgeInsets.all(12.5),
                               itemCount: lobbies.length,
                               itemBuilder: (context, index) {
+                                String username = lobbies[index]['creator_username'];
+                                int iconId = lobbies[index]['host_icon'];
                                 String lobbyId = lobbies[index]['lobby_id'];
                                 int numberOfPlayers =
                                     lobbies[index]['player_count'] ?? 0;
                                 return LobbieBox(
-                                  playerName: widget.hostName,
-                                  playerIcon: widget.hostAvatar,
+                                  playerName: username,
+                                  playerIcon: iconId,
                                   lobbyOcupation: numberOfPlayers,
                                   lobbyCode: lobbyId,
                                 );
