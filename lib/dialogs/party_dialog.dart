@@ -164,7 +164,7 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                         ),
                                       ),
                                       onPressed: () async {
-                                        await joinLobby(lobbyId);
+                                        final public = await joinLobby(lobbyId);
                                         setState(() {
                                           deleteLobbyInvitation(
                                             lobbyId,
@@ -179,8 +179,8 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                               type: PageTransitionType.fade,
                                               child: LobbyScreen(
                                                 hostName: myusername,
-                                                hostAvatar: iconId - 1,
-                                                lobbyState: true,
+                                                hostAvatar: iconId,
+                                                lobbyState: !public,
                                                 lobbyCode: lobbyId,
                                               ),
                                             ),
