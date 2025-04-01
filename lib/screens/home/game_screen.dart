@@ -20,6 +20,11 @@ class GameScreen extends StatefulWidget {
 class GameScreenState extends State<GameScreen> {
   final GlobalKey<MainCardsState> _mainCardsKey = GlobalKey();
   final GlobalKey<SelectedCardsState> _selectedCardsKey = GlobalKey();
+
+  // Show game fase widgets
+  bool _showGameFaseWidgets = true;
+  bool _hidden = false;
+
   int _remainingCards = 0;
   @override
   Widget build(BuildContext context) {
@@ -48,46 +53,82 @@ class GameScreenState extends State<GameScreen> {
                             children: [JokerCards()],
                           ),
                         ),
-                        SelectedCards(
-                          key: _selectedCardsKey,
+
+                        // Move down the widget to change fase
+                        Visibility(
+                          visible: _hidden,
+                          child: AnimatedSlide(
+                            offset:
+                                _showGameFaseWidgets
+                                    ? Offset(0, 0)
+                                    : Offset(0, 3),
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            child: SelectedCards(key: _selectedCardsKey),
+                          ),
                         ), // Widget displaying selected cards
-                        
+
                         const SizedBox(height: 5),
-                        // MainCards widget in the center
-                        MainCards(
-                          key: _mainCardsKey,
-                          onDeckUpdated: (value) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              setState(() {
-                                _remainingCards = value;
-                              });
-                            });
-                          },
-                          onPlayCards: (playedCards) {
-                            _selectedCardsKey.currentState?.showCards(
-                              playedCards,
-                            );
-                          },
-                        ),
-
-
-                        // Action buttons and deck info at the bottom
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 75),
-                            ActionButtons(
-                              onDiscard: () {
-                                _mainCardsKey.currentState
-                                    ?.discardSelectedCards();
+                        // Move down the widget to change fase
+                        Visibility(
+                          visible: _hidden,
+                          child: AnimatedSlide(
+                            offset:
+                                _showGameFaseWidgets
+                                    ? Offset(0, 0)
+                                    : Offset(0, 3),
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            // MainCards widget in the center
+                            child: MainCards(
+                              key: _mainCardsKey,
+                              onDeckUpdated: (value) {
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  setState(() {
+                                    _remainingCards = value;
+                                  });
+                                });
                               },
-                              onPlayHand: () {
-                                _mainCardsKey.currentState?.playSelectedCards();
+                              onPlayCards: (playedCards) {
+                                _selectedCardsKey.currentState?.showCards(
+                                  playedCards,
+                                );
                               },
                             ),
-                            SizedBox(width: 15),
-                            DeckInfo(remainingCards: _remainingCards),
-                          ],
+                          ),
+                        ),
+
+                        // Action buttons and deck info at the bottom
+                        Visibility(
+                          visible: _hidden,
+                          child: AnimatedSlide(
+                            offset:
+                                _showGameFaseWidgets
+                                    ? Offset(0, 0)
+                                    : Offset(0, 3),
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: 75),
+                                ActionButtons(
+                                  onDiscard: () {
+                                    _mainCardsKey.currentState
+                                        ?.discardSelectedCards();
+                                  },
+                                  onPlayHand: () {
+                                    _mainCardsKey.currentState
+                                        ?.playSelectedCards();
+                                  },
+                                ),
+                                SizedBox(width: 15),
+                                DeckInfo(remainingCards: _remainingCards),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -97,7 +138,30 @@ class GameScreenState extends State<GameScreen> {
 
               // Timer and settings button placed at the top right
               TimerWidget(),
-              SettingsButton(),
+              SettingsButton(
+                //TODO, puesto para cambiar entre fase de juego y tienda, cambiar a posteriori
+                onPressed: () {
+                  if (_showGameFaseWidgets) {
+                    setState(() {
+                      _showGameFaseWidgets = !_showGameFaseWidgets;
+                    });
+                    Future.delayed(Duration(milliseconds: 300), () {
+                      setState(() {
+                        _hidden = !_hidden;
+                      });
+                    });
+                  } else {
+                    setState(() {
+                      _hidden = !_hidden;
+                    });
+                    Future.delayed(Duration(milliseconds: 10), () {
+                      setState(() {
+                        _showGameFaseWidgets = !_showGameFaseWidgets;
+                      });
+                    });
+                  }
+                },
+              ),
             ],
           ),
         ),

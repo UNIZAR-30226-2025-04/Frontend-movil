@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 /// A settings button widget.
 /// Displays a settings icon that can be tapped to open a settings panel.
 class SettingsButton extends StatelessWidget {
-  const SettingsButton({super.key});
+  const SettingsButton({super.key, this.onPressed});
+
+  //TODO, puesto para cambiar entre fase de juego y tienda, cambiar a posteriori
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +21,13 @@ class SettingsButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: IconButton(
-          icon: Icon(Icons.settings, color: const Color.fromARGB(255, 57, 231, 136), size: 25),
-          onPressed: () {},
+          icon: Icon(
+            Icons.settings,
+            color: const Color.fromARGB(255, 57, 231, 136),
+            size: 25,
+          ),
+          //TODO, puesto para cambiar entre fase de juego y tienda, cambiar a posteriori
+          onPressed: onPressed,
         ),
       ),
     );
