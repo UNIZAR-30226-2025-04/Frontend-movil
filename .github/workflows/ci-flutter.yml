@@ -7,9 +7,7 @@ on:
       - main
 # Sets permissions of the GITHUB_TOKEN to allow writing to the repository
 permissions:
-  actions: write
   contents: write
-  id-token: write
 
 jobs:
   flutter-build:
@@ -62,10 +60,3 @@ jobs:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk"
           tag: v${{ env.VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Delete Artifacts # Delete the uploaded artifacts
-        run: |
-          artifact_id=$(gh api repos/${{ github.repository }}/actions/artifacts --jq '.artifacts[0].id')
-          gh api repos/${{ github.repository }}/actions/artifacts/$artifact_id -X DELETE
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
