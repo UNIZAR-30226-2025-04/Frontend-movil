@@ -64,3 +64,5 @@ jobs:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk"
           tag: v${{ env.VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          replacesArtifacts: true # Replace existing artifacts with the new ones
+          updateOnlyUnreleased: false # Create a new release even if the tag already exists
