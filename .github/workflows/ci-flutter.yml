@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v4 # Upload the generated APK
         with:
           name: nogler.apk  # Name of the artifact
-          path: build/app/outputs/flutter-apk/nogler.apk  # Path to the APK
+          path: build/app/outputs/flutter-apk/app-release.apk  # Path to the APK
