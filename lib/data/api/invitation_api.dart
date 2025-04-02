@@ -19,10 +19,16 @@ Future<List<Map<String, dynamic>>> getAllNonInvitedFriends(
       '/auth/sent_lobby_invitations',
     );
 
+    //List of people already in lobby
+    final inLobbyResponse = await dioClient.dio.get(
+      '/auth/lobbyInfo/$lobbyCode',
+    );
+
     //List of all non invited friends
     if (meResponse.statusCode == 200 &&
         friendsResponse.statusCode == 200 &&
-        invitationsResponse.statusCode == 200) {
+        invitationsResponse.statusCode == 200 &&
+        inLobbyResponse.statusCode == 200) {
       // Current user username
       String username = meResponse.data['username'].toString();
 
@@ -37,10 +43,15 @@ Future<List<Map<String, dynamic>>> getAllNonInvitedFriends(
             invitationsResponse.data['sent_game_lobby_invitations'] ?? [],
           ).map((inv) => inv['username'].toString()).toList();
 
+      List<String> inLobby = List<String>.from(
+        inLobbyResponse.data['players'] ?? [],
+      );
+
       // Return a filtered list of users who aren't yet invited to the lobby
       return friends
           .where(
             (user) =>
+                !inLobby.contains(user['username']) &&
                 !sentInvitations.contains(user['username']) &&
                 user['lobby_id'] != lobbyCode &&
                 user['username'] != username,
