@@ -1,8 +1,10 @@
 name: Flutter CI
 
-# Trigger the workflow on every push to any branch
+# Trigger the workflow on every push to any version tag
 on:
   push:
+    tags:
+      - 'v*'  # Trigger on version tags, e.g., v1.0.0, v2.0.0, etc.
 
 jobs:
   flutter-build:
@@ -27,7 +29,69 @@ jobs:
         run: flutter build apk --release  # Build the app in release mode for Android
 
       - name: Upload release artifact
-        uses: actions/upload-artifact@v4 # Upload the generated APK
+        uses: actions/upload-artifact@v4  # Upload the generated APK
         with:
-          name: nogler.apk  # Name of the artifact
+          name: app-release.apk  # Name of the artifact
           path: build/app/outputs/flutter-apk/app-release.apk  # Path to the APK
+
+      # Step to extract version from pubspec.yaml
+      - name: Extract version from pubspec.yaml
+        id: extract_version
+        run: |
+          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+      # Check if the release tag exists
+      - name: Check if Tag Exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      # Modify version if tag exists
+      - name: Modify Version if Tag Exists
+        if: env.TAG_EXISTS == 'true'
+        id: modify_tag
+        run: |
+          new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
+          echo "VERSION=$new_version" >> $GITHUB_ENV
+
+      # Get existing release ID
+      - name: Get existing release ID
+        id: get_release
+        run: |
+          RELEASE_TAG="${GITHUB_REF#refs/tags/}"
+          RELEASE_ID=$(curl --silent --show-error --header "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$RELEASE_TAG" \
+            | jq -r .id)
+          echo "RELEASE_ID=$RELEASE_ID" >> $GITHUB_ENV
+        continue-on-error: true  # Continue if no release exists yet
+
+      # Create or update release on GitHub
+      - name: Create or Update Release
+        id: create_or_update_release
+        run: |
+          if [ -z "${{ env.RELEASE_ID }}" ]; then
+            # Create new release if none exists
+            echo "Creating a new release..."
+            curl --silent --show-error --header "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              --data '{"tag_name": "'"v${{ env.VERSION }}'"', "name": "'"v${{ env.VERSION }}'"', "body": "New version release", "draft": false, "prerelease": false}' \
+              "https://api.github.com/repos/${{ github.repository }}/releases"
+          else
+            # Update existing release with new APK
+            echo "Updating existing release..."
+            curl --silent --show-error --header "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              --data '{"assets": [{"name": "app-release.apk", "path": "build/app/outputs/flutter-apk/app-release.apk"}]}' \
+              "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets"
+          fi
+
+      # Upload APK to release
+      - name: Upload APK to Release
+        uses: softprops/action-gh-release@v1  # Upload the APK to the release
+        with:
+          files: build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
