@@ -1,0 +1,33 @@
+name: Flutter CI
+
+# Trigger the workflow on every push to any branch
+on:
+  push:
+
+jobs:
+  flutter-build:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3  # Clone the repository into the runner
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2  # Install Flutter SDK
+        with:
+          flutter-version: '3.29.0'  # Set the Flutter version to use
+
+      - name: Install dependencies
+        run: flutter pub get  # Install all pub dependencies
+
+      - name: Analyze code
+        run: flutter analyze  # Run static analysis on the codebase
+
+      - name: Build APK
+        run: flutter build apk --release  # Build the app in release mode for Android
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v3  # Upload the generated APK
+        with:
+          name: nogler.apk  # Name of the artifact
+          path: build/app/outputs/flutter-apk/nogler.apk  # Path to the APK
