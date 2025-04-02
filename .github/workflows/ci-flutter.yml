@@ -1,9 +1,10 @@
 name: Flutter CI
 
-# Trigger the workflow on every push to any branch
+# Trigger the workflow on push events to the main branch
 on:
   push:
-
+    branches:
+      - main
 # Sets permissions of the GITHUB_TOKEN to allow writing to the repository
 permissions:
   contents: write
