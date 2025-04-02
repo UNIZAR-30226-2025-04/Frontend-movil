@@ -4,6 +4,10 @@ name: Flutter CI
 on:
   push:
 
+# Sets permissions of the GITHUB_TOKEN to allow writing to the repository
+permissions:
+  contents: write
+
 jobs:
   flutter-build:
     runs-on: ubuntu-latest  # Use the latest Ubuntu runner
@@ -27,19 +31,19 @@ jobs:
         run: flutter build apk --release  # Build the app in release mode for Android
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4 # Upload the built APK as an artifact
         with:
           name: Releases
           path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Extract version from pubspec.yaml
-        id: extract_version
+        id: extract_version # Extract the version from pubspec.yaml
         run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r') #
           echo "VERSION=$version" >> $GITHUB_ENV
       
       - name: Check if Tag Exists
-        id: check_tag
+        id: check_tag # Check if the tag already exists in the repository
         run: |
           if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
             echo "TAG_EXISTS=true" >> $GITHUB_ENV
@@ -55,7 +59,7 @@ jobs:
           echo "VERSION=$new_version" >> $GITHUB_ENV
 
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1 # Create a new release in the repository
         with:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk"
           tag: v${{ env.VERSION }}
