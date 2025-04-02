@@ -27,7 +27,7 @@ jobs:
         run: flutter build apk --release  # Build the app in release mode for Android
 
       - name: Upload release artifact
-        uses: actions/upload-artifact@v3  # Upload the generated APK
+        uses: actions/upload-artifact@v4 # Upload the generated APK
         with:
           name: nogler.apk  # Name of the artifact
           path: build/app/outputs/flutter-apk/nogler.apk  # Path to the APK
