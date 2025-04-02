@@ -37,16 +37,16 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Extract version from pubspec.yaml
-        id: extract_version # Extract the version from pubspec.yaml
+        id: extract_version
         run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r') #
+          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
           echo "VERSION=$version" >> $GITHUB_ENV
       
-          - name: Delete existing release
-          run: |
-            gh release delete "v${{ env.VERSION }}" --yes || true
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Delete existing release
+        run: |
+          gh release delete "v${{ env.VERSION }}" --yes || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Delete existing tag
         run: |
