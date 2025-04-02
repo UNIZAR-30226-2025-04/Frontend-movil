@@ -1,10 +1,8 @@
 name: Flutter CI
 
-# Trigger the workflow on every push to any version tag
+# Trigger the workflow on every push to any branch
 on:
   push:
-    tags:
-      - 'v*'  # Trigger on version tags, e.g., v1.0.0, v2.0.0, etc.
 
 jobs:
   flutter-build:
