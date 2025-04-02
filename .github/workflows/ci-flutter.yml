@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3  # Clone the repository into the runner
+        uses: actions/checkout@v4  # Clone the repository into the runner
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2  # Install Flutter SDK
