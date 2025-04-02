@@ -19,18 +19,25 @@ class LobbieBox extends StatelessWidget {
   final int lobbyOcupation;
   final String lobbyCode;
 
+  // Variable t
+  static bool colorSwap = true;
+
   @override
   Widget build(BuildContext context) {
+    colorSwap = !colorSwap;
     return LayoutBuilder(
       builder: (context, constraints) {
         //final boxHeight = 50;
         final boxWidth = 100;
         return Container(
           width: 100,
-          height: 50,
+          height: 55,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black, width: 1),
-            color: Colors.indigo,
+            color:
+                colorSwap
+                    ? Colors.indigo
+                    : const Color.fromARGB(255, 45, 58, 134),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,7 +48,7 @@ class LobbieBox extends StatelessWidget {
                   SizedBox(width: boxWidth * 0.15),
 
                   CircleAvatar(
-                    radius: 20,
+                    radius: 22,
                     backgroundColor: Colors.white,
                     child: buildAvatarImage(playerIcon),
                   ),
@@ -51,7 +58,7 @@ class LobbieBox extends StatelessWidget {
                   //Name of the host of the lobby
                   Text(
                     playerName,
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
