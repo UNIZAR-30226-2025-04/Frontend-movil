@@ -42,21 +42,16 @@ jobs:
           version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r') #
           echo "VERSION=$version" >> $GITHUB_ENV
       
-      - name: Check if Tag Exists
-        id: check_tag # Check if the tag already exists in the repository
+          - name: Delete existing release
+          run: |
+            gh release delete "v${{ env.VERSION }}" --yes || true
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Delete existing tag
         run: |
-          if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
-          fi
-
-      - name: Modify Tag
-        if: env.TAG_EXISTS == 'true'
-        id: modify_tag
-        run: |
-          new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
-          echo "VERSION=$new_version" >> $GITHUB_ENV
+          git push --delete origin "v${{ env.VERSION }}" || true
+        
 
       - name: Create Release
         uses: ncipollo/release-action@v1 # Create a new release in the repository
@@ -64,5 +59,3 @@ jobs:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk"
           tag: v${{ env.VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          replacesArtifacts: true # Replace existing artifacts with the new ones
-          updateOnlyUnreleased: false # Create a new release even if the tag already exists
