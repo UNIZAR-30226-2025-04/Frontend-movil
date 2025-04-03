@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/invitation_api.dart';
 import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/data/api/party_api.dart';
+import 'package:nogler/screens/loading/loading_screen.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
@@ -294,6 +295,16 @@ Future<void> showCreateLobbyButton(
                           ),
                         ),
                         onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.fade,
+                              child: const LoadingScreen(
+                                loadingMessage: 'Creating Lobby...',
+                              ),
+                            ),
+                          );
+
                           createLobby(
                             (String code) async {
                               // Join the lobby created previously
@@ -306,7 +317,7 @@ Future<void> showCreateLobbyButton(
                               // Auto-connect when screen loads
                               await wsClient.initialize();
                               if (context.mounted) {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   PageTransition(
                                     type: PageTransitionType.fade,
