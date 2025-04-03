@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
-import 'package:nogler/widgets/game_fase/game_fase_widget.dart';
-import 'package:nogler/widgets/joker_cards_widget.dart';
-import 'package:nogler/widgets/main_cards_widget.dart';
-import 'package:nogler/widgets/selected_cards_widget.dart';
-import 'package:nogler/widgets/setting_button_widget.dart';
-import 'package:nogler/widgets/shop_fase/shop_widget.dart';
-import 'package:nogler/widgets/sidebar_widget.dart';
-import 'package:nogler/widgets/timer_widget.dart';
+import 'package:nogler/widgets/in_game/game_fase/game_fase_widget.dart';
+import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
+import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
+import 'package:nogler/widgets/in_game/main_cards_widget.dart';
+import 'package:nogler/widgets/in_game/setting_button_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
+import 'package:nogler/widgets/in_game/sidebar_widget.dart';
+import 'package:nogler/widgets/in_game/timer_widget.dart';
 
 /// Represents the main game screen with UI components for gameplay.
 class GameScreen extends StatefulWidget {
@@ -59,47 +59,48 @@ class GameScreenState extends State<GameScreen> {
                           ),
                         ),
 
-                        _showGameFaseWidget
-                            ? Expanded(
-                              // Widget with all game fase widgets included
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  // Show the widget if we're in game fase
-                                  Visibility(
-                                    visible: _showGameFaseWidget,
-                                    // Animate its entry and exit off screen
-                                    child: AnimatedSlide(
-                                      offset:
-                                          _animateShowGameFaseWidgets
-                                              ? Offset(0, 0)
-                                              : Offset(0, 3),
-                                      duration: Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
+                        if (_showGameFaseWidget)
+                          Expanded(
+                            // Widget with all game fase widgets included
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                // Show the widget if we're in game fase
+                                Visibility(
+                                  visible: _showGameFaseWidget,
+                                  // Animate its entry and exit off screen
+                                  child: AnimatedSlide(
+                                    offset:
+                                        _animateShowGameFaseWidgets
+                                            ? Offset(0, 0)
+                                            : Offset(0, 3),
+                                    duration: Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
 
-                                      child: GameFaseWidget(
-                                        mainCardsKey: _mainCardsKey,
-                                        selectedCardsKey: _selectedCardsKey,
-                                        remainingCards: _remainingCards,
-                                        onDeckUpdated: (value) {
-                                          WidgetsBinding.instance
-                                              .addPostFrameCallback((_) {
-                                                setState(() {
-                                                  _remainingCards = value;
-                                                });
+                                    child: GameFaseWidget(
+                                      mainCardsKey: _mainCardsKey,
+                                      selectedCardsKey: _selectedCardsKey,
+                                      remainingCards: _remainingCards,
+                                      onDeckUpdated: (value) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                              setState(() {
+                                                _remainingCards = value;
                                               });
-                                        },
-                                        onPlayCards: (playedCards) {
-                                          _selectedCardsKey.currentState
-                                              ?.showCards(playedCards);
-                                        },
-                                      ),
+                                            });
+                                      },
+                                      onPlayCards: (playedCards) {
+                                        _selectedCardsKey.currentState
+                                            ?.showCards(playedCards);
+                                      },
                                     ),
                                   ),
-                                ],
-                              ),
-                            )
-                            : Expanded(child: Column(children: [Shop()])),
+                                ),
+                              ],
+                            ),
+                          )
+                        else if (_showShopFaseWidget)
+                          Expanded(child: Column(children: [Shop()])),
                       ],
                     ),
                   ),
@@ -114,7 +115,7 @@ class GameScreenState extends State<GameScreen> {
                   // Animate Game Fase Widgets
                   if (_animateShowGameFaseWidgets) {
                     setState(() {
-                      // Init animation
+                      // Init animation game fase
                       _animateShowGameFaseWidgets =
                           !_animateShowGameFaseWidgets;
                     });
@@ -123,17 +124,21 @@ class GameScreenState extends State<GameScreen> {
                         // Change visible state of widgets
                         _showGameFaseWidget = !_showGameFaseWidget;
                         _showShopFaseWidget = !_showShopFaseWidget;
+                        _animateShowShopFaseWidgets =
+                            !_animateShowShopFaseWidgets;
                       });
                     });
-                  } else {
+                  } else if (_animateShowShopFaseWidgets) {
                     setState(() {
-                      // Change visible state of widgets
-                      _showGameFaseWidget = !_showGameFaseWidget;
-                      _showShopFaseWidget = !_showShopFaseWidget;
+                      // Init animation shop fase
+                      _animateShowShopFaseWidgets = !_showShopFaseWidget;
                     });
-                    Future.delayed(Duration(milliseconds: 10), () {
+                    Future.delayed(Duration(milliseconds: 300), () {
                       setState(() {
-                        // Init animation
+                        // Change visible state of widgets
+                        _showShopFaseWidget = !_showShopFaseWidget;
+                        _showGameFaseWidget = !_showGameFaseWidget;
+                        // Init animation of game fase
                         _animateShowGameFaseWidgets =
                             !_animateShowGameFaseWidgets;
                       });
