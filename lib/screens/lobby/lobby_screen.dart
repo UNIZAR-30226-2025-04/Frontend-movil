@@ -378,7 +378,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                 //Leave lobby button
                 Row(
                   //button at the end of the row
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -419,6 +419,28 @@ class _LobbyScreen extends State<LobbyScreen> {
                         ),
                       ),
                     ),
+
+                    // Add Start button if the user is the host
+                    lobbyCreator == widget.hostName 
+                        ? Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 50,
+                                  vertical: 15,
+                                ),
+                              ),
+                              onPressed: () {
+                              },
+                              child: Text(
+                                'Start',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          )
+                        : Container(), // Empty container if not host
                   ],
                 ),
               ],
