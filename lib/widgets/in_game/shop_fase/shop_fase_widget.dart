@@ -25,77 +25,72 @@ class _ShopState extends State<ShopFaseWidget> {
           // Next round and reroll buttons, buying items
           Row(
             children: [
-              Flexible(
-                flex: 2,
-                child: Expanded(
-                  child: Column(
-                    spacing: 5,
-                    children: [
-                      // Next Round button
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              8,
-                            ), // Smooth the border shape
-                          ),
-                          minimumSize: const Size.fromHeight(50),
+              Expanded(
+                child: Column(
+                  spacing: 5,
+                  children: [
+                    // Next Round button
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            8,
+                          ), // Smooth the border shape
                         ),
-                        child: const Text("Next \nRound"),
+                        minimumSize: const Size.fromHeight(50),
                       ),
-                      // Space between
-                      const SizedBox(width: 15),
+                      child: const Text("Next \nRound"),
+                    ),
+                    // Space between
+                    const SizedBox(width: 15),
 
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              8,
-                            ), // Smooth the border shape
-                          ),
-                          minimumSize: const Size.fromHeight(55),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            8,
+                          ), // Smooth the border shape
                         ),
-                        child: const Text(
-                          "Reroll\n\$5",
-                          textAlign: TextAlign.center,
-                        ),
+                        minimumSize: const Size.fromHeight(55),
                       ),
-                    ],
-                  ),
+                      child: const Text(
+                        "Reroll\n\$5",
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
               // Space Between
               const SizedBox(width: 5),
 
               // Joker and consumables slots
-              Flexible(
-                flex: 3,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.redAccent, width: 2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _cardBox("\$7", "JOKER"),
-                          const SizedBox(width: 2),
-                          _cardBox("\$1", "CARD 2"),
-                          const SizedBox(width: 2),
-                          _cardBox("\$1", "CARD 2"),
-                          const SizedBox(width: 2),
-                          _cardBox("\$7", "JOKER"),
-                        ],
-                      ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.redAccent, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _cardBox("\$7", "JOKER"),
+                        const SizedBox(width: 5),
+                        _cardBox("\$1", "CARD 2"),
+                        const SizedBox(width: 5),
+                        _cardBox("\$1", "CARD 2"),
+                        const SizedBox(width: 5),
+                        _cardBox("\$7", "JOKER"),
+                      ],
                     ),
                   ),
                 ),
@@ -134,9 +129,12 @@ class _ShopState extends State<ShopFaseWidget> {
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _cardBox("\$4", "BUFFOON"),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 5),
+                        _cardBox("\$6", "CELESTIAL"),
+                        const SizedBox(width: 5),
                         _cardBox("\$6", "CELESTIAL"),
                       ],
                     ),
