@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
@@ -216,7 +217,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                         //Add some space between
                         SizedBox(width: 20),
 
-                        //TODO, boton de public para poder cambiar entre private y public
+                        // Public/Private button
+                        // If the user is the host, show the button to change visibility
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -225,8 +227,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                               vertical: 12,
                             ),
                           ),
-                          onPressed: () {
-                            //TODO, que implica que sean privadas y publicas -> cambiar especificaciones lobby en base de datos, etc
+                          onPressed: () async {
+                            // Change the visibility of the lobby
                             if (lobbyCreator == widget.hostName) {
                               setState(() {
                                 if (_publicPrivateButton == 'Public') {
@@ -235,6 +237,12 @@ class _LobbyScreen extends State<LobbyScreen> {
                                   _publicPrivateButton = 'Public';
                                 }
                               });
+                              await updateVisibilityLobby(
+                                widget.lobbyCode,
+                                _publicPrivateButton == 'Public'
+                                    ? 'true'
+                                    : 'false',
+                              );
                             }
                           },
                           child: Text(
@@ -420,7 +428,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                       ),
                     ),
 
-                    // Add Start button if the user is the host
+                    // Start button if the user is the host
                     lobbyCreator == widget.hostName 
                         ? Padding(
                             padding: const EdgeInsets.all(20.0),
