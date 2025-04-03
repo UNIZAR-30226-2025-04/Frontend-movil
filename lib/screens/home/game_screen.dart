@@ -5,7 +5,7 @@ import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 import 'package:nogler/widgets/in_game/setting_button_widget.dart';
-import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
 import 'package:nogler/widgets/in_game/sidebar_widget.dart';
 import 'package:nogler/widgets/in_game/timer_widget.dart';
 
@@ -18,8 +18,14 @@ class GameScreen extends StatefulWidget {
 }
 
 class GameScreenState extends State<GameScreen> {
+  // WebSocket
+  //final WebSocketClient wsClient = WebSocketClient();
+
+  List<Map<String, dynamic>> chatMessages = [];
+
   final GlobalKey<MainCardsState> _mainCardsKey = GlobalKey();
   final GlobalKey<SelectedCardsState> _selectedCardsKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // Variables to animate the exit of the elements off screen
   bool _animateShowGameFaseWidgets = true;
@@ -33,6 +39,18 @@ class GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Dont redimension page if keyboard on
+      resizeToAvoidBottomInset: false,
+      key: _scaffoldKey,
+
+      /*
+      endDrawer: ChatWidget(
+            myUsername: widget.hostName,
+            myAvatarImage: widget.hostAvatar,
+            lobbyCode: widget.lobbyCode,
+            chatMessages: chatMessages,
+          ),
+          */
       body: BackgroundWidget(
         child: SafeArea(
           child: Stack(
@@ -100,7 +118,7 @@ class GameScreenState extends State<GameScreen> {
                             ),
                           )
                         else if (_showShopFaseWidget)
-                          Expanded(child: Column(children: [Shop()])),
+                          Expanded(child: ShopFaseWidget()),
                       ],
                     ),
                   ),
