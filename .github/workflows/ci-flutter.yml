@@ -1,0 +1,62 @@
+name: Flutter CI
+
+# Trigger the workflow on push events to the main branch
+on:
+  push:
+    branches:
+      - main
+# Sets permissions of the GITHUB_TOKEN to allow writing to the repository
+permissions:
+  contents: write
+
+jobs:
+  flutter-build:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4  # Clone the repository into the runner
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2  # Install Flutter SDK
+        with:
+          flutter-version: '3.29.0'  # Set the Flutter version to use
+
+      - name: Install dependencies
+        run: flutter pub get  # Install all pub dependencies
+
+      - name: Analyze code
+        run: flutter analyze  # Run static analysis on the codebase
+
+      - name: Build APK
+        run: flutter build apk --release  # Build the app in release mode for Android
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4 # Upload the built APK as an artifact
+        with:
+          name: Releases
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Extract version from pubspec.yaml
+        id: extract_version
+        run: |
+          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          echo "VERSION=$version" >> $GITHUB_ENV
+      
+      - name: Delete existing release
+        run: |
+          gh release delete "v${{ env.VERSION }}" --yes || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Delete existing tag
+        run: |
+          git push --delete origin "v${{ env.VERSION }}" || true
+        
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1 # Create a new release in the repository
+        with:
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
+          tag: v${{ env.VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}

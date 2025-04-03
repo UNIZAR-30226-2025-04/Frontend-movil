@@ -28,7 +28,7 @@ Future<List<Map<String, dynamic>>> getReceivedGameLobbyInvitations() async {
 }
 
 /// Function to add the user to the user-lobby relation
-Future<void> joinLobby(String lobbyId) async {
+Future<bool> joinLobby(String lobbyId) async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a POST request to the API to add the user to the lobby
@@ -38,11 +38,13 @@ Future<void> joinLobby(String lobbyId) async {
     if (response.statusCode == 200) {
       // Print success message if the user is successfully added to the lobby
       debugPrint('✅ User added to lobby: $lobbyId');
+      return response.data['public'] == 'true'?  true: false;
     }
   } catch (e) {
     // Print error message if adding the user to the lobby fails
     debugPrint('❌ Failed to add user to lobby: $e');
   }
+  return false;
 }
 
 /// Function to delete a received game lobby invitation after accepting it

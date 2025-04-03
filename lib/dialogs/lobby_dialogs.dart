@@ -294,7 +294,7 @@ Future<void> showCreateLobbyButton(
                         onPressed: () {
                           createLobby((String code) async {
                             // Join the lobby created previously
-                            await joinLobby(code);
+                            final public = await joinLobby(code);
                             if (context.mounted) {
                               Navigator.push(
                                 context,
@@ -303,13 +303,13 @@ Future<void> showCreateLobbyButton(
                                   child: LobbyScreen(
                                     hostName: username,
                                     hostAvatar: avatar,
-                                    lobbyState: isSwitched,
+                                    lobbyState: !public,
                                     lobbyCode: code,
                                   ),
                                 ),
                               );
                             }
-                          });
+                          }, isSwitched ? "false" : "true"); // Create the lobby with the selected privacy
                         },
                         child: Text(
                           "Create",

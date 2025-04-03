@@ -92,25 +92,27 @@ Future<void> showCodeDialog(
                       backgroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 12),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       // Concatenate the 4 text field values into a single code string
                       String code = controllers
                           .map((controller) => controller.text)
                           .join('');
                       Navigator.of(context).pop(); // Close the dialog
-                      joinLobby(code);
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.fade,
-                          child: LobbyScreen(
-                            hostName: username,
-                            hostAvatar: iconId,
-                            lobbyState: true,
-                            lobbyCode: code,
+                      final public = await joinLobby(code);
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: LobbyScreen(
+                              hostName: username,
+                              hostAvatar: iconId,
+                              lobbyState: !public,
+                              lobbyCode: code,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                     child: Text("Join", style: TextStyle(color: Colors.black)),
                   ),

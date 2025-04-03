@@ -49,141 +49,145 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
               FocusScope.of(context).requestFocus(FocusNode());
             },
             child: BackgroundWidget(
-              child: Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Column(
-                  children: [
-                    //Screen's title
-                    Text(
-                      'Public lobbies',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+              child: Column(
+                children: [
+                  //Screen's title
+                  Text(
+                    'Public lobbies',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    Row(
-                      children: [
-                        //Add some space between
-                        SizedBox(width: 10),
+                  ),
+                  Row(
+                    children: [
+                      //Add some space between
+                      SizedBox(width: 10),
 
-                        //Insert code button
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25,
-                              vertical: 12,
-                            ),
-                          ),
-                          onPressed:
-                              () => showCodeDialog(
-                                context,
-                                widget.hostName,
-                                widget.hostAvatar,
-                              ),
-                          child: Text(
-                            "Insert Code",
-                            style: TextStyle(color: Colors.black),
+                      //Insert code button
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 12,
                           ),
                         ),
-                        //Add some space between
-                        SizedBox(width: 20),
-
-                        //Matchmaking button
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25,
-                              vertical: 12,
-                            ),
-                          ),
-                          onPressed: () => showMatchmakingDialog(context),
-                          child: Text(
-                            "Matchmaking",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-
-                        //Add some space between
-                        SizedBox(width: 20),
-                      ],
-                    ),
-                    //Add some space between
-                    SizedBox(height: 10),
-
-                    //lobbies list
-                    Expanded(
-                      child: // Show loading indicator while data is being fetched
-                          isLoading
-                              ? const Center(
-                                child:
-                                    CircularProgressIndicator(), // Show loading spinner
-                              )
-                              : lobbies.isEmpty
-                              ? Center(
-                                child: Text(
-                                  'No lobbies available', // Message when no data is available
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              )
-                              : ListView.builder(
-                                padding: EdgeInsets.all(12.5),
-                                itemCount: lobbies.length,
-                                itemBuilder: (context, index) {
-                                  String lobbyId = lobbies[index]['lobby_id'];
-                                  int numberOfPlayers =
-                                      lobbies[index]['player_count'] ?? 0;
-                                  return LobbieBox(
-                                    playerName:
-                                        lobbies[index]['creator_username'],
-                                    playerIcon: lobbies[index]['host_icon'],
-                                    lobbyOcupation: numberOfPlayers,
-                                    lobbyCode: lobbyId,
-                                  );
-                                },
-                              ),
-                    ),
-                    //Add some space between
-                    SizedBox(height: 10),
-                    //Back button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25,
-                              vertical: 12,
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
+                        onPressed:
+                            () => showCodeDialog(
                               context,
-                              PageTransition(
-                                type: PageTransitionType.fade,
-                                child: const HomeScreen(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            "Back",
-                            style: TextStyle(color: Colors.black),
+                              widget.hostName,
+                              widget.hostAvatar,
+                            ),
+                        child: Text(
+                          "Insert Code",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                      //Add some space between
+                      SizedBox(width: 20),
+
+                      //Matchmaking button
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 12,
                           ),
                         ),
-                        //Add some space between
-                        SizedBox(width: 20),
-                      ],
-                    ),
-                    //Add some space between
-                    SizedBox(height: 10),
-                  ],
-                ),
+                        onPressed:
+                            () => showMatchmakingDialog(
+                              context,
+                              widget.hostName,
+                              widget.hostAvatar,
+                            ),
+                        child: Text(
+                          "Matchmaking",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+
+                      //Add some space between
+                      SizedBox(width: 20),
+                    ],
+                  ),
+                  //Add some space between
+                  SizedBox(height: 10),
+
+                  //lobbies list
+                  Expanded(
+                    child: // Show loading indicator while data is being fetched
+                        isLoading
+                            ? const Center(
+                              child:
+                                  CircularProgressIndicator(), // Show loading spinner
+                            )
+                            : lobbies.isEmpty
+                            ? Center(
+                              child: Text(
+                                'No lobbies available', // Message when no data is available
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            )
+                            : ListView.builder(
+                              padding: EdgeInsets.all(12.5),
+                              itemCount: lobbies.length,
+                              itemBuilder: (context, index) {
+                                String username =
+                                    lobbies[index]['creator_username'];
+                                int iconId = lobbies[index]['host_icon'];
+                                String lobbyId = lobbies[index]['lobby_id'];
+                                int numberOfPlayers =
+                                    lobbies[index]['player_count'] ?? 0;
+                                return LobbieBox(
+                                  playerName: username,
+                                  playerIcon: iconId,
+                                  lobbyOcupation: numberOfPlayers,
+                                  lobbyCode: lobbyId,
+                                );
+                              },
+                            ),
+                  ),
+                  //Add some space between
+                  SizedBox(height: 10),
+                  //Back button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 12,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.fade,
+                              child: const HomeScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Back",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                      //Add some space between
+                      SizedBox(width: 20),
+                    ],
+                  ),
+                  //Add some space between
+                  SizedBox(height: 10),
+                ],
               ),
             ),
           ),

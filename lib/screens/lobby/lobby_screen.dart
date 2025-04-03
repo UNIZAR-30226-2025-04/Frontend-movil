@@ -227,13 +227,15 @@ class _LobbyScreen extends State<LobbyScreen> {
                           ),
                           onPressed: () {
                             //TODO, que implica que sean privadas y publicas -> cambiar especificaciones lobby en base de datos, etc
-                            setState(() {
-                              if (_publicPrivateButton == 'Public') {
-                                _publicPrivateButton = 'Private';
-                              } else {
-                                _publicPrivateButton = 'Public';
-                              }
-                            });
+                            if (lobbyCreator == widget.hostName) {
+                              setState(() {
+                                if (_publicPrivateButton == 'Public') {
+                                  _publicPrivateButton = 'Private';
+                                } else {
+                                  _publicPrivateButton = 'Public';
+                                }
+                              });
+                            }
                           },
                           child: Text(
                             _publicPrivateButton,

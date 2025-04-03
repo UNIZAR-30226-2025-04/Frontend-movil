@@ -1,10 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/data/api/join_lobby_api.dart';
+import 'package:nogler/data/api/party_api.dart';
+import 'package:nogler/screens/lobby/lobby_screen.dart';
+import 'package:page_transition/page_transition.dart';
 
 /// Displays a matchmaking dialog with an animated dot loading indicator.
-Future<void> showMatchmakingDialog(BuildContext context) async {
+Future<void> showMatchmakingDialog(
+  BuildContext context,
+  String username,
+  int iconId,
+) async {
+  bool hasFetched = false;
   showDialog(
     context: context,
     builder: (BuildContext context) {
+      if (!hasFetched) {
+        hasFetched = true;
+        Future.delayed(Duration.zero, () async {
+          await Future.delayed(
+            const Duration(seconds: 3),
+          ); // Simulate loading time
+          // Fetch a lobby ID from the API
+          final lobbyId = await getLobby(); // Function to fetch a lobby
+          if (context.mounted && lobbyId.isNotEmpty) {
+            final public = await joinLobby(lobbyId);
+            if (context.mounted) {
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.fade,
+                  child: LobbyScreen(
+                    hostName: username,
+                    hostAvatar: iconId,
+                    lobbyState: !public,
+                    lobbyCode: lobbyId,
+                  ),
+                ),
+              );
+            }
+          } else if (context.mounted) {
+            Navigator.pop(context); // Close the dialog
+          }
+        });
+      }
       return AlertDialog(
         backgroundColor: Colors.blueGrey[900], // Dark theme background
         title: const Text(
@@ -132,7 +170,7 @@ class AnimatedDotsState extends State<AnimatedDots>
       ]).animate(
         CurvedAnimation(
           parent: _controller,
-          curve: Curves.linear , // Smooth transitions
+          curve: Curves.linear, // Smooth transitions
         ),
       );
     });

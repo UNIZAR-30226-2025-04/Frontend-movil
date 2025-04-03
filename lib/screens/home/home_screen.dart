@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadUserProfile(); // Obtain user profile information
-    wsClient.initialize(); // ✅ Auto-connect when screen loads
+    wsClient.initialize(); // Auto-connect when screen loads
   }
 
   /// Method to load the user profile information
