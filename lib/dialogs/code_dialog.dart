@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/party_api.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:page_transition/page_transition.dart'; // For Clipboard
 
 /// Shows a dialog for entering a 4-character code to join a lobby.
@@ -17,7 +19,8 @@ Future<void> showCodeDialog(
     (index) => TextEditingController(),
   );
   List<FocusNode> focusNodes = List.generate(4, (index) => FocusNode());
-
+  final WebSocketClient wsClient =
+      WebSocketClient(); // WebSocket client instance
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -99,6 +102,13 @@ Future<void> showCodeDialog(
                           .join('');
                       Navigator.of(context).pop(); // Close the dialog
                       final public = await joinLobby(code);
+                      // Store the code in secure storage
+                      await const FlutterSecureStorage().write(
+                        key: 'code',
+                        value: code,
+                      );
+                      // Auto-connect when screen loads
+                      await wsClient.initialize();
                       if (context.mounted) {
                         Navigator.push(
                           context,

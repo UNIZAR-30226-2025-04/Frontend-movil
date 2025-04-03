@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/party_api.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 import 'package:page_transition/page_transition.dart';
 
 /// Widget to show the information of a public lobby in the JOIN LOBBY screen
 class LobbieBox extends StatelessWidget {
-  const LobbieBox({
+  LobbieBox({
     super.key,
     required this.playerName,
     required this.playerIcon,
     required this.lobbyOcupation,
     required this.lobbyCode,
+    required this.usernameHost,
+    required this.iconHost,
   });
 
   final String playerName;
   final int playerIcon;
   final int lobbyOcupation;
   final String lobbyCode;
+  final String usernameHost;
+  final int iconHost;
 
-  // Variable t
+  // This variable is used to change the color of the box every time it is built
   static bool colorSwap = true;
-
+  final WebSocketClient wsClient =
+      WebSocketClient(); // WebSocket client instance
   @override
   Widget build(BuildContext context) {
     colorSwap = !colorSwap;
@@ -83,14 +90,21 @@ class LobbieBox extends StatelessWidget {
                     ),
                     onPressed: () async {
                       final public = await joinLobby(lobbyCode);
+                      // Store the code in secure storage
+                      await const FlutterSecureStorage().write(
+                        key: 'code',
+                        value: lobbyCode,
+                      );
+                      // Auto-connect when screen loads
+                      await wsClient.initialize();
                       if (context.mounted) {
                         Navigator.push(
                           context,
                           PageTransition(
                             type: PageTransitionType.fade,
                             child: LobbyScreen(
-                              hostName: playerName,
-                              hostAvatar: playerIcon,
+                              hostName: usernameHost,
+                              hostAvatar: iconHost,
                               lobbyState: !public,
                               lobbyCode: lobbyCode,
                             ),

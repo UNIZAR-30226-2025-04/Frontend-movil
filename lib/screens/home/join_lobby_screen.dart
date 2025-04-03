@@ -149,6 +149,8 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
                                   playerIcon: iconId,
                                   lobbyOcupation: numberOfPlayers,
                                   lobbyCode: lobbyId,
+                                  usernameHost: widget.hostName,
+                                  iconHost: widget.hostAvatar,
                                 );
                               },
                             ),

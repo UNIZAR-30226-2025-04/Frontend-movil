@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/auth_api.dart';
 import 'package:nogler/data/api/users_api.dart';
-import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 
 /// Displays a dialog that allows the user to edit their profile.
@@ -13,9 +11,6 @@ Future<bool> showProfile(
   String currentUsername,
   int currentAvatar,
 ) async {
-  // WebSocket
-  final WebSocketClient wsClient = WebSocketClient();
-
   // List of available icon options (avatars)
   final List<int> iconOptions = List.generate(9, (index) => index);
 
@@ -152,15 +147,6 @@ Future<bool> showProfile(
                               );
 
                               if (success) {
-                                // Save the new username in secure storage
-                                await const FlutterSecureStorage().write(
-                                  key: 'username',
-                                  value: usernameController.text,
-                                );
-                                WebSocketClient()
-                                    .disconnect(); // Close the current WebSocket connection
-                                await WebSocketClient()
-                                    .initialize(); // Reconnect to the WebSocket server
                                 changesMade =
                                     true; // Mark changes as successful
                                 if (context.mounted) {
@@ -176,8 +162,6 @@ Future<bool> showProfile(
                           // Log off button
                           TextButton(
                             onPressed: () async {
-                              wsClient
-                                  .disconnect(); // ✅ Disconnect when the screen is closed
                               await logout(context);
                             },
                             child: const Text('Log off'),

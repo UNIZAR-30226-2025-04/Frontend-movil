@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/invitation_api.dart';
 import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/data/api/party_api.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -223,7 +225,7 @@ Future<void> showCreateLobbyButton(
   int avatar,
 ) async {
   bool isSwitched = false;
-
+  final WebSocketClient wsClient = WebSocketClient();
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -292,24 +294,34 @@ Future<void> showCreateLobbyButton(
                           ),
                         ),
                         onPressed: () {
-                          createLobby((String code) async {
-                            // Join the lobby created previously
-                            final public = await joinLobby(code);
-                            if (context.mounted) {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.fade,
-                                  child: LobbyScreen(
-                                    hostName: username,
-                                    hostAvatar: avatar,
-                                    lobbyState: !public,
-                                    lobbyCode: code,
-                                  ),
-                                ),
+                          createLobby(
+                            (String code) async {
+                              // Join the lobby created previously
+                              final public = await joinLobby(code);
+                              // Store the code in secure storage
+                              await const FlutterSecureStorage().write(
+                                key: 'code',
+                                value: code,
                               );
-                            }
-                          }, isSwitched ? 'false' : 'true'); // Create the lobby with the selected privacy
+                              // Auto-connect when screen loads
+                              await wsClient.initialize();
+                              if (context.mounted) {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.fade,
+                                    child: LobbyScreen(
+                                      hostName: username,
+                                      hostAvatar: avatar,
+                                      lobbyState: !public,
+                                      lobbyCode: code,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            isSwitched ? 'false' : 'true',
+                          ); // Create the lobby with the selected privacy
                         },
                         child: Text(
                           "Create",

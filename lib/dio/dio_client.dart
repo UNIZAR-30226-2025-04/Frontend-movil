@@ -63,22 +63,6 @@ class DioClient {
   Future<void> setToken(String token) async {
     await _storage.write(key: 'session_token', value: token); // Save the token securely
     debugPrint("🔑 JWT Token Set");
-    try {
-    final response = await _instance.dio.get('/auth/me');
-
-    if (response.statusCode == 200) {
-      String username = response.data['username'];
-
-      // Store username
-      await _storage.write(key: 'username', value: username);
-
-      debugPrint("👤 User Profile Saved: $username");
-    } else {
-      debugPrint("❌ Error getting profile: ${response.data}");
-    }
-  } catch (e) {
-    debugPrint("❌ Network error while getting profile: $e");
-  }
   }
 
   /// Clears the JWT token when the user logs out.
@@ -87,7 +71,6 @@ class DioClient {
   // Clear the token on logout
   Future<void> clearToken() async {
     await _storage.delete(key: 'session_token'); // Remove token securely
-    await _storage.delete(key: 'username');
     debugPrint("🚪 User logged out. Token cleared.");
   }
 

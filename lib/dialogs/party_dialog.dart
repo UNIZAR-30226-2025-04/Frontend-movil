@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/party_api.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -9,7 +11,8 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
   List<Map<String, dynamic>> invitationsList = [];
   bool hasFetched = false; // To ensure the data is fetched only once
   bool isLoading = true; // Flag to track loading state
-
+  final WebSocketClient wsClient =
+      WebSocketClient(); // WebSocket client instance
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -172,6 +175,11 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                           );
                                           invitationsList.removeAt(index);
                                         });
+                                        // Store the code in secure storage
+                                        await const FlutterSecureStorage()
+                                            .write(key: 'code', value: lobbyId);
+                                        // Auto-connect when screen loads
+                                        await wsClient.initialize();
                                         if (context.mounted) {
                                           Navigator.push(
                                             context,

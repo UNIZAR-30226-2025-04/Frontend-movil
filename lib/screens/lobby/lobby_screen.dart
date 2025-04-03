@@ -30,13 +30,14 @@ class LobbyScreen extends StatefulWidget {
 class _LobbyScreen extends State<LobbyScreen> {
   List<Map<String, dynamic>> lobbyUsers = [];
   String? lobbyCreator;
-  // WebSocket
+  // WebSocket client instance
   final WebSocketClient wsClient = WebSocketClient();
 
+  // List to store chat messages
   List<Map<String, dynamic>> chatMessages = [];
-
+  
   String _publicPrivateButton = "Public";
-  bool hasFetched = false;
+  bool hasFetched = false; // To ensure the data is fetched only once
 
   // Needed to define which Scaffold we are refering
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -45,8 +46,6 @@ class _LobbyScreen extends State<LobbyScreen> {
   void initState() {
     super.initState();
     _publicPrivateButton = widget.lobbyState ? "Private" : "Public";
-    wsClient.sendMessage("join_lobby", widget.lobbyCode);
-    wsClient.sendMessage("get_lobby_info", widget.lobbyCode);
 
     // Listen for lobby info
     wsClient.addEventListener("lobby_info", (data) {
@@ -129,14 +128,8 @@ class _LobbyScreen extends State<LobbyScreen> {
 
       // Check if the kicked user is the current user
       if (lobbyId == widget.lobbyCode) {
-        // Clean up WebSocket listeners
-        wsClient.removeEventListener("new_lobby_message");
-        wsClient.removeEventListener("lobby_info");
-        wsClient.removeEventListener("new_user_in_lobby");
-        wsClient.removeEventListener("kick_success");
-        wsClient.removeEventListener("you_were_kicked");
-        wsClient.removeEventListener("player_left");
-        wsClient.removeEventListener("player_kicked");
+        // Close the current WebSocket connection
+        wsClient.disconnect();
 
         // Go back to home screen or show a dialog
         Navigator.pushReplacement(
@@ -405,14 +398,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                             widget.hostName,
                           });
 
-                          // Remoeve all listeners
-                          wsClient.removeEventListener("new_lobby_message");
-                          wsClient.removeEventListener("lobby_info");
-                          wsClient.removeEventListener("new_user_in_lobby");
-                          wsClient.removeEventListener("kick_success");
-                          wsClient.removeEventListener("you_were_kicked");
-                          wsClient.removeEventListener("player_left");
-                          wsClient.removeEventListener("player_kicked");
+                          // Close the current WebSocket connection
+                          wsClient.disconnect();
                           Navigator.push(
                             context,
                             PageTransition(
@@ -429,25 +416,24 @@ class _LobbyScreen extends State<LobbyScreen> {
                     ),
 
                     // Start button if the user is the host
-                    lobbyCreator == widget.hostName 
+                    lobbyCreator == widget.hostName
                         ? Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 50,
-                                  vertical: 15,
-                                ),
-                              ),
-                              onPressed: () {
-                              },
-                              child: Text(
-                                'Start',
-                                style: TextStyle(color: Colors.black),
+                          padding: const EdgeInsets.all(20.0),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 15,
                               ),
                             ),
-                          )
+                            onPressed: () {},
+                            child: Text(
+                              'Start',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        )
                         : Container(), // Empty container if not host
                   ],
                 ),
