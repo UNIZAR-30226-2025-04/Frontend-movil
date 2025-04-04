@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class Joker extends StatelessWidget {
-  const Joker({super.key});
+  const Joker({super.key, required this.index});
+
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Draggable<String>(
-      data: 'joker_card', // Data of the card
+    return Draggable<int>(
+      data: index, // Data of the card
       feedback: _buildJokerCard(), // Shown when dragging
       childWhenDragging: Opacity(opacity: 0, child: _buildJokerCard()),
       child: _buildJokerCard(),

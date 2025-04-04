@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 class ShopFaseWidget extends StatefulWidget {
@@ -9,19 +10,21 @@ class ShopFaseWidget extends StatefulWidget {
 }
 
 class _ShopFaseWidgetState extends State<ShopFaseWidget> {
+  final GlobalKey<ShopWidgetState> _shopWidgetKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 400,
-      //height: 270,
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.black87,
-        border: Border.all(color: Colors.redAccent, width: 2),
-        borderRadius: BorderRadius.circular(12),
+    return Expanded(
+      child: Row(
+        children: [
+          ShopWidget(key: _shopWidgetKey),
+          BuyWidget(
+            onJokerDropped: (int index) {
+              return _shopWidgetKey.currentState?.removeJoker(index);
+            },
+          ),
+        ],
       ),
-      child: ShopWidget(),
     );
   }
 }
