@@ -118,7 +118,20 @@ class GameScreenState extends State<GameScreen> {
                             ),
                           )
                         else if (_showShopFaseWidget)
-                          Expanded(child: ShopFaseWidget()),
+                          Expanded(
+                            child: Visibility(
+                              visible: _showShopFaseWidget,
+                              child: AnimatedSlide(
+                                offset:
+                                    _animateShowShopFaseWidgets
+                                        ? Offset(0, 0)
+                                        : Offset(0, 3),
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                child: ShopFaseWidget(),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
