@@ -23,19 +23,15 @@ class WebSocketClient {
     try {
       // Retrieve authentication credentials.
       String? token = await _storage.read(key: 'session_token');
-      String? username = await _storage.read(key: 'username');
+      String? code = await _storage.read(key: 'code');
 
       // If credentials are missing, do not attempt connection.
-      if (token == null ||
-          token.isEmpty ||
-          username == null ||
-          username.isEmpty) {
+      if (token == null || token.isEmpty || code == null || code.isEmpty) {
         debugPrint("⚠ Cannot connect: Missing token or username.");
         return;
       }
 
       debugPrint("🔑 Using token: $token");
-      debugPrint("👤 Username: $username");
 
       // Initialize WebSocket connection without explicitly calling `connect()`.
       socket = io.io(
@@ -43,7 +39,7 @@ class WebSocketClient {
         io.OptionBuilder()
             .setTransports(['websocket'])
             .enableAutoConnect()
-            .setAuth({'username': username, 'authorization': "Bearer $token"})
+            .setAuth({'authorization': "Bearer $token"})
             .setTimeout(10000)
             .enableForceNew() // Ensures a fresh connection each time
             .build(),
@@ -58,6 +54,12 @@ class WebSocketClient {
       socket.on("connect", (_) {
         debugPrint('🟢 Connected to WebSocket server.');
         debugPrint('🔄 Connection Details: ${socket.id}');
+      });
+
+      socket.on("connection_success", (reason) {
+        debugPrint("🟢 Connection successful: $reason");
+        sendMessage("join_lobby", code);
+        sendMessage("get_lobby_info", code);
       });
 
       // Event: Disconnected from server.
@@ -132,7 +134,7 @@ class WebSocketClient {
       debugPrint("⚠ Cannot send message, WebSocket is disconnected.");
     }
   }
-  
+
   /// Disconnect from the WebSocket server.
   void disconnect() {
     socket.disconnect();

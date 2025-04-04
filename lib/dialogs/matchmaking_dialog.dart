@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/join_lobby_api.dart';
 import 'package:nogler/data/api/party_api.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:page_transition/page_transition.dart';
 
 /// Displays a matchmaking dialog with an animated dot loading indicator.
@@ -11,6 +13,8 @@ Future<void> showMatchmakingDialog(
   int iconId,
 ) async {
   bool hasFetched = false;
+  final WebSocketClient wsClient =
+      WebSocketClient(); // WebSocket client instance
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -24,6 +28,10 @@ Future<void> showMatchmakingDialog(
           final lobbyId = await getLobby(); // Function to fetch a lobby
           if (context.mounted && lobbyId.isNotEmpty) {
             final public = await joinLobby(lobbyId);
+            // Store the code in secure storage
+            await const FlutterSecureStorage().write(key: 'code', value: lobbyId);
+            // Auto-connect when screen loads
+            await wsClient.initialize();
             if (context.mounted) {
               Navigator.push(
                 context,

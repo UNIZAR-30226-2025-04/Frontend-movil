@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
@@ -29,13 +30,14 @@ class LobbyScreen extends StatefulWidget {
 class _LobbyScreen extends State<LobbyScreen> {
   List<Map<String, dynamic>> lobbyUsers = [];
   String? lobbyCreator;
-  // WebSocket
+  // WebSocket client instance
   final WebSocketClient wsClient = WebSocketClient();
 
+  // List to store chat messages
   List<Map<String, dynamic>> chatMessages = [];
-
+  
   String _publicPrivateButton = "Public";
-  bool hasFetched = false;
+  bool hasFetched = false; // To ensure the data is fetched only once
 
   // Needed to define which Scaffold we are refering
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -44,8 +46,6 @@ class _LobbyScreen extends State<LobbyScreen> {
   void initState() {
     super.initState();
     _publicPrivateButton = widget.lobbyState ? "Private" : "Public";
-    wsClient.sendMessage("join_lobby", widget.lobbyCode);
-    wsClient.sendMessage("get_lobby_info", widget.lobbyCode);
 
     // Listen for lobby info
     wsClient.addEventListener("lobby_info", (data) {
@@ -128,14 +128,8 @@ class _LobbyScreen extends State<LobbyScreen> {
 
       // Check if the kicked user is the current user
       if (lobbyId == widget.lobbyCode) {
-        // Clean up WebSocket listeners
-        wsClient.removeEventListener("new_lobby_message");
-        wsClient.removeEventListener("lobby_info");
-        wsClient.removeEventListener("new_user_in_lobby");
-        wsClient.removeEventListener("kick_success");
-        wsClient.removeEventListener("you_were_kicked");
-        wsClient.removeEventListener("player_left");
-        wsClient.removeEventListener("player_kicked");
+        // Close the current WebSocket connection
+        wsClient.disconnect();
 
         // Go back to home screen or show a dialog
         Navigator.pushReplacement(
@@ -216,7 +210,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                         //Add some space between
                         SizedBox(width: 20),
 
-                        //TODO, boton de public para poder cambiar entre private y public
+                        // Public/Private button
+                        // If the user is the host, show the button to change visibility
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -225,8 +220,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                               vertical: 12,
                             ),
                           ),
-                          onPressed: () {
-                            //TODO, que implica que sean privadas y publicas -> cambiar especificaciones lobby en base de datos, etc
+                          onPressed: () async {
+                            // Change the visibility of the lobby
                             if (lobbyCreator == widget.hostName) {
                               setState(() {
                                 if (_publicPrivateButton == 'Public') {
@@ -235,6 +230,12 @@ class _LobbyScreen extends State<LobbyScreen> {
                                   _publicPrivateButton = 'Public';
                                 }
                               });
+                              await updateVisibilityLobby(
+                                widget.lobbyCode,
+                                _publicPrivateButton == 'Public'
+                                    ? 'true'
+                                    : 'false',
+                              );
                             }
                           },
                           child: Text(
@@ -378,7 +379,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                 //Leave lobby button
                 Row(
                   //button at the end of the row
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -397,14 +398,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                             widget.hostName,
                           });
 
-                          // Remoeve all listeners
-                          wsClient.removeEventListener("new_lobby_message");
-                          wsClient.removeEventListener("lobby_info");
-                          wsClient.removeEventListener("new_user_in_lobby");
-                          wsClient.removeEventListener("kick_success");
-                          wsClient.removeEventListener("you_were_kicked");
-                          wsClient.removeEventListener("player_left");
-                          wsClient.removeEventListener("player_kicked");
+                          // Close the current WebSocket connection
+                          wsClient.disconnect();
                           Navigator.push(
                             context,
                             PageTransition(
@@ -419,6 +414,27 @@ class _LobbyScreen extends State<LobbyScreen> {
                         ),
                       ),
                     ),
+
+                    // Start button if the user is the host
+                    lobbyCreator == widget.hostName
+                        ? Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 15,
+                              ),
+                            ),
+                            onPressed: () {},
+                            child: Text(
+                              'Start',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        )
+                        : Container(), // Empty container if not host
                   ],
                 ),
               ],

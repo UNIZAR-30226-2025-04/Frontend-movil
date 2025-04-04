@@ -7,7 +7,6 @@ import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
 
 import 'package:flutter/material.dart';
-import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -23,14 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String _username = "Loading...";
   int _avatar = 1;
 
-  // WebSocket
-  final WebSocketClient wsClient = WebSocketClient();
-
   @override
   void initState() {
     super.initState();
     _loadUserProfile(); // Obtain user profile information
-    wsClient.initialize(); // Auto-connect when screen loads
   }
 
   /// Method to load the user profile information
@@ -83,9 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Container to hold the menu buttons
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 100, 99, 99),
+                    color: const Color(0xFF2C3454),
                     borderRadius: BorderRadius.circular(15), // Rounded corners
-                    border: Border.all(color: Colors.black), // Black border
+                    border: Border.all(color: Colors.white), // Black border
                   ),
                   child: Wrap(
                     // Wrap widget to create a flow of buttons
@@ -93,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     runSpacing: 16,
                     alignment: WrapAlignment.center, // Centers the buttons
                     children: [
-                      _buildMenuButton(context, 'OFFLINE', () {
+                      _buildMenuButton(context, 'VS AI', () {
                         Navigator.push(
                           context,
                           PageTransition(
@@ -150,11 +145,15 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ElevatedButton(
         // ElevatedButton widget for the menu button
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 141, 203, 232),
-          foregroundColor: Colors.black,
+          backgroundColor: const Color(0xFF2C3454),
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ), // Rounded corners
+          side: BorderSide(
+            color: Colors.white,
+            width: 1, // White border
+          ),
         ),
         onPressed: onPressed, // Calls the provided function when pressed
         child: Text(
@@ -171,18 +170,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         // Style of the button
-        backgroundColor: const Color.fromARGB(255, 181, 178, 178),
-        foregroundColor: Colors.black,
+        backgroundColor: const Color(0xFF2C3454),
+        foregroundColor: Colors.white,
         padding: const EdgeInsets.all(8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.white,
+            width: 1, // White border
+          ),
         ), // Rounded edges
       ),
       onPressed: () async {
-        // Abrir perfil y esperar la respuesta
+        // Function to execute when the button is pressed
+        // Show the profile dialog and wait for the result
         final result = await showProfile(context, _username, _avatar);
         if (result == true) {
-          _loadUserProfile(); // ✅ Recargar datos después de actualizar perfil
+          _loadUserProfile(); // Reload the user profile
         }
       }, // Empty function for now
       child: Column(
@@ -201,16 +205,14 @@ class _HomeScreenState extends State<HomeScreen> {
               vertical: 6,
             ), // Padding inside the box
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 84, 82, 82),
+              color: const Color(0xFF2C3454),
               borderRadius: BorderRadius.circular(8), // Rounded corners
+              border: Border.all(color: Colors.white), // Black border
             ),
             child: Text(
               // Username text inside the box
               username,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Color.fromARGB(255, 17, 17, 17),
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
           ),
         ],

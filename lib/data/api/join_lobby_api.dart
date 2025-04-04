@@ -29,7 +29,7 @@ Future<String> getLobby() async {
   final dioClient = DioClient(); // Create a new Dio client instance
   try {
     // Send a POST request to fetch a lobby
-    final response = await dioClient.dio.post('/auth/matchMaking');
+    final response = await dioClient.dio.get('/auth/matchMaking');
     debugPrint("🔍 Response data: ${response.data}");
 
     if (response.statusCode == 200) {
