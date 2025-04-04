@@ -53,7 +53,9 @@ jobs:
         run: |
           git push --delete origin "v${{ env.VERSION }}" || true
         
-
+      - name: Wait before creating release
+        run: sleep 10
+        
       - name: Create Release
         uses: ncipollo/release-action@v1 # Create a new release in the repository
         with:
