@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 class ShopFaseWidget extends StatefulWidget {
-  const ShopFaseWidget({super.key});
+  const ShopFaseWidget({super.key, required this.jokerCards});
+
+  final GlobalKey<JokerCardsState> jokerCards;
 
   @override
   State<ShopFaseWidget> createState() => _ShopFaseWidgetState();
@@ -17,7 +20,10 @@ class _ShopFaseWidgetState extends State<ShopFaseWidget> {
     return Expanded(
       child: Row(
         children: [
-          ShopWidget(key: _shopWidgetKey),
+          ShopWidget(
+            key: _shopWidgetKey,
+            ownedJokersWidgetKey: widget.jokerCards,
+          ),
           BuyWidget(
             onJokerDropped: (int index) {
               return _shopWidgetKey.currentState?.removeJoker(index);

@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/joker_widget.dart';
 
 /// A widget that displays a row of Joker cards.
 /// The number of cards is generated dynamically and displayed below.
@@ -11,7 +14,33 @@ class JokerCards extends StatefulWidget {
 
 class JokerCardsState extends State<JokerCards> {
   // List of Joker cards to be displayed
-  final List<String> cards = List.generate(5, (index) => 'Joker');
+  List<PurchasableItemInfo> jokersOwned = [];
+
+  Future<void> addJokerOwned(PurchasableItemInfo jokerInfo) async {
+    debugPrint("Joker añadido en ");
+    setState(() {
+      jokersOwned.add(jokerInfo);
+      debugPrint("Joker añadido en ");
+    });
+  }
+
+  void _generateRandomJoker() {
+    final random = Random();
+    jokersOwned = List.generate(4, (int index) {
+      return PurchasableItemInfo(
+        price: random.nextInt(10),
+        id: index,
+        index: -1,
+        type: "joker",
+      );
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _generateRandomJoker();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +51,19 @@ class JokerCardsState extends State<JokerCards> {
         // Displays the row of Joker cards.
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: cards.map((card) => _buildCard(card, Colors.red)).toList(),
+          children: List.generate(jokersOwned.length, (index) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              margin: const EdgeInsets.symmetric(horizontal: 2),
+              child: Joker(purchasableItemInfo: jokersOwned[index]),
+            );
+          }),
         ),
-        
 
         // Displays the count of Joker cards.
         Text(
-          "${cards.length} / 5",
+          "${jokersOwned.length} / 5",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
@@ -36,26 +71,6 @@ class JokerCardsState extends State<JokerCards> {
           ),
         ),
       ],
-    );
-  }
-
-  /// Builds a single Joker card widget.
-  Widget _buildCard(String label, Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: Container(
-        width: 50,
-        height: 70,
-        decoration: BoxDecoration(
-          color: color,
-          border: Border.all(color: Colors.black, width: 2),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 }

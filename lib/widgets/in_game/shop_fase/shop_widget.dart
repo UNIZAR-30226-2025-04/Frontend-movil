@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 
 class ShopWidget extends StatefulWidget {
-  const ShopWidget({super.key});
+  const ShopWidget({super.key, required this.ownedJokersWidgetKey});
+
+  final GlobalKey<JokerCardsState> ownedJokersWidgetKey;
 
   @override
   State<ShopWidget> createState() => ShopWidgetState();
@@ -61,7 +64,11 @@ class ShopWidgetState extends State<ShopWidget> {
 
   Future<void> removeJoker(int index) async {
     setState(() {
+      widget.ownedJokersWidgetKey.currentState?.addJokerOwned(
+        shopJokers[index],
+      );
       shopJokers.removeAt(index);
+
       debugPrint("Eliminado joker $index");
     });
   }

@@ -30,7 +30,7 @@ class Joker extends StatelessWidget {
     );
   }
 
-  Widget _buildJokerCard({double height = 80}) {
+  Widget _buildJokerCard({double height = 75}) {
     return Container(
       width: 57,
       height: height,
