@@ -22,6 +22,12 @@ class _ShopFaseWidgetState extends State<ShopFaseWidget> {
             onJokerDropped: (int index) {
               return _shopWidgetKey.currentState?.removeJoker(index);
             },
+            onConsumableDropped: (int index) {
+              return _shopWidgetKey.currentState?.removeConsumable(index);
+            },
+            onPackageDropped: (int index) {
+              return _shopWidgetKey.currentState?.removePackage(index);
+            },
           ),
         ],
       ),

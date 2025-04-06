@@ -10,54 +10,73 @@ class ShopWidget extends StatefulWidget {
   State<ShopWidget> createState() => ShopWidgetState();
 }
 
-/// Class where we save all info about jokers disposed in the s
-class ShopItemInfo {
-  ShopItemInfo({required this.price, required this.id, required this.type});
-  final int price;
-  final int id;
-  final String type;
-}
-
 class ShopWidgetState extends State<ShopWidget> {
-  List<ShopItemInfo> shopJokers = [];
-  List<ShopItemInfo> shopConsumables = [];
-  List<ShopItemInfo> shopPackages = [];
+  List<PurchasableItemInfo> shopJokers = [];
+  List<PurchasableItemInfo> shopConsumables = [];
+  List<PurchasableItemInfo> shopPackages = [];
 
-  // Function used to generate random jokers in when we enter shop fase and refresh the shop
+  // Function used to generate random jokers when we enter shop fase and refresh the shop
   void _generateRandomJoker() {
     final random = Random();
     shopJokers = List.generate(4, (int index) {
-      return ShopItemInfo(price: random.nextInt(10), id: index, type: "joker");
+      return PurchasableItemInfo(
+        price: random.nextInt(10),
+        id: index,
+        index: -1,
+        type: "joker",
+      );
     });
   }
 
+  // Function used to generate random consumables when we enter shop fase
   void _generateRandomConsumable() {
     final random = Random();
     shopConsumables = List.generate(2, (int index) {
-      return ShopItemInfo(
+      return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
+        index: -1,
         type: "consumable",
       );
     });
   }
 
+  // Function used to generate random packages when we enter shop fase
   void _generateRandomPackage() {
     final random = Random();
     shopPackages = List.generate(3, (int index) {
-      return ShopItemInfo(
+      return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
+        index: -1,
         type: "package",
       );
     });
   }
 
+  PurchasableItemInfo updateIndex(PurchasableItemInfo item, int index) {
+    item.index = index;
+    return item;
+  }
+
   Future<void> removeJoker(int index) async {
     setState(() {
       shopJokers.removeAt(index);
-
       debugPrint("Eliminado joker $index");
+    });
+  }
+
+  Future<void> removeConsumable(int index) async {
+    setState(() {
+      shopConsumables.removeAt(index);
+      debugPrint("Eliminado consumible $index");
+    });
+  }
+
+  Future<void> removePackage(int index) async {
+    setState(() {
+      shopPackages.removeAt(index);
+      debugPrint("Eliminado paquete $index");
     });
   }
 
@@ -156,7 +175,9 @@ class ShopWidgetState extends State<ShopWidget> {
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
                           margin: const EdgeInsets.symmetric(horizontal: 2),
-                          child: _cardAndPrice(shopJokers[index], index),
+                          child: _cardAndPrice(
+                            updateIndex(shopJokers[index], index),
+                          ),
                         );
                       }),
                     ),
@@ -186,7 +207,9 @@ class ShopWidgetState extends State<ShopWidget> {
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
                         margin: const EdgeInsets.symmetric(horizontal: 2),
-                        child: _cardAndPrice(shopConsumables[index], index),
+                        child: _cardAndPrice(
+                          updateIndex(shopConsumables[index], index),
+                        ),
                       );
                     }),
                   ),
@@ -209,7 +232,9 @@ class ShopWidgetState extends State<ShopWidget> {
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
                           margin: const EdgeInsets.symmetric(horizontal: 2),
-                          child: _cardAndPrice(shopPackages[index], index),
+                          child: _cardAndPrice(
+                            updateIndex(shopPackages[index], index),
+                          ),
                         );
                       }),
                     ),
@@ -223,7 +248,7 @@ class ShopWidgetState extends State<ShopWidget> {
     );
   }
 
-  Widget _cardAndPrice(ShopItemInfo info, int index) {
+  Widget _cardAndPrice(PurchasableItemInfo info) {
     return Column(
       children: [
         // Display of price
@@ -242,7 +267,7 @@ class ShopWidgetState extends State<ShopWidget> {
           ),
         ),
         // Display joker
-        Joker(index: index, id: info.id, type: info.type),
+        Joker(purchasableItemInfo: info),
       ],
     );
   }

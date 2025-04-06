@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 
-/// Implements the UI of a joker given a ... ... ... ... ... ...
-class Joker extends StatelessWidget {
-  const Joker({
-    super.key,
-    required this.index,
+/// Class where we save all info about jokers disposed in the s
+class PurchasableItemInfo {
+  PurchasableItemInfo({
+    required this.price,
     required this.id,
+    required this.index,
     required this.type,
   });
-
-  final int index;
+  final int price;
   final int id;
+  int index;
   final String type;
+}
+
+/// Implements the UI of a joker given a ... ... ... ... ... ...
+class Joker extends StatelessWidget {
+  const Joker({super.key, required this.purchasableItemInfo});
+
+  final PurchasableItemInfo purchasableItemInfo;
 
   @override
   Widget build(BuildContext context) {
-    return Draggable<int>(
-      data: index, // Data of the card
+    return Draggable<PurchasableItemInfo>(
+      data: purchasableItemInfo, // Data of the joker
       feedback: _buildJokerCard(), // Shown when dragging
       childWhenDragging: Opacity(opacity: 0, child: _buildJokerCard()),
       child: _buildJokerCard(),
@@ -35,7 +42,7 @@ class Joker extends StatelessWidget {
       ),
       //TODO, Add images of jokers next
       child: Text(
-        type,
+        purchasableItemInfo.type,
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Colors.white70,

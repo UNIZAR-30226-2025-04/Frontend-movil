@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/joker_widget.dart';
 
 class BuyWidget extends StatelessWidget {
-  const BuyWidget({super.key, required this.onJokerDropped});
+  const BuyWidget({
+    super.key,
+    required this.onJokerDropped,
+    required this.onConsumableDropped,
+    required this.onPackageDropped,
+  });
 
   // Callback to inform the joker has been bought
   final Future<void>? Function(int) onJokerDropped;
+  final Future<void>? Function(int) onConsumableDropped;
+  final Future<void>? Function(int) onPackageDropped;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +25,19 @@ class BuyWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.white),
       ),
-      child: DragTarget<int>(
-        onAcceptWithDetails: (DragTargetDetails<int> dragged) {
-          onJokerDropped(dragged.data);
+      child: DragTarget<PurchasableItemInfo>(
+        onAcceptWithDetails: (DragTargetDetails<PurchasableItemInfo> dragged) {
+          switch (dragged.data.type) {
+            case "joker":
+              onJokerDropped(dragged.data.index);
+              break;
+            case "consumable":
+              onConsumableDropped(dragged.data.index);
+              break;
+            case "package":
+              onPackageDropped(dragged.data.index);
+              break;
+          }
         },
         builder: (
           BuildContext context,
