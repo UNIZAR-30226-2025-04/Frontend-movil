@@ -6,6 +6,7 @@ import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 import 'package:nogler/widgets/in_game/setting_button_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 import 'package:nogler/widgets/in_game/sidebar_widget.dart';
 import 'package:nogler/widgets/in_game/timer_widget.dart';
 
@@ -25,7 +26,10 @@ class GameScreenState extends State<GameScreen> {
 
   final GlobalKey<MainCardsState> _mainCardsKey = GlobalKey();
   final GlobalKey<SelectedCardsState> _selectedCardsKey = GlobalKey();
-  final GlobalKey<JokerCardsState> _jokerCards = GlobalKey<JokerCardsState>();
+  final GlobalKey<JokerCardsState> _jokerCardsKey =
+      GlobalKey<JokerCardsState>();
+  final GlobalKey<ShopWidgetState> _shopWidgetKey =
+      GlobalKey<ShopWidgetState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // Variables to animate the exit of the elements off screen
@@ -76,7 +80,12 @@ class GameScreenState extends State<GameScreen> {
                             mainAxisAlignment:
                                 MainAxisAlignment
                                     .start, // Aligns JokerCards to the left
-                            children: [JokerCards(key: _jokerCards)],
+                            children: [
+                              JokerCards(
+                                key: _jokerCardsKey,
+                                shopWidgetKey: _shopWidgetKey,
+                              ),
+                            ],
                           ),
                         ),
 
@@ -126,7 +135,10 @@ class GameScreenState extends State<GameScreen> {
                               duration: Duration(milliseconds: animationTime),
                               curve: Curves.easeInOut,
 
-                              child: ShopFaseWidget(jokerCards: _jokerCards),
+                              child: ShopFaseWidget(
+                                jokerCards: _jokerCardsKey,
+                                shopWidgetKey: _shopWidgetKey,
+                              ),
                             ),
                           ),
                       ],

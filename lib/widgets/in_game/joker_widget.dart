@@ -16,9 +16,21 @@ class PurchasableItemInfo {
 
 /// Implements the UI of a joker given a ... ... ... ... ... ...
 class Joker extends StatelessWidget {
-  const Joker({super.key, required this.purchasableItemInfo});
+  const Joker({
+    super.key,
+    required this.purchasableItemInfo,
+    required this.onDraggedItem,
+    required this.onDroppedItem,
+  });
 
   final PurchasableItemInfo purchasableItemInfo;
+  final Future<void>? Function() onDraggedItem;
+  final Future<void>? Function() onDroppedItem;
+
+  VoidCallback? prueba() {
+    debugPrint("Dragged started");
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +38,14 @@ class Joker extends StatelessWidget {
       data: purchasableItemInfo, // Data of the joker
       feedback: _buildJokerCard(), // Shown when dragging
       childWhenDragging: Opacity(opacity: 0, child: _buildJokerCard()),
+      //onDragStarted: onDraggedItem(),
+      onDragUpdate: (details) {
+        onDraggedItem();
+      },
+      //onDragCompleted: onDroppedItem(),
+      onDragEnd: (details) {
+        onDroppedItem();
+      },
       child: _buildJokerCard(),
     );
   }

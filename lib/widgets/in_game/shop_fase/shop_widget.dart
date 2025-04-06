@@ -5,9 +5,16 @@ import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 
 class ShopWidget extends StatefulWidget {
-  const ShopWidget({super.key, required this.ownedJokersWidgetKey});
+  const ShopWidget({
+    super.key,
+    required this.ownedJokersWidgetKey,
+    required this.onDraggedItem,
+    required this.onDroppedItem,
+  });
 
   final GlobalKey<JokerCardsState> ownedJokersWidgetKey;
+  final Future<void>? Function() onDraggedItem;
+  final Future<void>? Function() onDroppedItem;
 
   @override
   State<ShopWidget> createState() => ShopWidgetState();
@@ -64,12 +71,9 @@ class ShopWidgetState extends State<ShopWidget> {
 
   Future<void> removeJoker(int index) async {
     setState(() {
-      widget.ownedJokersWidgetKey.currentState?.addJokerOwned(
-        shopJokers[index],
-      );
       shopJokers.removeAt(index);
 
-      debugPrint("Eliminado joker $index");
+      debugPrint("Eliminado joker tienda en indice $index");
     });
   }
 
@@ -274,7 +278,11 @@ class ShopWidgetState extends State<ShopWidget> {
           ),
         ),
         // Display joker
-        Joker(purchasableItemInfo: info),
+        Joker(
+          purchasableItemInfo: info,
+          onDraggedItem: widget.onDraggedItem,
+          onDroppedItem: widget.onDroppedItem,
+        ),
       ],
     );
   }

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 class BuyWidget extends StatelessWidget {
   const BuyWidget({
     super.key,
-    required this.onJokerDropped,
-    required this.onConsumableDropped,
-    required this.onPackageDropped,
+    required this.shopWidgetKey,
+    required this.jokerCardsKey,
   });
 
-  // Callback to inform the joker has been bought
-  final Future<void>? Function(int) onJokerDropped;
-  final Future<void>? Function(int) onConsumableDropped;
-  final Future<void>? Function(int) onPackageDropped;
+  final GlobalKey<ShopWidgetState> shopWidgetKey;
+  final GlobalKey<JokerCardsState> jokerCardsKey;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +28,13 @@ class BuyWidget extends StatelessWidget {
         onAcceptWithDetails: (DragTargetDetails<PurchasableItemInfo> dragged) {
           switch (dragged.data.type) {
             case "joker":
-              onJokerDropped(dragged.data.index);
+              jokerCardsKey.currentState?.addJokerOwned(dragged.data);
               break;
             case "consumable":
-              onConsumableDropped(dragged.data.index);
+              shopWidgetKey.currentState?.removeConsumable(dragged.data.index);
               break;
             case "package":
-              onPackageDropped(dragged.data.index);
+              shopWidgetKey.currentState?.removePackage(dragged.data.index);
               break;
           }
         },

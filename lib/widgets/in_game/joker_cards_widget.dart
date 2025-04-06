@@ -2,11 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 /// A widget that displays a row of Joker cards.
 /// The number of cards is generated dynamically and displayed below.
 class JokerCards extends StatefulWidget {
-  const JokerCards({super.key});
+  const JokerCards({super.key, required this.shopWidgetKey});
+
+  final GlobalKey<ShopWidgetState> shopWidgetKey;
 
   @override
   JokerCardsState createState() => JokerCardsState();
@@ -17,10 +20,22 @@ class JokerCardsState extends State<JokerCards> {
   List<PurchasableItemInfo> jokersOwned = [];
 
   Future<void> addJokerOwned(PurchasableItemInfo jokerInfo) async {
-    debugPrint("Joker añadido en ");
     setState(() {
-      jokersOwned.add(jokerInfo);
-      debugPrint("Joker añadido en ");
+      if (jokersOwned.length != 5) {
+        // Remove the bought joker
+        widget.shopWidgetKey.currentState?.removeJoker(jokerInfo.index);
+        // Add it to your owned list
+        final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
+          price: jokerInfo.price,
+          id: jokerInfo.id,
+          index: -1, // Not used
+          type: "owned joker",
+        );
+        jokersOwned.add(auxJokerInfo);
+        debugPrint("Joker añadido en la lista");
+      } else {
+        debugPrint("La lista esta llena");
+      }
     });
   }
 
@@ -31,7 +46,7 @@ class JokerCardsState extends State<JokerCards> {
         price: random.nextInt(10),
         id: index,
         index: -1,
-        type: "joker",
+        type: "owned joker",
       );
     });
   }
@@ -56,7 +71,15 @@ class JokerCardsState extends State<JokerCards> {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               margin: const EdgeInsets.symmetric(horizontal: 2),
-              child: Joker(purchasableItemInfo: jokersOwned[index]),
+              child: Joker(
+                purchasableItemInfo: jokersOwned[index],
+                onDraggedItem: () {
+                  return null;
+                },
+                onDroppedItem: () {
+                  return null;
+                },
+              ),
             );
           }),
         ),

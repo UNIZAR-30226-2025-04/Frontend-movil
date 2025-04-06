@@ -4,16 +4,33 @@ import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 class ShopFaseWidget extends StatefulWidget {
-  const ShopFaseWidget({super.key, required this.jokerCards});
+  const ShopFaseWidget({
+    super.key,
+    required this.jokerCards,
+    required this.shopWidgetKey,
+  });
 
   final GlobalKey<JokerCardsState> jokerCards;
+  final GlobalKey<ShopWidgetState> shopWidgetKey;
 
   @override
-  State<ShopFaseWidget> createState() => _ShopFaseWidgetState();
+  State<ShopFaseWidget> createState() => ShopFaseWidgetState();
 }
 
-class _ShopFaseWidgetState extends State<ShopFaseWidget> {
-  final GlobalKey<ShopWidgetState> _shopWidgetKey = GlobalKey();
+class ShopFaseWidgetState extends State<ShopFaseWidget> {
+  bool buyWidgetVisible = false;
+
+  Future<void> onDraggedItem() async {
+    setState(() {
+      buyWidgetVisible = true;
+    });
+  }
+
+  Future<void> onDroppedItem() async {
+    setState(() {
+      buyWidgetVisible = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +38,17 @@ class _ShopFaseWidgetState extends State<ShopFaseWidget> {
       child: Row(
         children: [
           ShopWidget(
-            key: _shopWidgetKey,
+            key: widget.shopWidgetKey,
             ownedJokersWidgetKey: widget.jokerCards,
+            onDraggedItem: onDraggedItem,
+            onDroppedItem: onDroppedItem,
           ),
-          BuyWidget(
-            onJokerDropped: (int index) {
-              return _shopWidgetKey.currentState?.removeJoker(index);
-            },
-            onConsumableDropped: (int index) {
-              return _shopWidgetKey.currentState?.removeConsumable(index);
-            },
-            onPackageDropped: (int index) {
-              return _shopWidgetKey.currentState?.removePackage(index);
-            },
+          Visibility(
+            visible: buyWidgetVisible,
+            child: BuyWidget(
+              shopWidgetKey: widget.shopWidgetKey,
+              jokerCardsKey: widget.jokerCards,
+            ),
           ),
         ],
       ),
