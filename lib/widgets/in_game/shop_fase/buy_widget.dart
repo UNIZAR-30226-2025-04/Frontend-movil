@@ -19,10 +19,7 @@ class BuyWidget extends StatelessWidget {
       ),
       child: DragTarget<int>(
         onAcceptWithDetails: (DragTargetDetails<int> dragged) {
-          if (dragged.data == 1) {
-            debugPrint("Reconocido joker");
-            onJokerDropped(dragged.data);
-          }
+          onJokerDropped(dragged.data);
         },
         builder: (
           BuildContext context,

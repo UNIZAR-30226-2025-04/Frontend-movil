@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 
+/// Implements the UI of a joker given a ... ... ... ... ... ...
 class Joker extends StatelessWidget {
-  const Joker({super.key, required this.index});
+  const Joker({
+    super.key,
+    required this.index,
+    required this.id,
+    required this.type,
+  });
 
   final int index;
+  final int id;
+  final String type;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +25,7 @@ class Joker extends StatelessWidget {
 
   Widget _buildJokerCard({double height = 80}) {
     return Container(
-      width: 60,
+      width: 57,
       height: height,
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -27,7 +35,7 @@ class Joker extends StatelessWidget {
       ),
       //TODO, Add images of jokers next
       child: Text(
-        "Joker",
+        type,
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Colors.white70,

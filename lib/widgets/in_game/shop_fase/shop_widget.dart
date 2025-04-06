@@ -10,25 +10,53 @@ class ShopWidget extends StatefulWidget {
   State<ShopWidget> createState() => ShopWidgetState();
 }
 
-class JokerInfo {
+/// Class where we save all info about jokers disposed in the s
+class ShopItemInfo {
+  ShopItemInfo({required this.price, required this.id, required this.type});
+  final int price;
   final int id;
-
-  JokerInfo({required this.id});
+  final String type;
 }
 
 class ShopWidgetState extends State<ShopWidget> {
-  List<JokerInfo> shopJokers = [];
+  List<ShopItemInfo> shopJokers = [];
+  List<ShopItemInfo> shopConsumables = [];
+  List<ShopItemInfo> shopPackages = [];
 
+  // Function used to generate random jokers in when we enter shop fase and refresh the shop
   void _generateRandomJoker() {
     final random = Random();
-    shopJokers = List.generate(4, (_) {
-      return JokerInfo(id: random.nextInt(10));
+    shopJokers = List.generate(4, (int index) {
+      return ShopItemInfo(price: random.nextInt(10), id: index, type: "joker");
+    });
+  }
+
+  void _generateRandomConsumable() {
+    final random = Random();
+    shopConsumables = List.generate(2, (int index) {
+      return ShopItemInfo(
+        price: random.nextInt(10),
+        id: index,
+        type: "consumable",
+      );
+    });
+  }
+
+  void _generateRandomPackage() {
+    final random = Random();
+    shopPackages = List.generate(3, (int index) {
+      return ShopItemInfo(
+        price: random.nextInt(10),
+        id: index,
+        type: "package",
+      );
     });
   }
 
   Future<void> removeJoker(int index) async {
     setState(() {
       shopJokers.removeAt(index);
+
       debugPrint("Eliminado joker $index");
     });
   }
@@ -37,6 +65,8 @@ class ShopWidgetState extends State<ShopWidget> {
   void initState() {
     super.initState();
     _generateRandomJoker();
+    _generateRandomConsumable();
+    _generateRandomPackage();
   }
 
   @override
@@ -57,6 +87,8 @@ class ShopWidgetState extends State<ShopWidget> {
           Row(
             children: [
               Expanded(
+                // Porcentage of space used, shared with the list of jokers
+                flex: 3,
                 child: Column(
                   spacing: 5,
                   children: [
@@ -104,25 +136,30 @@ class ShopWidgetState extends State<ShopWidget> {
               const SizedBox(width: 5),
 
               // Joker and consumables slots
-              Container(
-                width: 276,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.redAccent, width: 2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              Expanded(
+                // Porcentage of space used, shared with the floating buttons
+                flex: 8,
+                child: Container(
+                  //width: 276,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.redAccent, width: 2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
 
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(shopJokers.length, (index) {
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
-                        child: _cardBox(shopJokers[index].id, index, "joker"),
-                      );
-                    }),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    // Display of all purschasable jokers
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(shopJokers.length, (index) {
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          child: _cardAndPrice(shopJokers[index], index),
+                        );
+                      }),
+                    ),
                   ),
                 ),
               ),
@@ -141,12 +178,17 @@ class ShopWidgetState extends State<ShopWidget> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(5.0),
+                  // Display of all purschasable consumables
                   child: Row(
-                    children: [
-                      _cardBox(10, 0, "VOUCHER", height: 80),
-                      SizedBox(width: 5),
-                      _cardBox(10, 0, "VOUCHER", height: 80),
-                    ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(shopConsumables.length, (index) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        child: _cardAndPrice(shopConsumables[index], index),
+                      );
+                    }),
                   ),
                 ),
               ),
@@ -159,15 +201,17 @@ class ShopWidgetState extends State<ShopWidget> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
+                    // Display of all purschasable packages
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _cardBox(4, 0, "BUFFOON"),
-                        const SizedBox(width: 5),
-                        _cardBox(6, 0, "CELESTIAL"),
-                        const SizedBox(width: 5),
-                        _cardBox(6, 0, "CELESTIAL"),
-                      ],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(shopPackages.length, (index) {
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          child: _cardAndPrice(shopPackages[index], index),
+                        );
+                      }),
                     ),
                   ),
                 ),
@@ -179,9 +223,10 @@ class ShopWidgetState extends State<ShopWidget> {
     );
   }
 
-  Widget _cardBox(int price, int index, String label, {double height = 80}) {
+  Widget _cardAndPrice(ShopItemInfo info, int index) {
     return Column(
       children: [
+        // Display of price
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
@@ -189,15 +234,15 @@ class ShopWidgetState extends State<ShopWidget> {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
-            price.toString(),
+            "\$${info.price}",
             style: const TextStyle(
               color: Colors.amber,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        //const SizedBox(height: 2),
-        Joker(index: index),
+        // Display joker
+        Joker(index: index, id: info.id, type: info.type),
       ],
     );
   }
