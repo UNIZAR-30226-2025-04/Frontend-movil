@@ -137,14 +137,18 @@ class ShopWidgetState extends State<ShopWidget> {
                         ),
                         minimumSize: const Size.fromHeight(50),
                       ),
-                      child: const Text("Next \nRound"),
+                      child: const Text(" Next\nRound"),
                     ),
                     // Space between
                     const SizedBox(width: 15),
 
                     // Reroll button
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _generateRandomJoker();
+                        });
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
