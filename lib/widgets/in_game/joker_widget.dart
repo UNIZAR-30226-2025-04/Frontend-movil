@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 
 //TODO, moverlo a otra pantalla
 /// Class where we save all info about jokers disposed in the s
@@ -22,11 +23,13 @@ class Joker extends StatelessWidget {
     required this.purchasableItemInfo,
     required this.onDraggedItem,
     required this.onDroppedItem,
+    required this.buyWidgetKey,
   });
 
   final PurchasableItemInfo purchasableItemInfo;
   final Future<void>? Function() onDraggedItem;
   final Future<void>? Function() onDroppedItem;
+  final GlobalKey<BuyWidgetState> buyWidgetKey;
 
   VoidCallback? prueba() {
     debugPrint("Dragged started");
@@ -42,6 +45,7 @@ class Joker extends StatelessWidget {
       //onDragStarted: onDraggedItem(),
       onDragUpdate: (details) {
         onDraggedItem();
+        buyWidgetKey.currentState?.setDraggedItem(purchasableItemInfo);
       },
       //onDragCompleted: onDroppedItem(),
       onDragEnd: (details) {

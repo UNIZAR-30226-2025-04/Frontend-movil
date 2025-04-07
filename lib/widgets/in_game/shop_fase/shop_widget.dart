@@ -3,15 +3,18 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 
 class ShopWidget extends StatefulWidget {
   const ShopWidget({
     super.key,
+    required this.buyWidgetKey,
     required this.ownedJokersWidgetKey,
     required this.onDraggedItem,
     required this.onDroppedItem,
   });
 
+  final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<JokerCardsState> ownedJokersWidgetKey;
   final Future<void>? Function() onDraggedItem;
   final Future<void>? Function() onDroppedItem;
@@ -281,6 +284,7 @@ class ShopWidgetState extends State<ShopWidget> {
           purchasableItemInfo: info,
           onDraggedItem: widget.onDraggedItem,
           onDroppedItem: widget.onDroppedItem,
+          buyWidgetKey: widget.buyWidgetKey,
         ),
       ],
     );

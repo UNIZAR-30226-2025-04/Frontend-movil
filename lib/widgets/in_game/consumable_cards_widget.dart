@@ -2,14 +2,20 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 /// A widget that displays a row of Joker cards.
 /// The number of cards is generated dynamically and displayed below.
 class ConsumableCards extends StatefulWidget {
-  const ConsumableCards({super.key, required this.shopWidgetKey});
+  const ConsumableCards({
+    super.key,
+    required this.shopWidgetKey,
+    required this.buyWidgetKey,
+  });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
+  final GlobalKey<BuyWidgetState> buyWidgetKey;
 
   @override
   ConsumableCardsState createState() => ConsumableCardsState();
@@ -27,7 +33,7 @@ class ConsumableCardsState extends State<ConsumableCards> {
   Future<void> addConsumableOwned(PurchasableItemInfo jokerInfo) async {
     setState(() {
       if (consumableOwned.length != 5) {
-        // Remove the bought joker
+        // Remove the bought consumable
         widget.shopWidgetKey.currentState?.removeConsumable(jokerInfo.index);
         // Add it to your owned list
         final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
@@ -52,7 +58,7 @@ class ConsumableCardsState extends State<ConsumableCards> {
         price: random.nextInt(10),
         id: index,
         index: -1,
-        type: "owned joker",
+        type: "owned consumable",
       );
     });
   }
@@ -109,6 +115,7 @@ class ConsumableCardsState extends State<ConsumableCards> {
                   onDroppedItem: () {
                     return null;
                   },
+                  buyWidgetKey: widget.buyWidgetKey,
                 ),
               );
             }),

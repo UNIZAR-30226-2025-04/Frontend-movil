@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 /// A sidebar widget displaying game-related information such as the current round,
@@ -7,11 +8,13 @@ import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 class Sidebar extends StatefulWidget {
   const Sidebar({
     super.key,
-    required this.consumableCardsKey,
     required this.shopWidgetKey,
+    required this.buyWidgetKey,
+    required this.consumableCardsKey,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
+  final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<ConsumableCardsState> consumableCardsKey;
 
   @override
@@ -53,6 +56,7 @@ class SidebarState extends State<Sidebar> {
     return ConsumableCards(
       key: widget.consumableCardsKey,
       shopWidgetKey: widget.shopWidgetKey,
+      buyWidgetKey: widget.buyWidgetKey,
     );
   }
 

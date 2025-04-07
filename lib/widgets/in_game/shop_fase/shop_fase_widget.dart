@@ -8,6 +8,7 @@ class ShopFaseWidget extends StatefulWidget {
   const ShopFaseWidget({
     super.key,
     required this.shopWidgetKey,
+    required this.buyWidgetKey,
     required this.jokerCardsKey,
     required this.consumableCardsKey,
   });
@@ -15,6 +16,7 @@ class ShopFaseWidget extends StatefulWidget {
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final GlobalKey<ConsumableCardsState> consumableCardsKey;
+  final GlobalKey<BuyWidgetState> buyWidgetKey;
 
   @override
   State<ShopFaseWidget> createState() => ShopFaseWidgetState();
@@ -42,6 +44,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
         children: [
           ShopWidget(
             key: widget.shopWidgetKey,
+            buyWidgetKey: widget.buyWidgetKey,
             ownedJokersWidgetKey: widget.jokerCardsKey,
             onDraggedItem: onDraggedItem,
             onDroppedItem: onDroppedItem,
@@ -49,6 +52,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
           Visibility(
             visible: buyWidgetVisible,
             child: BuyWidget(
+              key: widget.buyWidgetKey,
               shopWidgetKey: widget.shopWidgetKey,
               jokerCardsKey: widget.jokerCardsKey,
               consumableCardsKey: widget.consumableCardsKey,

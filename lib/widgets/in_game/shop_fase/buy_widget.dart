@@ -4,7 +4,7 @@ import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
-class BuyWidget extends StatelessWidget {
+class BuyWidget extends StatefulWidget {
   const BuyWidget({
     super.key,
     required this.shopWidgetKey,
@@ -15,6 +15,26 @@ class BuyWidget extends StatelessWidget {
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final GlobalKey<ConsumableCardsState> consumableCardsKey;
+
+  @override
+  BuyWidgetState createState() => BuyWidgetState();
+}
+
+class BuyWidgetState extends State<BuyWidget> {
+  // Initialized because the compiler is mad
+  PurchasableItemInfo draggedItem = PurchasableItemInfo(
+    price: 0,
+    id: -1,
+    index: -1,
+    type: "",
+  );
+
+  // Get the info of dragged item
+  Future<void> setDraggedItem(PurchasableItemInfo currentDragged) async {
+    setState(() {
+      draggedItem = currentDragged;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +51,17 @@ class BuyWidget extends StatelessWidget {
         onAcceptWithDetails: (DragTargetDetails<PurchasableItemInfo> dragged) {
           switch (dragged.data.type) {
             case "joker":
-              jokerCardsKey.currentState?.addJokerOwned(dragged.data);
+              widget.jokerCardsKey.currentState?.addJokerOwned(dragged.data);
               break;
             case "consumable":
-              consumableCardsKey.currentState?.addConsumableOwned(dragged.data);
+              widget.consumableCardsKey.currentState?.addConsumableOwned(
+                dragged.data,
+              );
               break;
             case "package":
-              shopWidgetKey.currentState?.removePackage(dragged.data.index);
+              widget.shopWidgetKey.currentState?.removePackage(
+                dragged.data.index,
+              );
               break;
           }
         },
@@ -49,7 +73,7 @@ class BuyWidget extends StatelessWidget {
           // Buy text widget
           return Center(
             child: Text(
-              "Buy\n\$ 17",
+              "Buy\n\$ ${draggedItem.price}",
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.white,

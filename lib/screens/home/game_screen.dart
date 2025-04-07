@@ -6,6 +6,7 @@ import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 import 'package:nogler/widgets/in_game/setting_button_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 import 'package:nogler/widgets/in_game/sidebar_widget.dart';
@@ -33,6 +34,7 @@ class GameScreenState extends State<GameScreen> {
       GlobalKey<ConsumableCardsState>();
   final GlobalKey<ShopWidgetState> _shopWidgetKey =
       GlobalKey<ShopWidgetState>();
+  final GlobalKey<BuyWidgetState> _buyWidgetKey = GlobalKey<BuyWidgetState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // Variables to animate the exit of the elements off screen
@@ -71,6 +73,7 @@ class GameScreenState extends State<GameScreen> {
                   Sidebar(
                     consumableCardsKey: _consumableCardsKey,
                     shopWidgetKey: _shopWidgetKey,
+                    buyWidgetKey: _buyWidgetKey,
                   ), // Sidebar for navigation and game info
 
                   Expanded(
@@ -90,6 +93,7 @@ class GameScreenState extends State<GameScreen> {
                               JokerCards(
                                 key: _jokerCardsKey,
                                 shopWidgetKey: _shopWidgetKey,
+                                buyWidgetKey: _buyWidgetKey,
                               ),
                             ],
                           ),
@@ -143,6 +147,7 @@ class GameScreenState extends State<GameScreen> {
 
                               child: ShopFaseWidget(
                                 shopWidgetKey: _shopWidgetKey,
+                                buyWidgetKey: _buyWidgetKey,
                                 jokerCardsKey: _jokerCardsKey,
                                 consumableCardsKey: _consumableCardsKey,
                               ),
