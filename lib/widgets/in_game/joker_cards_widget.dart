@@ -73,9 +73,11 @@ class JokerCardsState extends State<JokerCards> {
               margin: const EdgeInsets.symmetric(horizontal: 2),
               child: Joker(
                 purchasableItemInfo: jokersOwned[index],
+                // Display sell widget
                 onDraggedItem: () {
                   return null;
                 },
+                // Hide sell widget
                 onDroppedItem: () {
                   return null;
                 },

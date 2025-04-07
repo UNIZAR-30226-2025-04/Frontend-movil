@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+//TODO, moverlo a otra pantalla
 /// Class where we save all info about jokers disposed in the s
 class PurchasableItemInfo {
   PurchasableItemInfo({

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/game_fase_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
@@ -28,6 +29,8 @@ class GameScreenState extends State<GameScreen> {
   final GlobalKey<SelectedCardsState> _selectedCardsKey = GlobalKey();
   final GlobalKey<JokerCardsState> _jokerCardsKey =
       GlobalKey<JokerCardsState>();
+  final GlobalKey<ConsumableCardsState> _consumableCardsKey =
+      GlobalKey<ConsumableCardsState>();
   final GlobalKey<ShopWidgetState> _shopWidgetKey =
       GlobalKey<ShopWidgetState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -65,7 +68,10 @@ class GameScreenState extends State<GameScreen> {
               // Main row containing the Sidebar and game UI elements
               Row(
                 children: [
-                  Sidebar(), // Sidebar for navigation and game info
+                  Sidebar(
+                    consumableCardsKey: _consumableCardsKey,
+                    shopWidgetKey: _shopWidgetKey,
+                  ), // Sidebar for navigation and game info
 
                   Expanded(
                     child: Column(
@@ -136,8 +142,9 @@ class GameScreenState extends State<GameScreen> {
                               curve: Curves.easeInOut,
 
                               child: ShopFaseWidget(
-                                jokerCards: _jokerCardsKey,
                                 shopWidgetKey: _shopWidgetKey,
+                                jokerCardsKey: _jokerCardsKey,
+                                consumableCardsKey: _consumableCardsKey,
                               ),
                             ),
                           ),

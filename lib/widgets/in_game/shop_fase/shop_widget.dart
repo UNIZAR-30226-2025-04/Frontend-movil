@@ -72,7 +72,6 @@ class ShopWidgetState extends State<ShopWidget> {
   Future<void> removeJoker(int index) async {
     setState(() {
       shopJokers.removeAt(index);
-
       debugPrint("Eliminado joker tienda en indice $index");
     });
   }

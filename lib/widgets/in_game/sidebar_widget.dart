@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 /// A sidebar widget displaying game-related information such as the current round,
 /// active consumables, and various game statistics.
 class Sidebar extends StatefulWidget {
-  const Sidebar({super.key});
+  const Sidebar({
+    super.key,
+    required this.consumableCardsKey,
+    required this.shopWidgetKey,
+  });
+
+  final GlobalKey<ShopWidgetState> shopWidgetKey;
+  final GlobalKey<ConsumableCardsState> consumableCardsKey;
 
   @override
   SidebarState createState() => SidebarState();
@@ -28,15 +37,6 @@ class SidebarState extends State<Sidebar> {
             ),
           ),
 
-          /// Displays the label for active consumables.
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Active consumables",
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-            ),
-          ),
-
           /// Displays modification cards for the game.
           _buildModCards(),
           SizedBox(height: 5),
@@ -50,18 +50,9 @@ class SidebarState extends State<Sidebar> {
 
   /// Builds a horizontal list of modification cards.
   Widget _buildModCards() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(
-          4,
-          (index) => Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: _buildCard('Mod', Colors.blueAccent),
-          ),
-        ),
-      ),
+    return ConsumableCards(
+      key: widget.consumableCardsKey,
+      shopWidgetKey: widget.shopWidgetKey,
     );
   }
 
@@ -175,23 +166,6 @@ class SidebarState extends State<Sidebar> {
       color: Colors.white,
       borderRadius: BorderRadius.circular(10),
       border: Border.all(color: Colors.black, width: 2),
-    );
-  }
-
-  /// Builds a simple rectangular card.
-  Widget _buildCard(String label, Color color) {
-    return Container(
-      width: 40,
-      height: 60,
-      decoration: BoxDecoration(
-        color: color,
-        border: Border.all(color: Colors.black, width: 2),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-      ),
     );
   }
 

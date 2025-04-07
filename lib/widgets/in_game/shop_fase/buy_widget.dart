@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
@@ -8,10 +9,12 @@ class BuyWidget extends StatelessWidget {
     super.key,
     required this.shopWidgetKey,
     required this.jokerCardsKey,
+    required this.consumableCardsKey,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
+  final GlobalKey<ConsumableCardsState> consumableCardsKey;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,7 @@ class BuyWidget extends StatelessWidget {
               jokerCardsKey.currentState?.addJokerOwned(dragged.data);
               break;
             case "consumable":
-              shopWidgetKey.currentState?.removeConsumable(dragged.data.index);
+              consumableCardsKey.currentState?.addConsumableOwned(dragged.data);
               break;
             case "package":
               shopWidgetKey.currentState?.removePackage(dragged.data.index);
