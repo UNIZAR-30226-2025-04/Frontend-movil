@@ -167,12 +167,13 @@ class ShopWidgetState extends State<ShopWidget> {
               // Space Between
               const SizedBox(width: 5),
 
-              // Joker and consumables slots
+              // Joker slots
               Expanded(
                 // Porcentage of space used, shared with the floating buttons
                 flex: 8,
                 child: Container(
-                  //width: 276,
+                  width: 276,
+                  height: 119,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.redAccent, width: 2),
                     borderRadius: BorderRadius.circular(12),
@@ -206,6 +207,8 @@ class ShopWidgetState extends State<ShopWidget> {
           Row(
             children: [
               Container(
+                width: 145,
+                height: 115,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.redAccent, width: 2),
                   borderRadius: BorderRadius.circular(12),
@@ -231,6 +234,8 @@ class ShopWidgetState extends State<ShopWidget> {
               const SizedBox(width: 8),
               Expanded(
                 child: Container(
+                  width: 145,
+                  height: 115,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.redAccent, width: 2),
                     borderRadius: BorderRadius.circular(12),

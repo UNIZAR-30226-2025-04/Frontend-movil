@@ -1,3 +1,4 @@
+//import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class JokerCardsState extends State<JokerCards> {
           type: "owned joker",
         );
         jokersOwned.add(auxJokerInfo);
+        _updateIndex();
         debugPrint("Joker añadido en la lista");
       } else {
         debugPrint("La lista esta llena");
@@ -52,20 +54,27 @@ class JokerCardsState extends State<JokerCards> {
 
   void _generateRandomJoker() {
     final random = Random();
-    jokersOwned = List.generate(4, (int index) {
+    jokersOwned = List.generate(1, (int index) {
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
-        index: -1,
+        index: index,
         type: "owned joker",
       );
     });
+  }
+
+  void _updateIndex() {
+    for (int i = 0; i < jokersOwned.length; i++) {
+      jokersOwned[i].index = i;
+    }
   }
 
   @override
   void initState() {
     super.initState();
     _generateRandomJoker();
+    _updateIndex();
   }
 
   @override
@@ -78,11 +87,9 @@ class JokerCardsState extends State<JokerCards> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(jokersOwned.length, (index) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              child: Joker(
+            return LongPressDraggable<PurchasableItemInfo>(
+              data: jokersOwned[index],
+              feedback: Joker(
                 buyWidgetKey: widget.buyWidgetKey,
                 purchasableItemInfo: jokersOwned[index],
                 // Display sell widget
@@ -92,6 +99,63 @@ class JokerCardsState extends State<JokerCards> {
                 // Hide sell widget
                 onDroppedItem: () {
                   return null;
+                },
+              ),
+              // Widget that lets you move the joker in the list as it keeps updating itself
+              child: DragTarget<PurchasableItemInfo>(
+                // Update the list as we move the joker in it
+                onWillAcceptWithDetails: (details) {
+                  final fromIndex = details.data;
+                  // Calculate the difference of the stride
+                  //    if difference > 0 == moving joker to the right
+                  //    if difference < 0 == moving joker to the left
+                  int difference = index - fromIndex.index;
+                  // save it for later
+                  final draggedJoker = jokersOwned[fromIndex.index];
+                  setState(() {
+                    switch (difference) {
+                      //    if difference < 0 == moving joker to the left
+                      case < 0:
+                        for (int i = fromIndex.index - 1; i >= index; i--) {
+                          jokersOwned[i + 1] = jokersOwned[i];
+                        }
+                        jokersOwned[index] = draggedJoker;
+                        break;
+                      //    if difference > 0 == moving joker to the right
+                      case > 0:
+                        for (int i = fromIndex.index; i < index; i++) {
+                          jokersOwned[i] = jokersOwned[i + 1];
+                        }
+                        jokersOwned[index] = draggedJoker;
+                        break;
+                      // if difference = 0 == same spot
+                      default:
+                        break;
+                    }
+                    // update the indexes of the jokers
+                    _updateIndex();
+                  });
+
+                  return fromIndex.index != index;
+                },
+                builder: (context, candidateData, rejectedData) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Joker(
+                      buyWidgetKey: widget.buyWidgetKey,
+                      purchasableItemInfo: jokersOwned[index],
+                      // Display sell widget
+                      onDraggedItem: () {
+                        return null;
+                      },
+                      // Hide sell widget
+                      onDroppedItem: () {
+                        return null;
+                      },
+                    ),
+                  );
                 },
               ),
             );

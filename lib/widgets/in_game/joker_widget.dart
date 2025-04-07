@@ -67,7 +67,7 @@ class Joker extends StatelessWidget {
       ),
       //TODO, Add images of jokers next
       child: Text(
-        purchasableItemInfo.type,
+        "${purchasableItemInfo.type} ${purchasableItemInfo.id}",
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: Colors.white70,
