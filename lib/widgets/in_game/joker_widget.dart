@@ -43,7 +43,7 @@ class Joker extends StatelessWidget {
       data: purchasableItemInfo, // Data of the joker
       feedback: _buildJokerCard(), // Shown when dragging
       childWhenDragging: Opacity(opacity: 0, child: _buildJokerCard()),
-      
+
       onDragUpdate: (details) {
         onDraggedItem();
         final state = keyWidget.currentState;
@@ -53,7 +53,7 @@ class Joker extends StatelessWidget {
           state.setDraggedItem(purchasableItemInfo);
         }
       },
-      
+
       onDragEnd: (details) {
         onDroppedItem();
       },

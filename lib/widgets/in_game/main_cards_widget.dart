@@ -15,6 +15,7 @@ class MainCards extends StatefulWidget {
 class SelectableCard {
   final String rank;
   final String suit;
+  final String overlay;
   final PlayingCard card;
   bool isSelected;
   bool isDiscarding;
@@ -23,6 +24,7 @@ class SelectableCard {
   SelectableCard({
     required this.rank,
     required this.suit,
+    required this.overlay,
     required this.card,
     this.isSelected = false,
     this.isDiscarding = false,
@@ -67,6 +69,7 @@ class MainCardsState extends State<MainCards> {
       return SelectableCard(
         rank: card.value.toString().split('.').last,
         suit: card.suit.toString().split('.').last,
+        overlay: "images/glassDemo3.png",
         card: card,
       );
     });
@@ -103,6 +106,7 @@ class MainCardsState extends State<MainCards> {
         final selectable = SelectableCard(
           rank: newCard.value.toString().split('.').last,
           suit: newCard.suit.toString().split('.').last,
+          overlay: "no overlay",
           card: newCard,
           isNew: true,
         );
@@ -159,6 +163,7 @@ class MainCardsState extends State<MainCards> {
         final selectable = SelectableCard(
           rank: newCard.value.toString().split('.').last,
           suit: newCard.suit.toString().split('.').last,
+          overlay: "no overlay",
           card: newCard,
           isNew: true,
         );
@@ -242,13 +247,15 @@ class MainCardsState extends State<MainCards> {
         builder: (context, candidateData, rejectedData) {
           return Draggable<int>(
             data: index,
-            onDragStarted: () { // Update the dragged index when dragging starts
+            onDragStarted: () {
+              // Update the dragged index when dragging starts
               setState(() {
                 _draggedIndex = index;
               });
             },
             onDragEnd: (_) {
-              setState(() { // Reset the dragged index when dragging ends
+              setState(() {
+                // Reset the dragged index when dragging ends
                 _draggedIndex = null;
               });
             },
@@ -275,6 +282,7 @@ class MainCardsState extends State<MainCards> {
   Widget _buildCard(SelectableCard selectable) {
     return AspectRatio(
       aspectRatio: 65 / 90,
+
       child: AnimatedOpacity(
         opacity: selectable.isDiscarding ? 0.0 : 1.0,
         duration: const Duration(milliseconds: 300),
@@ -296,7 +304,30 @@ class MainCardsState extends State<MainCards> {
             builder: (context, scale, child) {
               return Transform.scale(scale: scale, child: child);
             },
-            child: PlayingCardView(card: selectable.card, showBack: false),
+            child: Stack(
+              children: [
+                PlayingCardView(card: selectable.card, showBack: false),
+                // Overlay of the card
+                if (selectable.overlay != "no overlay")
+                  Positioned.fill(
+                    // Needed to resize the card effects
+                    left: 4,
+                    right: 4,
+                    top: 4,
+                    bottom: 4,
+                    child: Opacity(
+                      opacity: 0.8,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                        child: Image.asset(
+                          selectable.overlay,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
