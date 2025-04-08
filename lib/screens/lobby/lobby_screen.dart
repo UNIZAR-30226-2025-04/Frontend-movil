@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
+import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/background_widget.dart';
@@ -154,6 +155,18 @@ class _LobbyScreen extends State<LobbyScreen> {
           lobbyUsers.removeWhere((p) => p['username'] == kickedUser);
         });
       }
+    });
+
+    // Listen for lobby info
+    wsClient.addEventListener("game_starting", (data) {
+      debugPrint("📡 Starting game: $data");
+      Navigator.pushReplacement(
+        context,
+        PageTransition(
+          type: PageTransitionType.fade,
+          child: const GameScreen(),
+        ),
+      );
     });
   }
 
@@ -468,7 +481,9 @@ class _LobbyScreen extends State<LobbyScreen> {
                                         vertical: 15,
                                       ),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      wsClient.sendMessage("start_game", widget.lobbyCode);
+                                    },
                                     child: Text(
                                       'Start',
                                       style: TextStyle(color: Colors.black),
