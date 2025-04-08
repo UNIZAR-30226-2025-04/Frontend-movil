@@ -22,7 +22,11 @@ class LoadingScreen extends StatelessWidget {
               // The custom loading message
               Text(
                 loadingMessage,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),

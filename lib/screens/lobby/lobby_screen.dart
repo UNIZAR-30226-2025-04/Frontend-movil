@@ -32,10 +32,10 @@ class _LobbyScreen extends State<LobbyScreen> {
   String? lobbyCreator;
   // WebSocket client instance
   final WebSocketClient wsClient = WebSocketClient();
-
+  bool isLoading = true;
   // List to store chat messages
   List<Map<String, dynamic>> chatMessages = [];
-  
+
   String _publicPrivateButton = "Public";
   bool hasFetched = false; // To ensure the data is fetched only once
 
@@ -61,6 +61,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                 'avatarImage': player['user_icon'] ?? 0,
               };
             }).toList();
+        isLoading = false;
       });
     });
 
@@ -177,269 +178,309 @@ class _LobbyScreen extends State<LobbyScreen> {
             lobbyCode: widget.lobbyCode,
             chatMessages: chatMessages,
           ),
-
-          body: BackgroundWidget(
-            child: Column(
-              children: [
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        //Add some space between
-                        SizedBox(width: 15),
-
-                        //Title of page, lobby
-                        Text(
-                          'LOBBY',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        //Add some space between
-                        SizedBox(width: 15),
-
-                        //Number of participants
-                        Text(
-                          '${lobbyUsers.length} / 8',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
-                        //Add some space between
-                        SizedBox(width: 20),
-
-                        // Public/Private button
-                        // If the user is the host, show the button to change visibility
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25,
-                              vertical: 12,
+          // Show loading screen if isLoading is true
+          body:
+              isLoading
+                  ? BackgroundWidget(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // The loading spinner
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 20),
+                          // The custom loading message
+                          Text(
+                            "Entering the lobby ...",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          onPressed: () async {
-                            // Change the visibility of the lobby
-                            if (lobbyCreator == widget.hostName) {
-                              setState(() {
-                                if (_publicPrivateButton == 'Public') {
-                                  _publicPrivateButton = 'Private';
-                                } else {
-                                  _publicPrivateButton = 'Public';
-                                }
-                              });
-                              await updateVisibilityLobby(
-                                widget.lobbyCode,
-                                _publicPrivateButton == 'Public'
-                                    ? 'true'
-                                    : 'false',
-                              );
-                            }
-                          },
-                          child: Text(
-                            _publicPrivateButton,
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        //Add some space between
-                        SizedBox(width: 25),
-
-                        //Code of the lobby
-                        Text(
-                          'Code: ${widget.lobbyCode}',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
-                        //Add some space between
-                        SizedBox(width: 25),
-
-                        //Copy button
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25,
-                              vertical: 12,
-                            ),
-                          ),
-                          //copies on clipboard the lobbies code
-                          onPressed: () async {
-                            await Clipboard.setData(
-                              ClipboardData(text: widget.lobbyCode),
-                            );
-                          },
-                          child: Text(
-                            "Copy",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        //Add some space between
-                        SizedBox(width: 25),
-
-                        //Share button
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25,
-                              vertical: 12,
-                            ),
-                          ),
-                          onPressed: () {
-                            showInvitationLists(context, widget.lobbyCode);
-                          },
-                          child: Text(
-                            "Share",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-
-                    //Chat button
-                    Row(
+                  )
+                  : BackgroundWidget(
+                    child: Column(
                       children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 12,
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                //Add some space between
+                                SizedBox(width: 15),
+
+                                //Title of page, lobby
+                                Text(
+                                  'LOBBY',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                //Add some space between
+                                SizedBox(width: 15),
+
+                                //Number of participants
+                                Text(
+                                  '${lobbyUsers.length} / 8',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                //Add some space between
+                                SizedBox(width: 20),
+
+                                // Public/Private button
+                                // If the user is the host, show the button to change visibility
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 25,
+                                      vertical: 12,
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    // Change the visibility of the lobby
+                                    if (lobbyCreator == widget.hostName) {
+                                      setState(() {
+                                        if (_publicPrivateButton == 'Public') {
+                                          _publicPrivateButton = 'Private';
+                                        } else {
+                                          _publicPrivateButton = 'Public';
+                                        }
+                                      });
+                                      await updateVisibilityLobby(
+                                        widget.lobbyCode,
+                                        _publicPrivateButton == 'Public'
+                                            ? 'true'
+                                            : 'false',
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    _publicPrivateButton,
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                                //Add some space between
+                                SizedBox(width: 25),
+
+                                //Code of the lobby
+                                Text(
+                                  'Code: ${widget.lobbyCode}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                //Add some space between
+                                SizedBox(width: 25),
+
+                                //Copy button
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 25,
+                                      vertical: 12,
+                                    ),
+                                  ),
+                                  //copies on clipboard the lobbies code
+                                  onPressed: () async {
+                                    await Clipboard.setData(
+                                      ClipboardData(text: widget.lobbyCode),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Copy",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                                //Add some space between
+                                SizedBox(width: 25),
+
+                                //Share button
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 25,
+                                      vertical: 12,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    showInvitationLists(
+                                      context,
+                                      widget.lobbyCode,
+                                    );
+                                  },
+                                  child: Text(
+                                    "Share",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            //Chat button
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 12,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    // Open Drawer using the key previously mentioned
+                                    _scaffoldKey.currentState?.openEndDrawer();
+                                  },
+                                  child: Icon(
+                                    Icons.chat_bubble,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                //Add some space between
+                                SizedBox(width: 15),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        //User distribution
+                        Expanded(
+                          child: Align(
+                            alignment: const Alignment(0, -0.5),
+                            child: Stack(
+                              fit: StackFit.loose,
+                              alignment: Alignment.topLeft,
+                              children: [
+                                GridView.builder(
+                                  shrinkWrap: false,
+
+                                  padding: EdgeInsets.only(
+                                    left: 15,
+                                    right: 15,
+                                    top: 15,
+                                    bottom: 0,
+                                  ),
+
+                                  gridDelegate:
+                                      SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent:
+                                            200, //width of the player's box
+                                        crossAxisSpacing: 12,
+                                        mainAxisExtent:
+                                            100, //height of the player's box
+                                        mainAxisSpacing: 12,
+                                        childAspectRatio: 3,
+                                      ),
+                                  itemCount: lobbyUsers.length,
+                                  itemBuilder: (context, index) {
+                                    final player = lobbyUsers[index];
+                                    final isHost =
+                                        player['username'] == lobbyCreator;
+                                    final iAmHost =
+                                        lobbyCreator == widget.hostName;
+                                    return PlayerBox(
+                                      playerName: player['username'],
+                                      playerIcon: player['avatarImage'],
+                                      isHost: isHost,
+                                      iAmHost: iAmHost,
+                                      kickUser:
+                                          iAmHost
+                                              ? (String playerNameKick) {
+                                                wsClient.sendMessage(
+                                                  "kick_from_lobby",
+                                                  {
+                                                    widget.lobbyCode,
+                                                    playerNameKick,
+                                                  },
+                                                );
+                                              }
+                                              : (_) {},
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                           ),
-                          onPressed: () {
-                            // Open Drawer using the key previously mentioned
-                            _scaffoldKey.currentState?.openEndDrawer();
-                          },
-                          child: Icon(Icons.chat_bubble, color: Colors.black),
                         ),
-                        //Add some space between
-                        SizedBox(width: 15),
-                      ],
-                    ),
-                  ],
-                ),
 
-                //User distribution
-                Expanded(
-                  child: Align(
-                    alignment: const Alignment(0, -0.5),
-                    child: Stack(
-                      fit: StackFit.loose,
-                      alignment: Alignment.topLeft,
-                      children: [
-                        GridView.builder(
-                          shrinkWrap: false,
+                        //Leave lobby button
+                        Row(
+                          //button at the end of the row
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 50,
+                                    vertical: 15,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  // Exit lobby in WebSocket
+                                  wsClient.sendMessage("exit_lobby", {
+                                    widget.lobbyCode,
+                                    widget.hostName,
+                                  });
 
-                          padding: EdgeInsets.only(
-                            left: 15,
-                            right: 15,
-                            top: 15,
-                            bottom: 0,
-                          ),
-
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent:
-                                    200, //width of the player's box
-                                crossAxisSpacing: 12,
-                                mainAxisExtent:
-                                    100, //height of the player's box
-                                mainAxisSpacing: 12,
-                                childAspectRatio: 3,
+                                  // Close the current WebSocket connection
+                                  wsClient.disconnect();
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                      type: PageTransitionType.fade,
+                                      child: const HomeScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'Leave',
+                                  style: TextStyle(color: Colors.black),
+                                ),
                               ),
-                          itemCount: lobbyUsers.length,
-                          itemBuilder: (context, index) {
-                            final player = lobbyUsers[index];
-                            final isHost = player['username'] == lobbyCreator;
-                            final iAmHost = lobbyCreator == widget.hostName;
-                            return PlayerBox(
-                              playerName: player['username'],
-                              playerIcon: player['avatarImage'],
-                              isHost: isHost,
-                              iAmHost: iAmHost,
-                              kickUser:
-                                  iAmHost
-                                      ? (String playerNameKick) {
-                                        wsClient.sendMessage(
-                                          "kick_from_lobby",
-                                          {widget.lobbyCode, playerNameKick},
-                                        );
-                                      }
-                                      : (_) {},
-                            );
-                          },
+                            ),
+
+                            // Start button if the user is the host
+                            lobbyCreator == widget.hostName
+                                ? Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 50,
+                                        vertical: 15,
+                                      ),
+                                    ),
+                                    onPressed: () {},
+                                    child: Text(
+                                      'Start',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                )
+                                : Container(), // Empty container if not host
+                          ],
                         ),
                       ],
                     ),
                   ),
-                ),
-
-                //Leave lobby button
-                Row(
-                  //button at the end of the row
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 50,
-                            vertical: 15,
-                          ),
-                        ),
-                        onPressed: () {
-                          // Exit lobby in WebSocket
-                          wsClient.sendMessage("exit_lobby", {
-                            widget.lobbyCode,
-                            widget.hostName,
-                          });
-
-                          // Close the current WebSocket connection
-                          wsClient.disconnect();
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.fade,
-                              child: const HomeScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          'Leave',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-
-                    // Start button if the user is the host
-                    lobbyCreator == widget.hostName
-                        ? Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 50,
-                                vertical: 15,
-                              ),
-                            ),
-                            onPressed: () {},
-                            child: Text(
-                              'Start',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ),
-                        )
-                        : Container(), // Empty container if not host
-                  ],
-                ),
-              ],
-            ),
-          ),
         );
       },
     );
