@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 /// A widget that displays a row of Joker cards.
@@ -13,10 +15,14 @@ class JokerCards extends StatefulWidget {
     super.key,
     required this.shopWidgetKey,
     required this.buyWidgetKey,
+    required this.shopFaseWidgetKey,
+    required this.sellWidgetKey,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
+  final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
+  final GlobalKey<SellWidgetState> sellWidgetKey;
 
   @override
   JokerCardsState createState() => JokerCardsState();
@@ -45,9 +51,23 @@ class JokerCardsState extends State<JokerCards> {
         );
         jokersOwned.add(auxJokerInfo);
         _updateIndex();
-        debugPrint("Joker añadido en la lista");
+        debugPrint("Joker añadido en la lista con el precio: ${jokerInfo.price}");	
       } else {
         debugPrint("La lista esta llena");
+      }
+    });
+  }
+
+  /// This function removes the joker from the owned list
+  Future<void> removeJokerOwned(PurchasableItemInfo jokerInfo) async {
+    setState(() {
+      if (jokersOwned.isNotEmpty) {
+        // Remove the joker from the owned list
+        jokersOwned.remove(jokerInfo);
+        _updateIndex();
+        debugPrint("Joker eliminado de la lista");
+      } else {
+        debugPrint("La lista esta vacia");
       }
     });
   }
@@ -87,77 +107,62 @@ class JokerCardsState extends State<JokerCards> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(jokersOwned.length, (index) {
-            return LongPressDraggable<PurchasableItemInfo>(
-              data: jokersOwned[index],
-              feedback: Joker(
-                buyWidgetKey: widget.buyWidgetKey,
-                purchasableItemInfo: jokersOwned[index],
-                // Display sell widget
-                onDraggedItem: () {
-                  return null;
-                },
-                // Hide sell widget
-                onDroppedItem: () {
-                  return null;
-                },
-              ),
-              // Widget that lets you move the joker in the list as it keeps updating itself
-              child: DragTarget<PurchasableItemInfo>(
-                // Update the list as we move the joker in it
-                onWillAcceptWithDetails: (details) {
-                  final fromIndex = details.data;
-                  // Calculate the difference of the stride
-                  //    if difference > 0 == moving joker to the right
-                  //    if difference < 0 == moving joker to the left
-                  int difference = index - fromIndex.index;
-                  // save it for later
-                  final draggedJoker = jokersOwned[fromIndex.index];
-                  setState(() {
-                    switch (difference) {
-                      //    if difference < 0 == moving joker to the left
-                      case < 0:
-                        for (int i = fromIndex.index - 1; i >= index; i--) {
-                          jokersOwned[i + 1] = jokersOwned[i];
-                        }
-                        jokersOwned[index] = draggedJoker;
-                        break;
-                      //    if difference > 0 == moving joker to the right
-                      case > 0:
-                        for (int i = fromIndex.index; i < index; i++) {
-                          jokersOwned[i] = jokersOwned[i + 1];
-                        }
-                        jokersOwned[index] = draggedJoker;
-                        break;
-                      // if difference = 0 == same spot
-                      default:
-                        break;
-                    }
-                    // update the indexes of the jokers
-                    _updateIndex();
-                  });
-
-                  return fromIndex.index != index;
-                },
-                builder: (context, candidateData, rejectedData) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Joker(
-                      buyWidgetKey: widget.buyWidgetKey,
-                      purchasableItemInfo: jokersOwned[index],
-                      // Display sell widget
-                      onDraggedItem: () {
-                        return null;
-                      },
-                      // Hide sell widget
-                      onDroppedItem: () {
-                        return null;
-                      },
-                    ),
-                  );
-                },
-              ),
+            return DragTarget<PurchasableItemInfo>(
+              // Update the list as we move the joker in it
+              onAcceptWithDetails: (details) {
+                final fromIndex = details.data;
+                // Calculate the difference of the stride
+                //    if difference > 0 == moving joker to the right
+                //    if difference < 0 == moving joker to the left
+                int difference = index - fromIndex.index;
+                // save it for later
+                final draggedJoker = jokersOwned[fromIndex.index];
+                setState(() {
+                  switch (difference) {
+                    //    if difference < 0 == moving joker to the left
+                    case < 0:
+                      for (int i = fromIndex.index - 1; i >= index; i--) {
+                        jokersOwned[i + 1] = jokersOwned[i];
+                      }
+                      jokersOwned[index] = draggedJoker;
+                      break;
+                    //    if difference > 0 == moving joker to the right
+                    case > 0:
+                      for (int i = fromIndex.index; i < index; i++) {
+                        jokersOwned[i] = jokersOwned[i + 1];
+                      }
+                      jokersOwned[index] = draggedJoker;
+                      break;
+                    // if difference = 0 == same spot
+                    default:
+                      break;
+                  }
+                  // update the indexes of the jokers
+                  _updateIndex();
+                });
+              },
+              builder: (context, candidateData, rejectedData) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Joker(
+                    keyWidget: widget.sellWidgetKey,
+                    purchasableItemInfo: jokersOwned[index],
+                    // Display sell widget
+                    onDraggedItem: () {
+                      widget.shopFaseWidgetKey.currentState
+                          ?.onDraggedSellItem();
+                      return;
+                    },
+                    // Hide sell widget
+                    onDroppedItem: () {
+                      widget.shopFaseWidgetKey.currentState?.onDropSellItem();
+                      return;
+                    },
+                  ),
+                );
+              },
             );
           }),
         ),

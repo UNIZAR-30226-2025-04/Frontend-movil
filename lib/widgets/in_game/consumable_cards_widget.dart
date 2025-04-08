@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
+import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 /// A widget that displays a row of Joker cards.
@@ -12,10 +14,14 @@ class ConsumableCards extends StatefulWidget {
     super.key,
     required this.shopWidgetKey,
     required this.buyWidgetKey,
+    required this.shopFaseWidgetKey,
+    required this.sellWidgetKey,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
+  final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
+  final GlobalKey<SellWidgetState> sellWidgetKey;
 
   @override
   ConsumableCardsState createState() => ConsumableCardsState();
@@ -46,6 +52,19 @@ class ConsumableCardsState extends State<ConsumableCards> {
         debugPrint("Consumible añadido en la lista");
       } else {
         debugPrint("La lista de consumibles esta llena");
+      }
+    });
+  }
+
+  /// This function removes the consumable from the owned list
+  Future<void> removeConsumableOwned(PurchasableItemInfo jokerInfo) async {
+    setState(() {
+      if (consumableOwned.isNotEmpty) {
+        // Remove the consumable from the owned list
+        consumableOwned.remove(jokerInfo);
+        debugPrint("Consumible eliminado de la lista");
+      } else {
+        debugPrint("No hay consumibles para eliminar");
       }
     });
   }
@@ -109,13 +128,15 @@ class ConsumableCardsState extends State<ConsumableCards> {
                   purchasableItemInfo: consumableOwned[index],
                   // Display sell widget
                   onDraggedItem: () {
-                    return null;
+                    widget.shopFaseWidgetKey.currentState?.onDraggedSellItem();
+                    return;
                   },
                   // Hide sell widget
                   onDroppedItem: () {
-                    return null;
+                    widget.shopFaseWidgetKey.currentState?.onDropSellItem();
+                    return;
                   },
-                  buyWidgetKey: widget.buyWidgetKey,
+                  keyWidget: widget.sellWidgetKey,
                 ),
               );
             }),

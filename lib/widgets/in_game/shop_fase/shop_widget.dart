@@ -293,7 +293,7 @@ class ShopWidgetState extends State<ShopWidget> {
           purchasableItemInfo: info,
           onDraggedItem: widget.onDraggedItem,
           onDroppedItem: widget.onDroppedItem,
-          buyWidgetKey: widget.buyWidgetKey,
+          keyWidget: widget.buyWidgetKey,
         ),
       ],
     );

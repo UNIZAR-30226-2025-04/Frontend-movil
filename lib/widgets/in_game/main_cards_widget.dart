@@ -223,7 +223,7 @@ class MainCardsState extends State<MainCards> {
         setState(() {
           final selectedCount = handCards.where((c) => c.isSelected).length;
           final isSelected = handCards[index].isSelected;
-
+          // Allow selection if the card is not selected or if the selected count is less than 5
           if (isSelected || selectedCount < 5) {
             handCards[index].isSelected = !isSelected;
           }
@@ -232,6 +232,7 @@ class MainCardsState extends State<MainCards> {
       child: DragTarget<int>(
         onAcceptWithDetails: (details) {
           final fromIndex = details.data;
+          // Move the card to the new position
           setState(() {
             final temp = handCards[fromIndex];
             handCards[fromIndex] = handCards[index];
@@ -241,22 +242,24 @@ class MainCardsState extends State<MainCards> {
         builder: (context, candidateData, rejectedData) {
           return Draggable<int>(
             data: index,
-            onDragStarted: () {
+            onDragStarted: () { // Update the dragged index when dragging starts
               setState(() {
                 _draggedIndex = index;
               });
             },
             onDragEnd: (_) {
-              setState(() {
+              setState(() { // Reset the dragged index when dragging ends
                 _draggedIndex = null;
               });
             },
+            // This widget is shown when the card is being dragged
             feedback: Container(
               width: 65,
               height: 97,
               color: Colors.transparent,
               child: _buildCard(card),
             ),
+            // This widget is shown when the card is being dragged
             childWhenDragging:
                 _draggedIndex == index
                     ? const SizedBox.shrink()
