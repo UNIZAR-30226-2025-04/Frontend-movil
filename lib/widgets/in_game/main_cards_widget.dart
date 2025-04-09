@@ -16,6 +16,7 @@ class SelectableCard {
   final String rank;
   final String suit;
   final String overlay;
+  final LayerLink layerLink;
   final PlayingCard card;
   bool isSelected;
   bool isDiscarding;
@@ -25,6 +26,7 @@ class SelectableCard {
     required this.rank,
     required this.suit,
     required this.overlay,
+    required this.layerLink,
     required this.card,
     this.isSelected = false,
     this.isDiscarding = false,
@@ -40,6 +42,9 @@ class MainCardsState extends State<MainCards> {
   int? _draggedIndex;
   int get remainingCards => remainingDeck.length;
   bool hasMountedInitialHand = false;
+
+  /// Overlay for card description
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -70,6 +75,7 @@ class MainCardsState extends State<MainCards> {
         rank: card.value.toString().split('.').last,
         suit: card.suit.toString().split('.').last,
         overlay: "images/glassDemo3.png",
+        layerLink: LayerLink(),
         card: card,
       );
     });
@@ -107,6 +113,7 @@ class MainCardsState extends State<MainCards> {
           rank: newCard.value.toString().split('.').last,
           suit: newCard.suit.toString().split('.').last,
           overlay: "no overlay",
+          layerLink: LayerLink(),
           card: newCard,
           isNew: true,
         );
@@ -164,6 +171,7 @@ class MainCardsState extends State<MainCards> {
           rank: newCard.value.toString().split('.').last,
           suit: newCard.suit.toString().split('.').last,
           overlay: "no overlay",
+          layerLink: LayerLink(),
           card: newCard,
           isNew: true,
         );
@@ -234,46 +242,57 @@ class MainCardsState extends State<MainCards> {
           }
         });
       },
-      child: DragTarget<int>(
-        onAcceptWithDetails: (details) {
-          final fromIndex = details.data;
-          // Move the card to the new position
-          setState(() {
-            final temp = handCards[fromIndex];
-            handCards[fromIndex] = handCards[index];
-            handCards[index] = temp;
-          });
-        },
-        builder: (context, candidateData, rejectedData) {
-          return Draggable<int>(
-            data: index,
-            onDragStarted: () {
-              // Update the dragged index when dragging starts
-              setState(() {
-                _draggedIndex = index;
-              });
-            },
-            onDragEnd: (_) {
-              setState(() {
-                // Reset the dragged index when dragging ends
-                _draggedIndex = null;
-              });
-            },
-            // This widget is shown when the card is being dragged
-            feedback: Container(
-              width: 65,
-              height: 97,
-              color: Colors.transparent,
+      onLongPress: () {
+        debugPrint("OnLongPress");
+        _showCardDescription(card);
+        //_buildDescription(card);
+      },
+      onLongPressEnd: (_) {
+        _hideCardDescription();
+      },
+      child: CompositedTransformTarget(
+        link: card.layerLink,
+        child: DragTarget<int>(
+          onAcceptWithDetails: (details) {
+            final fromIndex = details.data;
+            // Move the card to the new position
+            setState(() {
+              final temp = handCards[fromIndex];
+              handCards[fromIndex] = handCards[index];
+              handCards[index] = temp;
+            });
+          },
+          builder: (context, candidateData, rejectedData) {
+            return Draggable<int>(
+              data: index,
+              onDragStarted: () {
+                // Update the dragged index when dragging starts
+                setState(() {
+                  _draggedIndex = index;
+                });
+              },
+              onDragEnd: (_) {
+                setState(() {
+                  // Reset the dragged index when dragging ends
+                  _draggedIndex = null;
+                });
+              },
+              // This widget is shown when the card is being dragged
+              feedback: Container(
+                width: 65,
+                height: 97,
+                color: Colors.transparent,
+                child: _buildCard(card),
+              ),
+              // This widget is shown when the card is being dragged
+              childWhenDragging:
+                  _draggedIndex == index
+                      ? const SizedBox.shrink()
+                      : _buildCard(card),
               child: _buildCard(card),
-            ),
-            // This widget is shown when the card is being dragged
-            childWhenDragging:
-                _draggedIndex == index
-                    ? const SizedBox.shrink()
-                    : _buildCard(card),
-            child: _buildCard(card),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -330,6 +349,101 @@ class MainCardsState extends State<MainCards> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _showCardDescription(SelectableCard card) {
+    debugPrint("${card.layerLink.leaderSize}");
+    _overlayEntry = OverlayEntry(
+      builder:
+          (context) => Positioned(
+            width: 120,
+            child: CompositedTransformFollower(
+              link: card.layerLink,
+              showWhenUnlinked: false,
+              offset: Offset(-25, -(card.layerLink.leaderSize!.height * 0.65)),
+              child: Material(
+                color: Colors.transparent,
+                child: _buildDescription(card),
+              ),
+            ),
+          ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _hideCardDescription() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  Widget _buildDescription(SelectableCard selectable) {
+    return Container(
+      //width: 100,
+      //height ?
+      decoration: BoxDecoration(
+        color: Colors.grey.shade700,
+        border: Border.all(color: Colors.white, width: 2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 2),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.grey.shade700, width: 2),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Container(
+              // Container to add some margin
+              margin: const EdgeInsets.all(4),
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold),
+                  children: [
+                    TextSpan(
+                      text: "${selectable.rank} of ",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    TextSpan(
+                      text: selectable.suit,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.grey.shade700, width: 2),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Container(
+              // Container to add some margin
+              margin: const EdgeInsets.all(4),
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold),
+                  children: [
+                    TextSpan(
+                      text: "+${selectable.rank}",
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                    TextSpan(
+                      text: " chips",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
