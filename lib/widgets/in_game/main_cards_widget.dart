@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:nogler/classes/card_class.dart';
 import 'package:playing_cards/playing_cards.dart';
 
 /// A widget that displays a set of main cards with draggable behavior.
@@ -10,28 +11,6 @@ class MainCards extends StatefulWidget {
 
   @override
   MainCardsState createState() => MainCardsState();
-}
-
-class SelectableCard {
-  final String rank;
-  final String suit;
-  final String overlay;
-  final LayerLink layerLink;
-  final PlayingCard card;
-  bool isSelected;
-  bool isDiscarding;
-  bool isNew;
-
-  SelectableCard({
-    required this.rank,
-    required this.suit,
-    required this.overlay,
-    required this.layerLink,
-    required this.card,
-    this.isSelected = false,
-    this.isDiscarding = false,
-    this.isNew = false,
-  });
 }
 
 class MainCardsState extends State<MainCards> {
@@ -74,8 +53,7 @@ class MainCardsState extends State<MainCards> {
       return SelectableCard(
         rank: card.value.toString().split('.').last,
         suit: card.suit.toString().split('.').last,
-        overlay: "images/glassDemo3.png",
-        layerLink: LayerLink(),
+        overlay: 1,
         card: card,
       );
     });
@@ -112,8 +90,7 @@ class MainCardsState extends State<MainCards> {
         final selectable = SelectableCard(
           rank: newCard.value.toString().split('.').last,
           suit: newCard.suit.toString().split('.').last,
-          overlay: "no overlay",
-          layerLink: LayerLink(),
+          overlay: 0,
           card: newCard,
           isNew: true,
         );
@@ -170,8 +147,7 @@ class MainCardsState extends State<MainCards> {
         final selectable = SelectableCard(
           rank: newCard.value.toString().split('.').last,
           suit: newCard.suit.toString().split('.').last,
-          overlay: "no overlay",
-          layerLink: LayerLink(),
+          overlay: 0,
           card: newCard,
           isNew: true,
         );
@@ -231,69 +207,71 @@ class MainCardsState extends State<MainCards> {
   Widget _buildDraggableCard(int index) {
     final card = handCards[index];
 
-    return GestureDetector(
-      onTap: () {
+    return DragTarget<int>(
+      onAcceptWithDetails: (details) {
+        final fromIndex = details.data;
+        // Move the card to the new position
         setState(() {
-          final selectedCount = handCards.where((c) => c.isSelected).length;
-          final isSelected = handCards[index].isSelected;
-          // Allow selection if the card is not selected or if the selected count is less than 5
-          if (isSelected || selectedCount < 5) {
-            handCards[index].isSelected = !isSelected;
-          }
+          final temp = handCards[fromIndex];
+          handCards[fromIndex] = handCards[index];
+          handCards[index] = temp;
         });
       },
-      onLongPress: () {
-        debugPrint("OnLongPress");
-        _showCardDescription(card);
-        //_buildDescription(card);
-      },
-      onLongPressEnd: (_) {
-        _hideCardDescription();
-      },
-      child: CompositedTransformTarget(
-        link: card.layerLink,
-        child: DragTarget<int>(
-          onAcceptWithDetails: (details) {
-            final fromIndex = details.data;
-            // Move the card to the new position
+      builder: (context, candidateData, rejectedData) {
+        return Draggable<int>(
+          data: index,
+          onDragStarted: () {
+            // Update the dragged index when dragging starts
             setState(() {
-              final temp = handCards[fromIndex];
-              handCards[fromIndex] = handCards[index];
-              handCards[index] = temp;
+              _draggedIndex = index;
             });
           },
-          builder: (context, candidateData, rejectedData) {
-            return Draggable<int>(
-              data: index,
-              onDragStarted: () {
-                // Update the dragged index when dragging starts
-                setState(() {
-                  _draggedIndex = index;
-                });
-              },
-              onDragEnd: (_) {
-                setState(() {
-                  // Reset the dragged index when dragging ends
-                  _draggedIndex = null;
-                });
-              },
-              // This widget is shown when the card is being dragged
-              feedback: Container(
-                width: 65,
-                height: 97,
-                color: Colors.transparent,
-                child: _buildCard(card),
-              ),
-              // This widget is shown when the card is being dragged
-              childWhenDragging:
-                  _draggedIndex == index
-                      ? const SizedBox.shrink()
-                      : _buildCard(card),
-              child: _buildCard(card),
-            );
+          onDragEnd: (_) {
+            setState(() {
+              // Reset the dragged index when dragging ends
+              _draggedIndex = null;
+            });
           },
-        ),
-      ),
+          // This widget is shown when the card is being dragged
+          feedback: Container(
+            width: 65,
+            height: 97,
+            color: Colors.transparent,
+            child: _buildCard(card),
+          ),
+          // This widget is shown when the card is being dragged
+          childWhenDragging:
+              _draggedIndex == index
+                  ? const SizedBox.shrink()
+                  : _buildCard(card),
+          child: Builder(
+            builder:
+                (cardContext) => GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      final selectedCount =
+                          handCards.where((c) => c.isSelected).length;
+                      final isSelected = handCards[index].isSelected;
+                      if (isSelected || selectedCount < 5) {
+                        handCards[index].isSelected = !isSelected;
+                      }
+                    });
+                  },
+                  onLongPress: () {
+                    final renderBox =
+                        cardContext.findRenderObject() as RenderBox;
+                    final size = renderBox.size;
+                    final position = renderBox.localToGlobal(
+                      Offset(size.width, 0),
+                    ); // esquina superior derecha
+                    _showCardDescription(card, position);
+                  },
+                  onLongPressEnd: (_) => _hideCardDescription(),
+                  child: _buildCard(card),
+                ),
+          ),
+        );
+      },
     );
   }
 
@@ -327,7 +305,7 @@ class MainCardsState extends State<MainCards> {
               children: [
                 PlayingCardView(card: selectable.card, showBack: false),
                 // Overlay of the card
-                if (selectable.overlay != "no overlay")
+                if (cardOverlay[selectable.overlay]['overlay']! != "no overlay")
                   Positioned.fill(
                     // Needed to resize the card effects
                     left: 4,
@@ -339,7 +317,7 @@ class MainCardsState extends State<MainCards> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(12.0)),
                         child: Image.asset(
-                          selectable.overlay,
+                          cardOverlay[selectable.overlay]['overlay']!,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -353,32 +331,68 @@ class MainCardsState extends State<MainCards> {
     );
   }
 
-  void _showCardDescription(SelectableCard card) {
-    debugPrint("${card.layerLink.leaderSize}");
-    _overlayEntry = OverlayEntry(
-      builder:
-          (context) => Positioned(
-            width: 120,
-            child: CompositedTransformFollower(
-              link: card.layerLink,
-              showWhenUnlinked: false,
-              offset: Offset(-25, -(card.layerLink.leaderSize!.height * 0.65)),
+  /// Builds the card description above it
+  void _showCardDescription(SelectableCard card, Offset position) {
+    _overlayEntry?.remove();
+
+    late OverlayEntry entry;
+
+    entry = OverlayEntry(
+      builder: (context) {
+        return Builder(
+          builder: (ctx) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final renderBox = ctx.findRenderObject() as RenderBox?;
+              if (renderBox != null) {
+                final height = renderBox.size.height;
+
+                // Resize the overlay just a bit above the card
+                _overlayEntry?.remove();
+                _overlayEntry = OverlayEntry(
+                  builder:
+                      (_) => Positioned(
+                        left: position.dx - 95,
+                        top: position.dy - height - 20,
+                        width: 120,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: _buildDescription(card),
+                        ),
+                      ),
+                );
+                Overlay.of(ctx).insert(_overlayEntry!);
+              }
+            });
+
+            // Provisional position for the description
+            return Positioned(
+              top: -9999,
+              left: -9999,
               child: Material(
                 color: Colors.transparent,
                 child: _buildDescription(card),
               ),
-            ),
-          ),
+            );
+          },
+        );
+      },
     );
 
-    Overlay.of(context).insert(_overlayEntry!);
+    _overlayEntry = entry;
+    Overlay.of(context).insert(entry);
   }
 
+  /// Hides the card description when no longer onLongPressed
   void _hideCardDescription() {
     _overlayEntry?.remove();
     _overlayEntry = null;
   }
 
+  /// Shows the cards atributtes:
+  /// - Card and suit
+  /// - Chips added when played
+  /// - Card overlay effect
+  /// - Card overlay name
   Widget _buildDescription(SelectableCard selectable) {
     return Container(
       //width: 100,
@@ -390,8 +404,8 @@ class MainCardsState extends State<MainCards> {
       ),
       child: Column(
         children: [
+          // Container to show the card played
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 2),
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(color: Colors.grey.shade700, width: 2),
@@ -402,7 +416,7 @@ class MainCardsState extends State<MainCards> {
               margin: const EdgeInsets.all(4),
               child: RichText(
                 text: TextSpan(
-                  style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                   children: [
                     TextSpan(
                       text: "${selectable.rank} of ",
@@ -417,6 +431,7 @@ class MainCardsState extends State<MainCards> {
               ),
             ),
           ),
+          // Container to show the chips gained and aditional effects triggered when the card is played
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -426,9 +441,9 @@ class MainCardsState extends State<MainCards> {
             child: Container(
               // Container to add some margin
               margin: const EdgeInsets.all(4),
-              child: RichText(
-                text: TextSpan(
-                  style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold),
+              child: Text.rich(
+                TextSpan(
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                   children: [
                     TextSpan(
                       text: "+${selectable.rank}",
@@ -438,11 +453,38 @@ class MainCardsState extends State<MainCards> {
                       text: " chips",
                       style: TextStyle(color: Colors.black),
                     ),
+                    if (cardOverlay[selectable.overlay]['overlay']! !=
+                        "no overlay")
+                      TextSpan(
+                        text:
+                            "\n ${cardOverlay[selectable.overlay]['overlayDescription']!}",
+                        style: TextStyle(color: Colors.black),
+                      ),
                   ],
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
+          if (cardOverlay[selectable.overlay]['overlay']! != "no overlay")
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.purple,
+                border: Border.all(color: Colors.grey.shade700, width: 2),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Container(
+                margin: const EdgeInsets.all(4),
+                child: Text(
+                  cardOverlay[selectable.overlay]['overlayName']!,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
