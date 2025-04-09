@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:playing_cards/playing_cards.dart';
+import 'package:nogler/classes/card_class.dart';
+import 'package:nogler/widgets/in_game/card_widget.dart';
 
 /// A widget that displays a row of played cards temporarily.
 class SelectedCards extends StatefulWidget {
@@ -11,13 +12,13 @@ class SelectedCards extends StatefulWidget {
 
 class SelectedCardsState extends State<SelectedCards> {
   // / List of cards to be displayed temporarily
-  List<PlayingCard> cards = [];
+  List<SelectableCard> cards = [];
   Set<int> bouncingIndices = {};
   Set<int> scoringIndices = {};
   Set<int> appearingIndices = {};
 
   /// Show cards temporarily when a hand is played
-  Future<void> showCards(List<PlayingCard> newCards) async {
+  Future<void> showCards(List<SelectableCard> newCards) async {
     setState(() {
       cards = newCards;
       bouncingIndices.clear();
@@ -68,7 +69,7 @@ class SelectedCardsState extends State<SelectedCards> {
     );
   }
 
-  Widget _buildCard(PlayingCard card, int index) {
+  Widget _buildCard(SelectableCard card, int index) {
     // Check if the card is in the bouncing, scoring or appearing state
     final isAppearing = appearingIndices.contains(index);
     final isBouncing = bouncingIndices.contains(index);
@@ -93,7 +94,7 @@ class SelectedCardsState extends State<SelectedCards> {
                 curve: Curves.easeInOut,
                 child: AspectRatio(
                   aspectRatio: 65 / 90,
-                  child: PlayingCardView(card: card, showBack: false),
+                  child: Stack(children: [buildCard(card)]),
                 ),
               ),
             ),

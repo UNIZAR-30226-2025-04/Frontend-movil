@@ -1,12 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nogler/classes/card_class.dart';
+import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:playing_cards/playing_cards.dart';
 
 /// A widget that displays a set of main cards with draggable behavior.
 class MainCards extends StatefulWidget {
   final Function(int)? onDeckUpdated;
-  final void Function(List<PlayingCard>)? onPlayCards;
+  final void Function(List<SelectableCard>)? onPlayCards;
   const MainCards({super.key, this.onDeckUpdated, this.onPlayCards});
 
   @override
@@ -114,7 +115,7 @@ class MainCardsState extends State<MainCards> {
   /// Plays selected cards and replaces them with new ones from the deck.
   void playSelectedCards() async {
     final selected = handCards.where((c) => c.isSelected).toList();
-    final selectedCards = selected.map((c) => c.card).toList();
+    final selectedCards = selected.map((c) => c).toList();
     final time = selectedCards.length + 1;
 
     // Notify the parent widget about the played cards
@@ -301,30 +302,7 @@ class MainCardsState extends State<MainCards> {
             builder: (context, scale, child) {
               return Transform.scale(scale: scale, child: child);
             },
-            child: Stack(
-              children: [
-                PlayingCardView(card: selectable.card, showBack: false),
-                // Overlay of the card
-                if (cardOverlay[selectable.overlay]['overlay']! != "no overlay")
-                  Positioned.fill(
-                    // Needed to resize the card effects
-                    left: 4,
-                    right: 4,
-                    top: 4,
-                    bottom: 4,
-                    child: Opacity(
-                      opacity: 0.8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                        child: Image.asset(
-                          cardOverlay[selectable.overlay]['overlay']!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            child: buildCard(selectable),
           ),
         ),
       ),

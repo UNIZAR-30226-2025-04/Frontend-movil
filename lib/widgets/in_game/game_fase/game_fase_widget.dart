@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/classes/card_class.dart';
 import 'package:nogler/widgets/in_game/action_buttons_widget.dart';
 import 'package:nogler/widgets/in_game/deck_info_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
-import 'package:playing_cards/playing_cards.dart';
 
 class GameFaseWidget extends StatelessWidget {
   const GameFaseWidget({
@@ -19,7 +19,7 @@ class GameFaseWidget extends StatelessWidget {
   final GlobalKey<SelectedCardsState> selectedCardsKey;
   final int remainingCards;
   final Function(int) onDeckUpdated;
-  final Function(List<PlayingCard>) onPlayCards;
+  final Function(List<SelectableCard>) onPlayCards;
 
   @override
   Widget build(BuildContext context) {
