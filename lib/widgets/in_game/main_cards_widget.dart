@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:nogler/classes/card_class.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:playing_cards/playing_cards.dart';
 
@@ -264,7 +263,7 @@ class MainCardsState extends State<MainCards> {
                     final size = renderBox.size;
                     final position = renderBox.localToGlobal(
                       Offset(size.width, 0),
-                    ); // esquina superior derecha
+                    );
                     _showCardDescription(card, position);
                   },
                   onLongPressEnd: (_) => _hideCardDescription(),

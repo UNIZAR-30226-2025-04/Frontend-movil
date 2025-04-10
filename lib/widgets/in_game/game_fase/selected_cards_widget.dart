@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nogler/classes/card_class.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 
 /// A widget that displays a row of played cards temporarily.

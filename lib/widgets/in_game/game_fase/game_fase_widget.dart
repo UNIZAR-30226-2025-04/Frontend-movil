@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nogler/classes/card_class.dart';
 import 'package:nogler/widgets/in_game/action_buttons_widget.dart';
+import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/deck_info_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';

@@ -1,6 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:nogler/classes/card_class.dart';
 import 'package:playing_cards/playing_cards.dart';
+
+/// Poker card class
+class SelectableCard {
+  final String rank;
+  final String suit;
+  final int overlay;
+  final PlayingCard card;
+  bool isSelected;
+  bool isDiscarding;
+  bool isNew;
+
+  SelectableCard({
+    required this.rank,
+    required this.suit,
+    required this.overlay,
+    required this.card,
+    this.isSelected = false,
+    this.isDiscarding = false,
+    this.isNew = false,
+  });
+}
 
 /// Builds a visual playing card using the playing_cards package.
 Widget buildCard(SelectableCard selectable) {
@@ -29,3 +49,22 @@ Widget buildCard(SelectableCard selectable) {
     ],
   );
 }
+
+/// Overlay list map to extract:
+/// - overlay rute to image
+/// - overlay name
+/// - overlay description: the effect of the overlay
+List<Map<String, String>> cardOverlay = [
+  {
+    // No overlay
+    'overlay': 'no overlay',
+    'overlayName': '',
+    'overlayDescription': '',
+  },
+  {
+    // Glass overlay
+    'overlay': 'images/cards_overlay/glassDemo3.png',
+    'overlayName': 'Glass card',
+    'overlayDescription': 'x2 each played glass card',
+  },
+];
