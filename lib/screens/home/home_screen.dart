@@ -7,6 +7,7 @@ import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
 
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/background_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -21,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String _username = "Loading...";
   int _avatar = 1;
-
+  final WebSocketClient wsClient = WebSocketClient();
   @override
   void initState() {
     super.initState();
@@ -88,15 +89,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     runSpacing: 16,
                     alignment: WrapAlignment.center, // Centers the buttons
                     children: [
-                      _buildMenuButton(context, 'VS AI', () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.fade,
-                            child: GameScreen(),
-                          ),
-                        );
+                      _buildMenuButton(context, 'VS AI', () async {
+                        await wsClient.initialize();
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.fade,
+                              child: GameScreen(),
+                            ),
+                          );
+                        }
                       }),
+
                       _buildMenuButton(context, 'JOIN', () {
                         Navigator.push(
                           context,

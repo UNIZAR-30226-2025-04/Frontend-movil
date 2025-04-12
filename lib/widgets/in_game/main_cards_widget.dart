@@ -1,5 +1,6 @@
-import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:playing_cards/playing_cards.dart';
 
@@ -21,6 +22,7 @@ class MainCardsState extends State<MainCards> {
   int? _draggedIndex;
   int get remainingCards => remainingDeck.length;
   bool hasMountedInitialHand = false;
+  final WebSocketClient wsClient = WebSocketClient();
 
   /// Overlay for card description
   OverlayEntry? _overlayEntry;
@@ -28,41 +30,140 @@ class MainCardsState extends State<MainCards> {
   @override
   void initState() {
     super.initState();
-    _generateRandomHand();
+    _setupWebSocketListener();
+    _drawCards();
   }
 
-  void _generateRandomHand() {
-    final random = Random();
-    final fullDeck = <PlayingCard>[];
+    /// Starts the game by drawing cards from the deck
+  void _drawCards() {
+    // Create a new deck of cards
+    final handData = {
+      'cards': [], 
+      'jokers': {
+        'juglares': [0, 0, 0, 0, 0], 
+      },
+      'gold': 0, 
+    };
+    // Send the request to the server to draw cards
+    wsClient.sendMessage("draw_cards", handData);
+  }
 
-    for (var suit in Suit.values) {
-      if (suit == Suit.joker) continue; // Avoid adding jokers to the deck
-      for (var value in CardValue.values) {
-        if (value != CardValue.joker_1 && value != CardValue.joker_2) {
-          fullDeck.add(PlayingCard(suit, value));
-        }
+  /// Sets up the WebSocket listener to receive card data from the server.
+  void _setupWebSocketListener() {
+    // Listen for the 'deck' event to receive the deck of cards
+    wsClient.addEventListener('drawed_cards', (data) {
+      // Check if the widget is still mounted before updating the state
+      if (!mounted) return;
+
+      try {
+        // Parse the data received from the server
+        final deckSize = data['deck_size'] as int;
+
+        final cardsJson = data['new_cards'] as String;
+
+        // Decode the JSON string into a list of dynamic objects
+        final List<dynamic> parsedList = jsonDecode(cardsJson);
+
+        // Filter and map the parsed list to create a new list of cards
+        final newCards =
+            parsedList
+                .map((item) {
+                  return {
+                    'Rank': item['Rank']?.toString(),
+                    'Suit': item['Suit']?.toString().toLowerCase(),
+                  };
+                })
+                .where((card) => card['Rank'] != null && card['Suit'] != null)
+                .toList();
+
+        // Create a list of SelectableCard objects from the new cards
+        final receivedCards =
+            newCards.map((cardData) {
+              final card = _createCardFromServerData(cardData);
+              return card;
+            }).toList();
+
+        // Update the remaining deck with the new cards
+        widget.onDeckUpdated?.call(deckSize);
+
+        // Update the state with the new cards
+        setState(() {
+          handCards = receivedCards;
+          hasMountedInitialHand = true;
+        });
+      } catch (e) {
+        debugPrint("❌ Error parsing card data: $e");
       }
+    });
+  }
+
+  /// Creates a SelectableCard object from the server data.
+  SelectableCard _createCardFromServerData(Map<String, dynamic> cardData) {
+    // Extract the rank and suit from the card data
+    final rank = cardData['Rank'].toString();
+    final suit = cardData['Suit'].toString().toLowerCase();
+
+    // Convert the suit and rank to the appropriate enum values
+    final cardValue = _valueFromString(rank);
+    final cardSuit = _suitFromString(suit);
+
+    // Create a SelectableCard object with the extracted data
+    return SelectableCard(
+      rank: rank,
+      suit: suit,
+      overlay: 1,
+      card: PlayingCard(cardSuit, cardValue),
+    );
+  }
+
+  /// Converts a string representation of a suit to the corresponding Suit enum value.
+  Suit _suitFromString(String suit) {
+    switch (suit) {
+      case 'h':
+        return Suit.hearts;
+      case 'd':
+        return Suit.diamonds;
+      case 'c':
+        return Suit.clubs;
+      case 's':
+        return Suit.spades;
+      default:
+        return Suit.hearts;
     }
+  }
 
-    fullDeck.shuffle(random);
-    remainingDeck = fullDeck; // All the cards in the deck
-
-    // Steal 8 cards from the deck
-    handCards = List.generate(8, (_) {
-      final card = remainingDeck.removeAt(0);
-      return SelectableCard(
-        rank: card.value.toString().split('.').last,
-        suit: card.suit.toString().split('.').last,
-        overlay: 1,
-        card: card,
-      );
-    });
-
-    // Notify the parent widget about the initial deck size
-    widget.onDeckUpdated?.call(remainingDeck.length);
-    setState(() {
-      hasMountedInitialHand = true;
-    });
+  /// Converts a string representation of a rank to the corresponding CardValue enum value.
+  CardValue _valueFromString(String rank) {
+    switch (rank) {
+      case 'A':
+        return CardValue.ace;
+      case 'J':
+        return CardValue.jack;
+      case 'Q':
+        return CardValue.queen;
+      case 'K':
+        return CardValue.king;
+      case '2':
+        return CardValue.two;
+      case '3':
+        return CardValue.three;
+      case '4':
+        return CardValue.four;
+      case '5':
+        return CardValue.five;
+      case '6':
+        return CardValue.six;
+      case '7':
+        return CardValue.seven;
+      case '8':
+        return CardValue.eight;
+      case '9':
+        return CardValue.nine;
+      case '10':
+        return CardValue.ten;
+      default:
+        return CardValue.ace;
+    }
   }
 
   /// Discards selected cards and replaces them with new ones from the deck.

@@ -37,8 +37,10 @@ class GameScreenState extends State<GameScreen> {
       GlobalKey<ShopWidgetState>();
   final GlobalKey<BuyWidgetState> _buyWidgetKey = GlobalKey<BuyWidgetState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<SellWidgetState> _sellWidgetKey = GlobalKey<SellWidgetState>();
-  final GlobalKey<ShopFaseWidgetState> _shopFaseWidgetKey = GlobalKey<ShopFaseWidgetState>();
+  final GlobalKey<SellWidgetState> _sellWidgetKey =
+      GlobalKey<SellWidgetState>();
+  final GlobalKey<ShopFaseWidgetState> _shopFaseWidgetKey =
+      GlobalKey<ShopFaseWidgetState>();
 
   // Variables to animate the exit of the elements off screen
   bool _animateShowGameFaseWidgets = true;
