@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/dialogs/game_dialogs.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
@@ -116,37 +117,40 @@ class SidebarState extends State<Sidebar> {
         SizedBox(height: 5),
 
         // Displays game multipliers and levels.
-        Container(
-          padding: EdgeInsets.all(8),
-          decoration: _boxDecoration(),
-          child: Column(
-            children: [
-              Text(
-                "Full House lvl 2",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildStatBox("90", const Color(0xFF0ea5e9)),
-                  SizedBox(width: 5),
-                  Text(
-                    "X",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+        GestureDetector(
+          onTap: () => showHandTypes(context),
+          child: Container(
+            padding: EdgeInsets.all(8),
+            decoration: _boxDecoration(),
+            child: Column(
+              children: [
+                Text(
+                  "Full House lvl 2",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                  SizedBox(width: 5),
-                  _buildStatBox("8", const Color(0xFFd41976)),
-                ],
-              ),
-            ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildStatBox("90", const Color(0xFF0ea5e9)),
+                    SizedBox(width: 5),
+                    Text(
+                      "X",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                    _buildStatBox("8", const Color(0xFFd41976)),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
 

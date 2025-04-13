@@ -12,9 +12,8 @@ class SortOptions extends StatelessWidget {
       height: 55,
       padding: EdgeInsets.all(10), // Padding inside the container
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 37, 213, 113), // White background
+        color: Color(0xFF495a8f),
         borderRadius: BorderRadius.circular(10), // Rounded borders
-        border: Border.all(color: const Color.fromARGB(255, 238, 236, 236), width: 2), // Black border
       ),
       child: Column(
         children: [
@@ -24,7 +23,7 @@ class SortOptions extends StatelessWidget {
             children: [
               Text(
                 "Sort hand",
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ],
           ),
@@ -63,7 +62,7 @@ class SortOptions extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
-            fontSize: 8,
+            fontSize: 10,
             fontWeight: FontWeight.bold,
           ), // Text size adjustment
         ),
