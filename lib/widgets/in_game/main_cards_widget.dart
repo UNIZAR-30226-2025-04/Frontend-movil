@@ -23,6 +23,7 @@ class MainCardsState extends State<MainCards> {
   int get remainingCards => remainingDeck.length;
   bool hasMountedInitialHand = false;
   final WebSocketClient wsClient = WebSocketClient();
+  int gold = 0;
 
   /// Overlay for card description
   OverlayEntry? _overlayEntry;
@@ -30,7 +31,7 @@ class MainCardsState extends State<MainCards> {
   @override
   void initState() {
     super.initState();
-    _setupWebSocketListener();
+    _setupWebSocketListeners();
     _drawCards();
   }
 
@@ -38,23 +39,28 @@ class MainCardsState extends State<MainCards> {
   void _drawCards() {
     // Create a new deck of cards
     final handData = {
-      'cards': [],
+      'cards':
+          handCards
+              .map(
+                (card) => {
+                  'rank': card.rank,
+                  'suit': card.suit.toLowerCase(), // Ensure lowercase suits
+                },
+              )
+              .toList(),
       'jokers': {
         'juglares': [0, 0, 0, 0, 0],
       },
-      'gold': 0,
+      'gold': gold,
     };
     // Send the request to the server to draw cards
     wsClient.sendMessage("draw_cards", handData);
   }
 
   /// Sets up the WebSocket listener to receive card data from the server.
-  void _setupWebSocketListener() {
+  void _setupWebSocketListeners() {
     // Listen for the 'deck' event to receive the deck of cards
-    wsClient.addEventListener('drawed_cards', (data) {
-      // Check if the widget is still mounted before updating the state
-      if (!mounted) return;
-
+    wsClient.addEventListener('drawed_cards', (data) async {
       try {
         // Parse the data received from the server
         final deckSize = data['deck_size'] as int;
@@ -86,14 +92,68 @@ class MainCardsState extends State<MainCards> {
         // Update the remaining deck with the new cards
         widget.onDeckUpdated?.call(deckSize);
 
-        // Update the state with the new cards
-        setState(() {
-          handCards = receivedCards;
-          hasMountedInitialHand = true;
-        });
+        // Animate the new cards coming in
+        if (receivedCards.isNotEmpty) {
+          // Add cards one by one with animation
+          for (final card in receivedCards) {
+            card.isNew = true;
+
+            setState(() {
+              handCards.add(card);
+            });
+
+            await Future.delayed(const Duration(milliseconds: 200));
+
+            setState(() {
+              card.isNew = false;
+            });
+
+            await Future.delayed(const Duration(milliseconds: 300));
+          }
+          setState(() {
+            hasMountedInitialHand = true;
+          });
+        } else {
+          // No animation needed if no cards
+          setState(() {
+            handCards = receivedCards;
+            hasMountedInitialHand = true;
+          });
+        }
       } catch (e) {
         debugPrint("❌ Error parsing card data: $e");
       }
+    });
+
+    // Listen for the 'played_hand' event to receive the played hand data
+    wsClient.addEventListener('played_hand', (data) async {
+      final selected = handCards.where((c) => c.isSelected).toList();
+      final selectedCards = selected.map((c) => c).toList();
+      final time = selectedCards.length + 1;
+
+      // Notify the parent widget about the discarded cards
+      setState(() {
+        for (var c in selected) {
+          c.isDiscarding = true;
+        }
+      });
+
+      // Simulate a delay for the animation effect
+      await Future.delayed(const Duration(milliseconds: 350));
+
+      // Notify the parent widget about the discarded cards
+      setState(() {
+        handCards.removeWhere((c) => c.isDiscarding);
+      });
+
+      // Simulate a delay for the animation effect
+      await Future.delayed(Duration(seconds: time));
+
+      // Clear the played cards from the parent widget
+      widget.onPlayCards?.call([]);
+
+      // Get the new cards from the server
+      _drawCards();
     });
   }
 
@@ -169,6 +229,7 @@ class MainCardsState extends State<MainCards> {
   /// Discards selected cards and replaces them with new ones from the deck.
   void discardSelectedCards() async {
     final selected = handCards.where((c) => c.isSelected).toList();
+
     // Notify the parent widget about the discarded cards
     setState(() {
       for (var c in selected) {
@@ -183,94 +244,38 @@ class MainCardsState extends State<MainCards> {
     setState(() {
       handCards.removeWhere((c) => c.isDiscarding);
     });
+
+    // Simulate a delay for the animation effect
     await Future.delayed(const Duration(milliseconds: 300));
 
-    for (var i = 0; i < selected.length; i++) {
-      if (remainingDeck.isNotEmpty) {
-        final newCard = remainingDeck.removeAt(0);
-        final selectable = SelectableCard(
-          rank: newCard.value.toString().split('.').last,
-          suit: newCard.suit.toString().split('.').last,
-          overlay: 0,
-          card: newCard,
-          isNew: true,
-        );
-        setState(() {
-          handCards.add(selectable);
-        });
-        await Future.delayed(const Duration(milliseconds: 200));
-
-        setState(() {
-          selectable.isNew = false;
-        });
-        // Simulate a delay for the animation effect
-        await Future.delayed(const Duration(milliseconds: 300));
-      }
-    }
-
-    // Notify the parent widget about the updated deck size
-    widget.onDeckUpdated?.call(remainingDeck.length);
+    // Get the new cards from the server
+    _drawCards();
   }
 
   /// Plays selected cards and replaces them with new ones from the deck.
   void playSelectedCards() async {
     final selected = handCards.where((c) => c.isSelected).toList();
     final selectedCards = selected.map((c) => c).toList();
-    final time = selectedCards.length + 1;
+
+    // Data to send to the server
+    final handData = {
+      'cards':
+          selected
+              .map(
+                (card) => {'rank': card.rank, 'suit': card.suit.toLowerCase()},
+              )
+              .toList(),
+      'jokers': {
+        'Juglares': [0, 0, 0, 0, 0], // Default empty jokers
+      },
+      'gold': gold,
+    };
+
+    // Send the request to the server to play the hand
+    wsClient.sendMessage("play_hand", handData);
 
     // Notify the parent widget about the played cards
     widget.onPlayCards?.call(selectedCards);
-    // Notify the parent widget about the discarded cards
-    setState(() {
-      for (var c in selected) {
-        c.isDiscarding = true;
-      }
-    });
-
-    // Simulate a delay for the animation effect
-    await Future.delayed(const Duration(milliseconds: 350));
-
-    // Notify the parent widget about the discarded cards
-    setState(() {
-      handCards.removeWhere((c) => c.isDiscarding);
-    });
-
-    // Simulate a delay for the animation effect
-    await Future.delayed(Duration(seconds: time));
-
-    // Clear the played cards from the parent widget
-    widget.onPlayCards?.call([]);
-
-    // Add new cards to the hand
-    for (var i = 0; i < selected.length; i++) {
-      if (remainingDeck.isNotEmpty) {
-        final newCard = remainingDeck.removeAt(0);
-        final selectable = SelectableCard(
-          rank: newCard.value.toString().split('.').last,
-          suit: newCard.suit.toString().split('.').last,
-          overlay: 0,
-          card: newCard,
-          isNew: true,
-        );
-
-        // Notify the parent widget about the new card
-        setState(() {
-          handCards.add(selectable);
-        });
-
-        // Simulate a delay for the animation effect
-        await Future.delayed(const Duration(milliseconds: 200));
-
-        // This will trigger the animation to show the card
-        setState(() {
-          selectable.isNew = false;
-        });
-        // Simulate a delay for the animation effect
-        await Future.delayed(const Duration(milliseconds: 300));
-      }
-    }
-    // Notify the parent widget about the updated deck size
-    widget.onDeckUpdated?.call(remainingDeck.length);
   }
 
   @override
