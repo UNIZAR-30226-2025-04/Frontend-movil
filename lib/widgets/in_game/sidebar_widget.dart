@@ -33,7 +33,7 @@ class SidebarState extends State<Sidebar> {
     return Container(
       width: 200,
       padding: EdgeInsets.all(10),
-      color: Colors.white,
+      color: const Color(0xFF2C3454),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -41,8 +41,12 @@ class SidebarState extends State<Sidebar> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "Round 3/10",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              "Round 1/10",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
 
@@ -81,16 +85,28 @@ class SidebarState extends State<Sidebar> {
             children: [
               Text(
                 "Round \nScore",
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               SizedBox(width: 10),
 
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-                decoration: _boxDecoration(),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2C3454),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
                 child: Text(
                   "302.24€",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -107,19 +123,27 @@ class SidebarState extends State<Sidebar> {
             children: [
               Text(
                 "Full House lvl 2",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildStatBox("90"),
+                  _buildStatBox("90", const Color(0xFF0ea5e9)),
                   SizedBox(width: 5),
                   Text(
                     "X",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   SizedBox(width: 5),
-                  _buildStatBox("8"),
+                  _buildStatBox("8", const Color(0xFFd41976)),
                 ],
               ),
             ],
@@ -135,9 +159,9 @@ class SidebarState extends State<Sidebar> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildLabelAndValue("Hands", "3"),
+                _buildLabelAndValue("Hands", "3", const Color(0xFF9fdbf6)),
                 SizedBox(width: 10),
-                _buildLabelAndValue("Discards", "4"),
+                _buildLabelAndValue("Discards", "4", const Color(0xFFeea3c8)),
               ],
             ),
             SizedBox(height: 5),
@@ -145,9 +169,9 @@ class SidebarState extends State<Sidebar> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildLabelAndValue("Money", "20€"),
+                _buildLabelAndValue("Pot", "5€", const Color(0xFFffffff)),
                 SizedBox(width: 10),
-                _buildLabelAndValue("Rounds", "10"),
+                _buildLabelAndValue("Money", "20€", const Color(0xFFf7e19c)),
               ],
             ),
           ],
@@ -157,16 +181,24 @@ class SidebarState extends State<Sidebar> {
   }
 
   /// Builds a labeled value box for game statistics.
-  Widget _buildStatBox(String value) {
+  Widget _buildStatBox(String value, Color color) {
     return Container(
       width: 60,
       height: 35,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: _boxDecoration(),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.black, width: 2),
+      ),
       child: Center(
         child: Text(
           value,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -175,20 +207,20 @@ class SidebarState extends State<Sidebar> {
   /// Creates a styled box decoration for UI components.
   BoxDecoration _boxDecoration() {
     return BoxDecoration(
-      color: Colors.white,
+      color: const Color(0xFF495a8f),
       borderRadius: BorderRadius.circular(10),
       border: Border.all(color: Colors.black, width: 2),
     );
   }
 
   /// Builds a labeled value box for game statistics.
-  Widget _buildLabelAndValue(String label, String value) {
+  Widget _buildLabelAndValue(String label, String value, Color color) {
     return Container(
       width: 85,
       height: 50,
       padding: EdgeInsets.all(1),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF495a8f),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.black, width: 2),
       ),
@@ -198,7 +230,11 @@ class SidebarState extends State<Sidebar> {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
 
           Container(
@@ -206,7 +242,7 @@ class SidebarState extends State<Sidebar> {
             height: 20,
             padding: EdgeInsets.all(1),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: const Color(0xFF2C3454),
               borderRadius: BorderRadius.circular(5),
               border: Border.all(color: Colors.black, width: 2),
             ),
@@ -216,7 +252,11 @@ class SidebarState extends State<Sidebar> {
               children: [
                 Text(
                   value,
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
                 ),
               ],
             ),

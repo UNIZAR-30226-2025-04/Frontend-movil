@@ -21,7 +21,8 @@ class ActionButtons extends StatelessWidget {
         ElevatedButton(
           onPressed: onPlayHand,
           style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.black, // Set text color to black
+            backgroundColor: const Color(0xFF0ea5e9),
+            foregroundColor: Colors.black,
           ),
           child: Text("Play Hand"),
         ),
@@ -34,7 +35,10 @@ class ActionButtons extends StatelessWidget {
         // Button to discard a card
         ElevatedButton(
           onPressed: onDiscard,
-          style: ElevatedButton.styleFrom(foregroundColor: Colors.black),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFd41976),
+            foregroundColor: Colors.white,
+          ),
           child: Text("Discard"),
         ),
       ],

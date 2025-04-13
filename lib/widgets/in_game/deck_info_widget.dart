@@ -52,7 +52,11 @@ class DeckInfo extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Colors.black, width: 2),
+        border: Border.all(color: Colors.white, width: 2),
+        image: DecorationImage(
+        image: AssetImage('images/Blue_Deck.png'), // Ruta de tu imagen
+        fit: BoxFit.cover, // Ajuste de la imagen
+      ),
       ),
     );
   }

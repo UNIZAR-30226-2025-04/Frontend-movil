@@ -100,7 +100,11 @@ class ConsumableCardsState extends State<ConsumableCards> {
             // Displays the label for active consumables.
             Text(
               "Active consumables",
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
 
             // Displays the count of Consumable cards.
@@ -109,7 +113,7 @@ class ConsumableCardsState extends State<ConsumableCards> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Colors.white,
               ),
             ),
           ],
