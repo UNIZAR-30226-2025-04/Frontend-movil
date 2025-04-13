@@ -34,15 +34,15 @@ class MainCardsState extends State<MainCards> {
     _drawCards();
   }
 
-    /// Starts the game by drawing cards from the deck
+  /// Starts the game by drawing cards from the deck
   void _drawCards() {
     // Create a new deck of cards
     final handData = {
-      'cards': [], 
+      'cards': [],
       'jokers': {
-        'juglares': [0, 0, 0, 0, 0], 
+        'juglares': [0, 0, 0, 0, 0],
       },
-      'gold': 0, 
+      'gold': 0,
     };
     // Send the request to the server to draw cards
     wsClient.sendMessage("draw_cards", handData);
@@ -279,21 +279,23 @@ class MainCardsState extends State<MainCards> {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child:
           hasMountedInitialHand
-              ? Row(
-                key: ValueKey(
-                  handCards.map((c) => '${c.rank}_${c.suit}').join(),
-                ),
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(handCards.length, (index) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    width: 65,
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    child: _buildDraggableCard(index),
-                  );
-                }),
-              )
+              ? handCards.isNotEmpty
+                  ? Row(
+                    key: ValueKey(
+                      handCards.map((c) => '${c.rank}_${c.suit}').join(),
+                    ),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(handCards.length, (index) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        width: 65,
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        child: _buildDraggableCard(index),
+                      );
+                    }),
+                  )
+                  : const SizedBox(height: 97)
               : Row(
                 // Versión sin key para que no haga animaciones en el primer render
                 mainAxisAlignment: MainAxisAlignment.center,

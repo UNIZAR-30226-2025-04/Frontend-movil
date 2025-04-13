@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nogler/widgets/background_widget.dart';
+import 'package:nogler/widgets/game_background_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/game_fase_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
@@ -52,7 +52,7 @@ class GameScreenState extends State<GameScreen> {
 
   int _remainingCards = 0;
   int animationTime = 500;
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +68,7 @@ class GameScreenState extends State<GameScreen> {
             chatMessages: chatMessages,
           ),
           */
-      body: BackgroundWidget(
+      body: GameBackgroundWidget(
         child: SafeArea(
           child: Stack(
             children: [
