@@ -15,8 +15,9 @@ import 'package:nogler/widgets/in_game/timer_widget.dart';
 
 /// Represents the main game screen with UI components for gameplay.
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  const GameScreen({super.key, required this.round});
 
+  final int round;
   @override
   GameScreenState createState() => GameScreenState();
 }
@@ -24,7 +25,6 @@ class GameScreen extends StatefulWidget {
 class GameScreenState extends State<GameScreen> {
   // WebSocket
   //final WebSocketClient wsClient = WebSocketClient();
-
   List<Map<String, dynamic>> chatMessages = [];
 
   final GlobalKey<MainCardsState> _mainCardsKey = GlobalKey();
@@ -51,8 +51,10 @@ class GameScreenState extends State<GameScreen> {
   bool _showShopFaseWidget = false;
 
   int _remainingCards = 0;
+  int _discardingCards = 0;
+  int _playingCards = 3;
   int animationTime = 500;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,6 +83,9 @@ class GameScreenState extends State<GameScreen> {
                     buyWidgetKey: _buyWidgetKey,
                     shopFaseWidgetKey: _shopFaseWidgetKey,
                     sellWidgetKey: _sellWidgetKey,
+                    round: widget.round,
+                    discardingCards: _discardingCards,
+                    playingCards: _playingCards,
                   ), // Sidebar for navigation and game info
 
                   Expanded(
@@ -139,6 +144,24 @@ class GameScreenState extends State<GameScreen> {
                                   _selectedCardsKey.currentState?.showCards(
                                     playedCards,
                                   );
+                                },
+                                onDiscardUpdated: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _discardingCards = value;
+                                    });
+                                  });
+                                },
+                                onPlayingUpdated: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _playingCards = value;
+                                    });
+                                  });
                                 },
                               ),
                             ),

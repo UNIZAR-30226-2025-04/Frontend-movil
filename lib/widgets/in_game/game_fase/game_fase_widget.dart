@@ -13,6 +13,8 @@ class GameFaseWidget extends StatelessWidget {
     required this.remainingCards,
     required this.onDeckUpdated,
     required this.onPlayCards,
+    required this.onDiscardUpdated,
+    required this.onPlayingUpdated,
   });
 
   final GlobalKey<MainCardsState> mainCardsKey;
@@ -20,6 +22,9 @@ class GameFaseWidget extends StatelessWidget {
   final int remainingCards;
   final Function(int) onDeckUpdated;
   final Function(List<SelectableCard>) onPlayCards;
+  final Function(int) onDiscardUpdated;
+  final Function(int) onPlayingUpdated;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +44,8 @@ class GameFaseWidget extends StatelessWidget {
           onDeckUpdated: onDeckUpdated,
           // Callback function
           onPlayCards: onPlayCards,
+          onDiscardUpdated: onDiscardUpdated,
+          onPlayingdUpdated: onPlayingUpdated,
         ),
 
         // Action buttons and deck info at the bottom

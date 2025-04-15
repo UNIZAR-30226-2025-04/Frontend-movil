@@ -3,7 +3,6 @@ import 'package:nogler/dialogs/friends_dialogs.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/dialogs/party_dialog.dart';
 import 'package:nogler/dialogs/profile_dialog.dart';
-import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -90,16 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     alignment: WrapAlignment.center, // Centers the buttons
                     children: [
                       _buildMenuButton(context, 'VS AI', () async {
-                        await wsClient.initialize();
-                        if (context.mounted) {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.fade,
-                              child: GameScreen(),
-                            ),
-                          );
-                        }
                       }),
 
                       _buildMenuButton(context, 'JOIN', () {

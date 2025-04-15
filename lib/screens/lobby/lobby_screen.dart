@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nogler/data/api/lobby_api.dart';
+import 'package:nogler/dialogs/game_dialogs.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/home_screen.dart';
@@ -157,14 +158,26 @@ class _LobbyScreen extends State<LobbyScreen> {
       }
     });
 
-    // Listen for lobby info
-    wsClient.addEventListener("game_starting", (data) {
-      debugPrint("📡 Starting game: $data");
-      Navigator.pushReplacement(
+    // Listen for game start event
+    wsClient.addEventListener("starting_next_blind", (data) async {
+      debugPrint("📡 Starting next blind: $data");
+
+      showSimpleBlindDialog(
         context,
+        widget.lobbyCode,
+      );
+    });
+
+    // Listen for round start event
+    wsClient.addEventListener("starting_round", (data) async {
+      debugPrint("📡 Starting round: $data");
+      final round = data['round_number'] as int;
+      Navigator.of(context).pushReplacement(
         PageTransition(
           type: PageTransitionType.fade,
-          child: const GameScreen(),
+          child: GameScreen(
+            round: round,
+          ),
         ),
       );
     });
@@ -482,7 +495,10 @@ class _LobbyScreen extends State<LobbyScreen> {
                                       ),
                                     ),
                                     onPressed: () {
-                                      wsClient.sendMessage("start_game", widget.lobbyCode);
+                                      wsClient.sendMessage(
+                                        "start_game",
+                                        widget.lobbyCode,
+                                      );
                                     },
                                     child: Text(
                                       'Start',

@@ -8,7 +8,15 @@ import 'package:playing_cards/playing_cards.dart';
 class MainCards extends StatefulWidget {
   final Function(int)? onDeckUpdated;
   final void Function(List<SelectableCard>)? onPlayCards;
-  const MainCards({super.key, this.onDeckUpdated, this.onPlayCards});
+  final Function(int)? onDiscardUpdated;
+  final Function(int)? onPlayingdUpdated;
+  const MainCards({
+    super.key,
+    this.onDeckUpdated,
+    this.onPlayCards,
+    this.onDiscardUpdated,
+    this.onPlayingdUpdated,
+  });
 
   @override
   MainCardsState createState() => MainCardsState();
@@ -20,14 +28,17 @@ class MainCardsState extends State<MainCards> {
 
   /// Stores the index of the dragged card
   int? _draggedIndex;
+  int? discardingCards;
+  int? playingCards;
   int get remainingCards => remainingDeck.length;
   bool hasMountedInitialHand = false;
   final WebSocketClient wsClient = WebSocketClient();
   int gold = 0;
+  bool isDiscarding = false;
 
   /// Overlay for card description
   OverlayEntry? _overlayEntry;
-
+  String? lobbyId;
   @override
   void initState() {
     super.initState();
@@ -54,7 +65,7 @@ class MainCardsState extends State<MainCards> {
       'gold': gold,
     };
     // Send the request to the server to draw cards
-    wsClient.sendMessage("draw_cards", handData);
+    wsClient.sendMessage("draw_cards", {handData, isDiscarding});
   }
 
   /// Sets up the WebSocket listener to receive card data from the server.
@@ -64,7 +75,12 @@ class MainCardsState extends State<MainCards> {
       try {
         // Parse the data received from the server
         final deckSize = data['deck_size'] as int;
-
+        final leftDraws = data['left_draws'] as int;
+        setState(() {
+          discardingCards = leftDraws;
+        });
+        // Notify the parent widget about the number of cards left to draw
+        widget.onDiscardUpdated?.call(leftDraws);
         final cardsJson = data['new_cards'] as String;
 
         // Decode the JSON string into a list of dynamic objects
@@ -130,12 +146,14 @@ class MainCardsState extends State<MainCards> {
       final selected = handCards.where((c) => c.isSelected).toList();
       final selectedCards = selected.map((c) => c).toList();
       final time = selectedCards.length + 1;
-
+      final playedCards = data['left_plays'] as int;
+      widget.onPlayingdUpdated?.call(playedCards);
       // Notify the parent widget about the discarded cards
       setState(() {
         for (var c in selected) {
           c.isDiscarding = true;
         }
+        playingCards = playedCards;
       });
 
       // Simulate a delay for the animation effect
@@ -228,6 +246,8 @@ class MainCardsState extends State<MainCards> {
 
   /// Discards selected cards and replaces them with new ones from the deck.
   void discardSelectedCards() async {
+    if (discardingCards == 0) return;
+
     final selected = handCards.where((c) => c.isSelected).toList();
 
     // Notify the parent widget about the discarded cards
@@ -235,6 +255,8 @@ class MainCardsState extends State<MainCards> {
       for (var c in selected) {
         c.isDiscarding = true;
       }
+      // Indicate that the cards are being discarded and decrease the dicarding hands
+      isDiscarding = true;
     });
 
     // Simulate a delay for the animation effect
@@ -254,9 +276,14 @@ class MainCardsState extends State<MainCards> {
 
   /// Plays selected cards and replaces them with new ones from the deck.
   void playSelectedCards() async {
+    if (playingCards == 0) return;
     final selected = handCards.where((c) => c.isSelected).toList();
     final selectedCards = selected.map((c) => c).toList();
 
+    // Indicate that the cards are being discarded but not decrease the dicarding hands
+    setState(() {
+      isDiscarding = false;
+    });
     // Data to send to the server
     final handData = {
       'cards':
@@ -300,14 +327,20 @@ class MainCardsState extends State<MainCards> {
                       );
                     }),
                   )
-                  : const SizedBox(height: 97)
-              : Row(
-                // Versión sin key para que no haga animaciones en el primer render
+                  : const SizedBox(
+                    height: 97,
+                  ) // Placeholder for when no cards are available
+              : handCards.isNotEmpty
+              ? Row(
+                // Render first cards
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(handCards.length, (index) {
                   return SizedBox(width: 65, child: _buildDraggableCard(index));
                 }),
-              ),
+              )
+              : const SizedBox(
+                height: 97,
+              ), // Placeholder for when no cards are available
     );
   }
 

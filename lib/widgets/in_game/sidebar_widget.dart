@@ -16,6 +16,9 @@ class Sidebar extends StatefulWidget {
     required this.consumableCardsKey,
     required this.shopFaseWidgetKey,
     required this.sellWidgetKey,
+    required this.round,
+    required this.discardingCards,
+    required this.playingCards,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -23,6 +26,9 @@ class Sidebar extends StatefulWidget {
   final GlobalKey<ConsumableCardsState> consumableCardsKey;
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
+  final int round;
+  final int discardingCards;
+  final int playingCards;
 
   @override
   SidebarState createState() => SidebarState();
@@ -42,7 +48,7 @@ class SidebarState extends State<Sidebar> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "Round 1/10",
+              "Round ${widget.round}/10",
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -56,7 +62,10 @@ class SidebarState extends State<Sidebar> {
           SizedBox(height: 5),
 
           /// Displays overall game statistics.
-          _buildGameStats(),
+          _buildGameStats(
+            widget.discardingCards.toString(),
+            widget.playingCards.toString(),
+          ),
         ],
       ),
     );
@@ -74,7 +83,7 @@ class SidebarState extends State<Sidebar> {
   }
 
   /// Builds a section displaying game statistics such as round score and player stats.
-  Widget _buildGameStats() {
+  Widget _buildGameStats(String remainingCards, String playingCards) {
     return Column(
       children: [
         // Displays the round score
@@ -163,9 +172,17 @@ class SidebarState extends State<Sidebar> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildLabelAndValue("Hands", "3", const Color(0xFF9fdbf6)),
+                _buildLabelAndValue(
+                  "Hands",
+                  playingCards,
+                  const Color(0xFF9fdbf6),
+                ),
                 SizedBox(width: 10),
-                _buildLabelAndValue("Discards", "4", const Color(0xFFeea3c8)),
+                _buildLabelAndValue(
+                  "Discards",
+                  remainingCards,
+                  const Color(0xFFeea3c8),
+                ),
               ],
             ),
             SizedBox(height: 5),
