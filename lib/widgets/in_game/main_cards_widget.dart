@@ -31,7 +31,6 @@ class MainCardsState extends State<MainCards> {
   int? discardingCards;
   int? playingCards;
   int get remainingCards => remainingDeck.length;
-  bool hasMountedInitialHand = false;
   final WebSocketClient wsClient = WebSocketClient();
   int gold = 0;
   bool isDiscarding = false;
@@ -126,14 +125,10 @@ class MainCardsState extends State<MainCards> {
 
             await Future.delayed(const Duration(milliseconds: 300));
           }
-          setState(() {
-            hasMountedInitialHand = true;
-          });
         } else {
           // No animation needed if no cards
           setState(() {
             handCards = receivedCards;
-            hasMountedInitialHand = true;
           });
         }
       } catch (e) {
@@ -147,6 +142,11 @@ class MainCardsState extends State<MainCards> {
       final selectedCards = selected.map((c) => c).toList();
       final time = selectedCards.length + 1;
       final playedCards = data['left_plays'] as int;
+
+      // Notify the parent widget about the played cards
+      widget.onPlayCards?.call(selectedCards);
+
+      // Notify the parent widget about the number of hands left to play
       widget.onPlayingdUpdated?.call(playedCards);
       // Notify the parent widget about the discarded cards
       setState(() {
@@ -278,8 +278,6 @@ class MainCardsState extends State<MainCards> {
   void playSelectedCards() async {
     if (playingCards == 0) return;
     final selected = handCards.where((c) => c.isSelected).toList();
-    final selectedCards = selected.map((c) => c).toList();
-
     // Indicate that the cards are being discarded but not decrease the dicarding hands
     setState(() {
       isDiscarding = false;
@@ -300,9 +298,6 @@ class MainCardsState extends State<MainCards> {
 
     // Send the request to the server to play the hand
     wsClient.sendMessage("play_hand", handData);
-
-    // Notify the parent widget about the played cards
-    widget.onPlayCards?.call(selectedCards);
   }
 
   /// Sorts the cards in the hand by rank
@@ -382,37 +377,25 @@ class MainCardsState extends State<MainCards> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child:
-          hasMountedInitialHand
-              ? handCards.isNotEmpty
-                  ? Row(
-                    key: ValueKey(
-                      handCards.map((c) => '${c.rank}_${c.suit}').join(),
-                    ),
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(handCards.length, (index) {
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        width: 65,
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
-                        child: _buildDraggableCard(index),
-                      );
-                    }),
-                  )
-                  : const SizedBox(
-                    height: 97,
-                  ) // Placeholder for when no cards are available
-              : handCards.isNotEmpty
+          handCards.isNotEmpty
               ? Row(
-                // Render first cards
+                key: ValueKey(
+                  handCards.map((c) => '${c.rank}_${c.suit}').join(),
+                ),
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(handCards.length, (index) {
-                  return SizedBox(width: 65, child: _buildDraggableCard(index));
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    width: 65,
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    child: _buildDraggableCard(index),
+                  );
                 }),
               )
               : const SizedBox(
                 height: 97,
-              ), // Placeholder for when no cards are available
+              ), // Placeholder para cuando no hay cartas
     );
   }
 

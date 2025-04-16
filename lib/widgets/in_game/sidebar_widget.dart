@@ -123,12 +123,13 @@ class SidebarState extends State<Sidebar> {
           ),
         ),
 
-        SizedBox(height: 5),
+        SizedBox(height: 2),
 
         // Displays game multipliers and levels.
         GestureDetector(
           onTap: () => showHandTypes(context),
           child: Container(
+            height: 68,
             padding: EdgeInsets.all(8),
             decoration: _boxDecoration(),
             child: Column(
@@ -154,7 +155,7 @@ class SidebarState extends State<Sidebar> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(width: 5),
+                    SizedBox(width: 2),
                     _buildStatBox("8", const Color(0xFFd41976)),
                   ],
                 ),
@@ -163,7 +164,7 @@ class SidebarState extends State<Sidebar> {
           ),
         ),
 
-        SizedBox(height: 5),
+        SizedBox(height: 2),
 
         // Displays additional player statistics
         Column(
@@ -205,7 +206,7 @@ class SidebarState extends State<Sidebar> {
   Widget _buildStatBox(String value, Color color) {
     return Container(
       width: 60,
-      height: 35,
+      height: 28,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: color,
@@ -216,7 +217,7 @@ class SidebarState extends State<Sidebar> {
         child: Text(
           value,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -238,7 +239,7 @@ class SidebarState extends State<Sidebar> {
   Widget _buildLabelAndValue(String label, String value, Color color) {
     return Container(
       width: 85,
-      height: 50,
+      height: 46,
       padding: EdgeInsets.all(1),
       decoration: BoxDecoration(
         color: const Color(0xFF495a8f),
@@ -252,7 +253,7 @@ class SidebarState extends State<Sidebar> {
           Text(
             label,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -260,7 +261,7 @@ class SidebarState extends State<Sidebar> {
 
           Container(
             width: 80,
-            height: 20,
+            height: 23,
             padding: EdgeInsets.all(1),
             decoration: BoxDecoration(
               color: const Color(0xFF2C3454),
@@ -274,7 +275,7 @@ class SidebarState extends State<Sidebar> {
                 Text(
                   value,
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: color,
                   ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nogler/screens/loading/loading_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
+import 'package:page_transition/page_transition.dart';
 
 /// Displays a dialog showing the types of hands in the game.
 Future<void> showHandTypes(BuildContext context) async {
@@ -286,7 +288,15 @@ Future<void> showSimpleBlindDialog(BuildContext context, String lobbyId) async {
                         proposedBlind,
                         lobbyId,
                       });
-                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: const LoadingScreen(
+                            loadingMessage: 'Starting round ...',
+                          ),
+                        ),
+                      );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

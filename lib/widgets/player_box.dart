@@ -40,22 +40,14 @@ class PlayerBox extends StatelessWidget {
                 ),
                 items: [
                   PopupMenuItem(
-                    child: TextButton(
-                      onPressed: () {
-                        //Kicks selected user from table
+                    child: ListTile(
+                      title: const Text("Kick from lobby"),
+                      onTap: () {
+                        // Kick the user from the lobby
                         kickUser(playerName);
+                        // Close the menu
                         Navigator.pop(context);
                       },
-                      child: const Text("Kick from lobby"),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    child: TextButton(
-                      onPressed: () {
-                        //TODO, en caso de que lo hagamos
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Give host privileges"),
                     ),
                   ),
                 ],

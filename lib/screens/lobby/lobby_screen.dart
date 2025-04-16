@@ -177,6 +177,9 @@ class _LobbyScreen extends State<LobbyScreen> {
           type: PageTransitionType.fade,
           child: GameScreen(
             round: round,
+            hostName: widget.hostName,
+            hostAvatar: widget.hostAvatar,
+            lobbyCode: widget.lobbyCode,
           ),
         ),
       );

@@ -42,22 +42,18 @@ class TimerWidgetState extends State<TimerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      top: 20,
-      right: 20,
-      child: Container(
-        width: 50,
-        height: 40,
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-          child: Text(
-            "$_seconds s",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+    return Container(
+      width: 50,
+      height: 40,
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(
+        child: Text(
+          "$_seconds s",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
     );
