@@ -52,13 +52,18 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
             });
           }
           return AlertDialog(
+            backgroundColor: const Color(0xFF2C3454),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20), // Pop up border
             ),
             title: const Text(
               "Invitations",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             content: SizedBox(
               width: 550, // pop-up width
@@ -75,7 +80,10 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                           padding: EdgeInsets.all(8.0),
                           child: Text(
                             'Non-invited Friends',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         // List of non invited friends
@@ -87,7 +95,8 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                 'No friends to invite',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             )
@@ -103,6 +112,10 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                     ),
                                     title: Text(
                                       nonInvitedFriends[index]['username'],
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -111,7 +124,7 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                         IconButton(
                                           icon: Icon(
                                             Icons.check,
-                                            color: Colors.green,
+                                            color: Colors.white,
                                           ),
                                           onPressed: () {
                                             sendInvitation(
@@ -147,7 +160,10 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                           padding: EdgeInsets.all(8.0),
                           child: Text(
                             'Invited Friends',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         isLoadingInvitedFriends
@@ -158,7 +174,8 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                 'No friends invited',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             )
@@ -173,7 +190,10 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                       ),
                                     ),
                                     title: Text(
-                                      invitedFriends[index]['username'],
+                                      invitedFriends[index]['username'], style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -181,8 +201,8 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                         // Cancel invitation to friend
                                         IconButton(
                                           icon: Icon(
-                                            Icons.cancel,
-                                            color: Colors.red,
+                                            Icons.close,
+                                            color: Colors.white,
                                           ),
                                           onPressed: () {
                                             deleteInvitation(
@@ -233,15 +253,20 @@ Future<void> showCreateLobbyButton(
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
+            backgroundColor: const Color(0xFF2C3454),
             scrollable: true, // Makes the content scrollable
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20), // Pop up border
             ),
             //Pop-up title
             title: const Text(
-              "Create a lobby",
+              "Create game lobby",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             content: SizedBox(
               width: 300,
@@ -252,7 +277,11 @@ Future<void> showCreateLobbyButton(
                   Text(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   //Add some space between
                   SizedBox(height: 10),
@@ -268,6 +297,7 @@ Future<void> showCreateLobbyButton(
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                       //Add some space between
@@ -288,7 +318,7 @@ Future<void> showCreateLobbyButton(
                       //Create lobby button
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor: const Color(0xFF495a8f),
                           padding: EdgeInsets.symmetric(
                             horizontal: 50,
                             vertical: 12,
@@ -336,7 +366,10 @@ Future<void> showCreateLobbyButton(
                         },
                         child: Text(
                           "Create",
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -357,7 +390,10 @@ Future<void> showCreateLobbyButton(
                     },
                     child: Text(
                       "Cancel",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

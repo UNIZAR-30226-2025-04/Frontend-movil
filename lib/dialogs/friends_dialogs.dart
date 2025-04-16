@@ -28,13 +28,18 @@ Future<void> showFriendsList(BuildContext context, String username) async {
             });
           }
           return AlertDialog(
+            backgroundColor: const Color(0xFF2C3454),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20), // Pop up border
             ),
             title: const Text(
               "Friends List",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             content: SizedBox(
               width: 550, // pop-up width
@@ -50,7 +55,11 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                       ? Center(
                         child: Text(
                           'No friends available', // Message when no data is available
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       )
                       : ListView.builder(
@@ -64,21 +73,39 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                                 friendsList[index]['icon'],
                               ),
                             ),
-                            title: Text(friendsList[index]['username']),
+                            title: Text(
+                              friendsList[index]['username'],
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: Icon(Icons.close, color: Colors.red),
+                                  icon: Icon(Icons.close, color: Colors.white),
                                   onPressed: () {
                                     // Show confirmation dialog
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text('Confirm deletion'),
+                                          backgroundColor: const Color(
+                                            0xFF2C3454,
+                                          ),
+                                          title: Text(
+                                            'Confirm deletion',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                           content: Text(
                                             'Are you sure you want to remove this friend?',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
                                           actions: [
                                             TextButton(
@@ -89,6 +116,9 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                                               },
                                               child: Text(
                                                 'No',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
                                               ), // Button to cancel the deletion
                                             ),
                                             TextButton(
@@ -109,6 +139,9 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                                               },
                                               child: Text(
                                                 'Yes',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                ),
                                               ), // Button to confirm deletion
                                             ),
                                           ],
@@ -132,7 +165,14 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                   // Close pop-up button
                   TextButton(
                     onPressed: () => Navigator.pop(context), // Closes pop-up
-                    child: const Text("Close", style: TextStyle(fontSize: 16)),
+                    child: const Text(
+                      "Close",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
 
                   // Friend Requests button
@@ -143,7 +183,11 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                     },
                     child: const Text(
                       "Friend Requests",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
 
@@ -155,7 +199,11 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                     },
                     child: const Text(
                       "Add Friends",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
 
@@ -167,7 +215,11 @@ Future<void> showFriendsList(BuildContext context, String username) async {
                     },
                     child: const Text(
                       "Sent Requests",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -236,6 +288,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
           }
 
           return Dialog(
+            backgroundColor: const Color(0xFF2C3454),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -254,6 +307,7 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -267,8 +321,12 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                           hintStyle: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
-                          prefixIcon: Icon(Icons.search), // Search icon
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Colors.white,
+                          ), // Search icon
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -301,7 +359,8 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                               "No users available to add", // Message when no requests are present
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.grey,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -322,12 +381,18 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                                   ),
                                 ),
                                 title: Text(
-                                  filteredFriends[index]['username'], // Display username
+                                  // Display username
+                                  filteredFriends[index]['username'],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(
                                     Icons.person_add,
-                                    color: Colors.green,
+                                    color: Colors.white,
                                   ),
                                   onPressed: () {
                                     // Send friend request when button is pressed
@@ -360,7 +425,11 @@ Future<void> showAddFriend(BuildContext context, String username) async {
                           },
                           child: const Text(
                             "Back",
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 20),
@@ -408,6 +477,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
             });
           }
           return AlertDialog(
+            backgroundColor: const Color(0xFF2C3454),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(
                 20,
@@ -416,7 +486,11 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
             title: const Text(
               "Friends Requests", // Title of the dialog
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
 
             content: SizedBox(
@@ -435,7 +509,11 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                       ? Center(
                         child: Text(
                           "No friend requests available ", // Message when no requests are present
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       )
                       : ListView.builder(
@@ -452,17 +530,17 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                             ),
                             title: Text(
                               receivedRequests[index]['username'],
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ), // Display the username of the requester
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: Icon(
-                                    Icons.check,
-                                    color:
-                                        Colors
-                                            .lightGreen, // Green color for accept
-                                  ),
+                                  icon: Icon(Icons.check, color: Colors.white),
                                   onPressed: () {
                                     // Accept the friend request and delete the request
                                     acceptFriendRequest(
@@ -479,7 +557,7 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                                   },
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.close, color: Colors.red),
+                                  icon: Icon(Icons.close, color: Colors.white),
                                   onPressed: () {
                                     // Delete the friend request when declined
                                     deleteFriendRequest(
@@ -512,7 +590,14 @@ Future<void> showFriendRequests(BuildContext context, String username) async {
                         username,
                       ); // Show the updated friends list after closing the dialog
                     },
-                    child: const Text("Back", style: TextStyle(fontSize: 16)),
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -555,6 +640,7 @@ Future<void> showSentRequest(BuildContext context, String username) async {
             });
           }
           return AlertDialog(
+            backgroundColor: const Color(0xFF2C3454),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(
                 20,
@@ -563,7 +649,11 @@ Future<void> showSentRequest(BuildContext context, String username) async {
             title: const Text(
               "Sent Requests", // Title of the dialog
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
 
             content: SizedBox(
@@ -582,7 +672,11 @@ Future<void> showSentRequest(BuildContext context, String username) async {
                       ? Center(
                         child: Text(
                           "You haven't sent any friend requests yet", // Message when no requests are present
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       )
                       : ListView.builder(
@@ -599,12 +693,17 @@ Future<void> showSentRequest(BuildContext context, String username) async {
                             ),
                             title: Text(
                               sentRequests[index]['username'],
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ), // Display the username of the requester
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: Icon(Icons.close, color: Colors.red),
+                                  icon: Icon(Icons.close, color: Colors.white),
                                   onPressed: () {
                                     // Delete the sent friend request
                                     deleteSentFriendRequest(
@@ -637,7 +736,14 @@ Future<void> showSentRequest(BuildContext context, String username) async {
                         username,
                       ); // Show the updated friends list after closing the dialog
                     },
-                    child: const Text("Back", style: TextStyle(fontSize: 16)),
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),

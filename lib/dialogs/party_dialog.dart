@@ -34,6 +34,7 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
             });
           }
           return AlertDialog(
+            backgroundColor: const Color(0xFF2C3454),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20), // Rounded pop-up border
             ),
@@ -47,26 +48,27 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
-                        width: 35, // Square width
-                        height: 35, // Square height
+                        width: 35,
+                        height: 35,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 2,
-                          ), // Black border
-                          borderRadius: BorderRadius.circular(
-                            5,
-                          ), // Slightly rounded corners
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
                         ),
-                        child: IconButton(
-                          icon: const Icon(Icons.close),
-                          iconSize: 20, // Adjust icon size inside the square
-                          padding: EdgeInsets.zero, // Remove extra padding
-                          constraints:
-                              const BoxConstraints(), // Fit button inside the square
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close dialog
-                          },
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text(
+                            'X',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -82,6 +84,7 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -102,7 +105,8 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                 'No game invitations available', // Message when no data is available
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             )
@@ -126,6 +130,7 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                         // Remove user button (X)
                                         IconButton(
                                           icon: const Icon(Icons.close),
+                                          color: Colors.white,
                                           onPressed: () {
                                             // Remove this user from the list
                                             setState(() {
@@ -147,7 +152,11 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                         const SizedBox(width: 10),
                                         Text(
                                           username, // Display username dynamically
-                                          style: const TextStyle(fontSize: 16),
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -195,7 +204,12 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                           );
                                         }
                                       },
-                                      child: Text("JOIN $numberOfPlayers/8"),
+                                      child: Text("JOIN $numberOfPlayers/8", 
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          )),
                                     ),
                                   ],
                                 );

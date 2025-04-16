@@ -36,7 +36,7 @@ Future<bool> showProfile(
           void Function(void Function()) setState,
         ) {
           return Dialog(
-            backgroundColor: Color(0xFFF5F5F5),
+            backgroundColor: const Color(0xFF2C3454),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20), // Pop up border
             ),
@@ -99,20 +99,29 @@ Future<bool> showProfile(
                                 children: [
                                   const SizedBox(height: 5),
                                   // Text field for username
-                                  Text("Username"),
+                                  Text(
+                                    "Username",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   _buildTextField(
                                     'Username',
                                     usernameController,
                                   ),
                                   // Text field for password
-                                  Text("Password"),
+                                  Text(
+                                    "Password",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   _buildTextField(
                                     'Password',
                                     passwordController,
                                     isPassword: true,
                                   ),
                                   // Text field for repeat password
-                                  Text("Repeat password"),
+                                  Text(
+                                    "Repeat password",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   _buildTextField(
                                     'Repeat password',
                                     repeatPasswordController,
@@ -157,14 +166,20 @@ Future<bool> showProfile(
                                 }
                               }
                             },
-                            child: const Text('Save Changes'),
+                            child: const Text(
+                              'Save Changes',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           // Log off button
                           TextButton(
                             onPressed: () async {
                               await logout(context);
                             },
-                            child: const Text('Log off'),
+                            child: const Text(
+                              'Log off',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           // Cancel button
                           TextButton(
@@ -177,7 +192,10 @@ Future<bool> showProfile(
                                 );
                               }
                             },
-                            child: const Text('Cancel'),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           SizedBox(width: 1),
                         ],
@@ -257,10 +275,10 @@ Widget _buildTextField(
   return TextField(
     controller: controller,
     obscureText: isPassword,
-    style: const TextStyle(color: Colors.black),
+    style: const TextStyle(color: Colors.white),
     decoration: InputDecoration(
       filled: true,
-      fillColor: const Color(0xFFF5F5F5),
+      fillColor: const Color(0xFF495a8f),
       enabledBorder: OutlineInputBorder(
         borderSide: const BorderSide(color: Colors.black, width: 1.5),
         borderRadius: BorderRadius.circular(8),
