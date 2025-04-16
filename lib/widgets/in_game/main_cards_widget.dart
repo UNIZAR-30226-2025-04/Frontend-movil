@@ -305,6 +305,78 @@ class MainCardsState extends State<MainCards> {
     widget.onPlayCards?.call(selectedCards);
   }
 
+  /// Sorts the cards in the hand by rank
+  void sortCardsByRank() {
+    setState(() {
+      // Sort the cards by rank using a custom order
+      const rankOrder = {
+        'A': 1,
+        '2': 2,
+        '3': 3,
+        '4': 4,
+        '5': 5,
+        '6': 6,
+        '7': 7,
+        '8': 8,
+        '9': 9,
+        '10': 10,
+        'J': 11,
+        'Q': 12,
+        'K': 13,
+      };
+
+      // Sort the hand cards based on the rank order
+      handCards.sort((a, b) {
+        final aRankValue = rankOrder[a.rank] ?? 0;
+        final bRankValue = rankOrder[b.rank] ?? 0;
+        return bRankValue.compareTo(aRankValue);
+      });
+    });
+  }
+
+  /// Sort the cards in the hand by suit
+  void sortCardsBySuit() {
+    setState(() {
+      // Sort the cards by suit using a custom order
+      const suitOrder = {
+        'h': 1, // hearts
+        'd': 2, // diamonds
+        'c': 3, // clubs
+        's': 4, // spades
+      };
+
+      // Sort the hand cards based on the suit order
+      handCards.sort((a, b) {
+        final aSuitValue = suitOrder[a.suit] ?? 0;
+        final bSuitValue = suitOrder[b.suit] ?? 0;
+
+        // If suits are the same, sort by rank
+        if (aSuitValue == bSuitValue) {
+          const rankOrder = {
+            'A': 1,
+            '2': 2,
+            '3': 3,
+            '4': 4,
+            '5': 5,
+            '6': 6,
+            '7': 7,
+            '8': 8,
+            '9': 9,
+            '10': 10,
+            'J': 11,
+            'Q': 12,
+            'K': 13,
+          };
+          final aRankValue = rankOrder[a.rank] ?? 0;
+          final bRankValue = rankOrder[b.rank] ?? 0;
+          return bRankValue.compareTo(aRankValue);
+        }
+        // Sort by suit value if suits are different
+        return bSuitValue.compareTo(aSuitValue);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(

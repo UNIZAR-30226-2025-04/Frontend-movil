@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 /// A widget that provides sorting options for the player's hand.
 /// Users can sort by "Rank" or "Suit" using the available buttons.
 class SortOptions extends StatelessWidget {
-  const SortOptions({super.key});
+  final VoidCallback onSortByRank;
+  final VoidCallback onSortBySuit;
+  const SortOptions({super.key, required this.onSortByRank, required this.onSortBySuit});
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +35,9 @@ class SortOptions extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildSortButton("Rank", const Color(0xFFd41976)),
+              _buildSortButton("Rank", const Color(0xFFd41976), onSortByRank),
               SizedBox(width: 5), // Space between buttons
-              _buildSortButton("Suit", const Color(0xFF0ea5e9),),
+              _buildSortButton("Suit", const Color(0xFF0ea5e9), onSortBySuit),
             ],
           ),
         ],
@@ -44,7 +46,7 @@ class SortOptions extends StatelessWidget {
   }
 
   /// Builds a sorting button with a given title.
-  Widget _buildSortButton(String title, Color color) {
+  Widget _buildSortButton(String title, Color color, VoidCallback onPressed) {
     return SizedBox(
       width: 40, // Button width
       height: 15, // Button height
@@ -58,7 +60,7 @@ class SortOptions extends StatelessWidget {
             side: BorderSide(color: Colors.black, width: 2), // Black border
           ),
         ),
-        onPressed: () {},
+        onPressed: onPressed,
         child: Text(
           title,
           style: TextStyle(

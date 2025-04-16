@@ -60,6 +60,7 @@ class GameFaseWidget extends StatelessWidget {
               onPlayHand: () {
                 mainCardsKey.currentState?.playSelectedCards();
               },
+              mainCardsKey: mainCardsKey,
             ),
             SizedBox(width: 15),
             DeckInfo(remainingCards: remainingCards),
