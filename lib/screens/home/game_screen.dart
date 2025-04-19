@@ -59,6 +59,7 @@ class GameScreenState extends State<GameScreen> {
   // Show game fase widgets visibly
   bool _showGameFaseWidget = true;
   bool _showShopFaseWidget = false;
+  bool _isShopPhase = false;
 
   int _remainingCards = 0;
   int _discardingCards = 0;
@@ -114,6 +115,7 @@ class GameScreenState extends State<GameScreen> {
                     round: widget.round,
                     discardingCards: _discardingCards,
                     playingCards: _playingCards,
+                     isShopPhase: _isShopPhase,
                   ), // Sidebar for navigation and game info
 
                   Expanded(
@@ -249,6 +251,7 @@ class GameScreenState extends State<GameScreen> {
                             // Init animation game fase
                             _animateShowGameFaseWidgets =
                                 !_animateShowGameFaseWidgets;
+                                _isShopPhase = true; // Set to shop phase
                           });
                           Future.delayed(
                             Duration(milliseconds: animationTime),
@@ -270,6 +273,7 @@ class GameScreenState extends State<GameScreen> {
                           setState(() {
                             // Init animation shop fase
                             _animateShowShopFaseWidgets = !_showShopFaseWidget;
+                            _isShopPhase = false; // Set to game phase
                           });
                           Future.delayed(
                             Duration(milliseconds: animationTime),

@@ -1,8 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nogler/screens/loading/loading_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
+import 'package:nogler/widgets/in_game/card_widget.dart';
+import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:playing_cards/playing_cards.dart';
 
 /// Displays a dialog showing the types of hands in the game.
 Future<void> showHandTypes(BuildContext context) async {
@@ -288,7 +293,7 @@ Future<void> showSimpleBlindDialog(BuildContext context, String lobbyId) async {
                         proposedBlind,
                         lobbyId,
                       });
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         PageTransition(
                           type: PageTransitionType.fade,
@@ -318,4 +323,377 @@ Future<void> showSimpleBlindDialog(BuildContext context, String lobbyId) async {
       );
     },
   );
+}
+
+/// Displays a dialog to choose a joker, a consumible item or a card.
+Future<PurchasableItemInfo?> showVoucherPackDialog(
+  BuildContext context,
+  String subtype,
+  List<PurchasableItemInfo> availableItems,
+) async {
+  // Lists to hold the displayed items and selected index
+  List<PurchasableItemInfo> displayedItems = [];
+  List<int> selectedIndexes = [];
+
+  return await showDialog<PurchasableItemInfo>(
+    context: context,
+    barrierDismissible: false, // Prevents closing the dialog by tapping outside
+    builder: (BuildContext context) {
+      String title = "";
+      String subtitle = "";
+      Widget content = const SizedBox();
+      int maxChoices = 1; // Default max choices
+      int maxSelected = 1; // Default max selected
+
+      // Check if the available items are empty
+      if (displayedItems.isEmpty) {
+        // If subtype is "StandardNormal", "SpectralJumbo" or "BuffoonNormal"
+        // set the max choices and displayed items accordingly
+        switch (subtype) {
+          case "StandardNormal":
+            maxChoices = 3;
+            displayedItems = _getRandomItems(availableItems, maxChoices);
+            maxSelected = 3;
+            break;
+          case "SpectralJumbo":
+            maxChoices = 2;
+            displayedItems = _getRandomItems(availableItems, maxChoices);
+            maxSelected = 1;
+            break;
+          case "BuffoonNormal":
+            maxChoices = 2;
+            displayedItems = _getRandomItems(availableItems, maxChoices);
+            maxSelected = 1;
+            break;
+          default:
+            displayedItems = _getRandomItems(availableItems, 1);
+        }
+      }
+
+      // Set the title and subtitle based on the subtype
+      switch (subtype) {
+        case "StandardNormal":
+          title = "Standard Pack";
+          subtitle = "Choose up to 3";
+          break;
+        case "SpectralJumbo":
+          title = "Voucher Pack";
+          subtitle = "SPECTRAL";
+          break;
+        case "BuffoonNormal":
+          title = "Mystery Pack";
+          subtitle = "BUFFOON";
+          break;
+        default:
+          title = "Unknown Pack";
+          subtitle = "";
+      }
+      // Set the content of the dialog based on the subtype
+      content = StatefulBuilder(
+        builder: (context, setState) {
+          return _buildSelectableRow(displayedItems, selectedIndexes, (index) {
+            setState(() {
+              if (selectedIndexes.contains(index)) {
+                selectedIndexes.remove(index);
+                debugPrint("Removed index: $index");
+              } else if (selectedIndexes.length < maxSelected) {
+                selectedIndexes.add(index);
+                debugPrint("Added index: $index");
+              }
+            });
+          }, maxChoices: maxChoices);
+        },
+      );
+      // Show the dialog with the custom content
+      // The dialog will be closed when the user selects an item
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.transparent,
+        child: Container(
+          width: (150 * displayedItems.length).toDouble(),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF2C3454),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white24, width: 2),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  shadows: [Shadow(color: Colors.blue, blurRadius: 10)],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[200],
+                  letterSpacing: 3,
+                ),
+              ),
+              const SizedBox(height: 5),
+              content,
+              const SizedBox(height: 5),
+
+              // Display the selected items
+              ElevatedButton(
+                onPressed: () {
+                  if (selectedIndexes.isNotEmpty) {
+                    Navigator.of(
+                      context,
+                    ).pop(displayedItems[selectedIndexes.first]);
+                  }
+                },
+                child: Text(
+                  maxChoices > 2 ? "Choose" : "Choose 1",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+/// Buils a selectable row of cards
+Widget _buildSelectableRow(
+  List<PurchasableItemInfo> items,
+  List<int> selectedIndexes,
+  Function(int) onSelect, {
+  int maxChoices = 1,
+}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children:
+        items.asMap().entries.map((entry) {
+          final index = entry.key;
+          final item = entry.value;
+          final isSelected = selectedIndexes.contains(index);
+          // Check if the item is disabled
+          final isDisabled =
+              !isSelected && selectedIndexes.length >= maxChoices;
+
+          return GestureDetector(
+            onTap: () {
+              if (!isDisabled) {
+                // Only allow selection if not disabled
+                onSelect(index);
+              }
+            },
+            child: _buildCard(
+              item.type,
+              item.subtype,
+              isSelected: isSelected,
+              isDisabled: isDisabled,
+            ),
+          );
+        }).toList(),
+  );
+}
+
+/// Builds a single card widget, either a playing card or an image-based item
+Widget _buildCard(
+  String type,
+  String assetName, {
+  bool isSelected = false,
+  bool isDisabled = false,
+}) {
+  return Container(
+    margin: const EdgeInsets.all(4),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+      boxShadow: [
+        // Shadow effect depends on the selection/disabled status
+        if (isSelected) ...[
+          BoxShadow(color: Colors.yellow, blurRadius: 15, spreadRadius: 2),
+          BoxShadow(color: Colors.blue, blurRadius: 10, spreadRadius: 1),
+        ] else if (isDisabled) ...[
+          BoxShadow(color: Colors.grey, blurRadius: 5),
+        ] else ...[
+          BoxShadow(color: Colors.blue, blurRadius: 8, spreadRadius: 1),
+        ],
+      ],
+    ),
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      width: isSelected ? 100 : 90,
+      height: isSelected ? 130 : 120,
+      decoration: BoxDecoration(
+        color: isDisabled ? Colors.blue[900]! : Colors.blue[900],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color:
+              isSelected
+                  ? Colors.yellow
+                  : isDisabled
+                  ? Colors.grey
+                  : Colors.blue[200]!,
+          width: isSelected ? 3 : 2,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Opacity(
+              opacity: isDisabled ? 0.6 : 1.0,
+              child:
+                  type == 'card'
+                      // If the item is a card, build a card widget
+                      ? buildCard(getSelectableCardFromAssetName(assetName))
+                      // Otherwise, load the image from assets
+                      : Image.asset(
+                        getImagePathBySubtype(assetName),
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.error, color: Colors.red);
+                        },
+                      ),
+            ),
+          ),
+          
+          if (isSelected)
+            Positioned(
+              top: 5,
+              right: 5,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.yellow,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check, size: 16, color: Colors.black),
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Picks a random subset of available items (up to maxChoices)
+List<PurchasableItemInfo> _getRandomItems(
+  List<PurchasableItemInfo> availableItems,
+  int maxChoices,
+) {
+  final random = Random();
+  // If there are fewer available items than maxChoices, return all of them
+  int itemsToSelect = min(maxChoices, availableItems.length);
+  return List<PurchasableItemInfo>.generate(
+    itemsToSelect,
+    (index) => availableItems[random.nextInt(availableItems.length)],
+  );
+}
+
+/// Returns the image path based on the item's subtype
+String getImagePathBySubtype(String subtype) {
+  switch (subtype) {
+    case "CrystalBall":
+      return "images/consumables/Crystal_Ball.png";
+    case "ClearanceSale":
+      return "images/consumables/Clearance_Sale.png";
+    case "death":
+      return "images/consumables/death.png";
+    case "SolidSeven":
+      return "images/jokers/solid_seven.png";
+    case "AverageSizeMichael":
+      return "images/jokers/AVERAGE_SIZE_MICHAEL.png";
+    case "Queen":
+      return "images/consumables/death.png";
+    case "Eight":
+      return "images/consumables/death.png";
+    case "Four":
+      return "images/consumables/death.png";
+    default:
+      return "images/consumables/death.png";
+  }
+}
+
+/// Converts an asset name into a SelectableCard widget
+SelectableCard getSelectableCardFromAssetName(String assetName) {
+  final card = parseCardCode(assetName);
+  return SelectableCard(
+    card: card,
+    overlay: 0,
+    isNew: false,
+    isDiscarding: false,
+    isSelected: false,
+    rank: '',
+    suit: '',
+  );
+}
+
+/// Parses a card code string into a PlayingCard object
+PlayingCard parseCardCode(String code) {
+  final rankChar = code.substring(0, code.length - 1);
+  final suitChar = code[code.length - 1];
+
+  // Determine suit from last character
+  Suit suit;
+  switch (suitChar.toUpperCase()) {
+    case 'H':
+      suit = Suit.hearts;
+      break;
+    case 'D':
+      suit = Suit.diamonds;
+      break;
+    case 'S':
+      suit = Suit.spades;
+      break;
+    case 'C':
+      suit = Suit.clubs;
+      break;
+    default:
+      throw Exception("Invalid suit");
+  }
+
+  // Determine card value from first part of string
+  CardValue value;
+  switch (rankChar) {
+    case 'A':
+      value = CardValue.ace;
+    case 'K':
+      value = CardValue.king;
+    case 'Q':
+      value = CardValue.queen;
+    case 'J':
+      value = CardValue.jack;
+    case '2':
+      value = CardValue.two;
+    case '3':
+      value = CardValue.three;
+    case '4':
+      value = CardValue.four;
+    case '5':
+      value = CardValue.five;
+    case '6':
+      value = CardValue.six;
+    case '7':
+      value = CardValue.seven;
+    case '8':
+      value = CardValue.eight;
+    case '9':
+      value = CardValue.nine;
+    case '10':
+      value = CardValue.ten;
+    default:
+      throw Exception(
+        "Invalid rank: $rankChar",
+      ); // Throw an exception if invalid rank
+  }
+  return PlayingCard(suit, value);
 }

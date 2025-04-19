@@ -19,6 +19,7 @@ class Sidebar extends StatefulWidget {
     required this.round,
     required this.discardingCards,
     required this.playingCards,
+    required this.isShopPhase,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -29,6 +30,7 @@ class Sidebar extends StatefulWidget {
   final int round;
   final int discardingCards;
   final int playingCards;
+  final bool isShopPhase;
 
   @override
   SidebarState createState() => SidebarState();
@@ -47,19 +49,49 @@ class SidebarState extends State<Sidebar> {
           /// Displays the current round number.
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(
-              "Round ${widget.round}/10",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            child: Container(
+              height: 24,
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color:
+                    widget.isShopPhase ? Colors.blue[800] : Colors.purple[800],
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    blurRadius: 2,
+                    offset: Offset(1, 1),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Display a shopping cart icon if it's the shop phase
+                  if (widget.isShopPhase)
+                    Icon(Icons.shopping_cart, size: 16, color: Colors.white),
+                  // Otherwise, display a casino icon if it's the round phase
+                  if (!widget.isShopPhase)
+                    Icon(Icons.casino, size: 16, color: Colors.white),
+                  SizedBox(width: 4),
+                  // Display the label: "SHOP" if it's the shop phase, otherwise show the round number
+                  Text(
+                    widget.isShopPhase ? "SHOP" : "ROUND ${widget.round}/10",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
 
           /// Displays modification cards for the game.
           _buildModCards(),
-          SizedBox(height: 5),
+          SizedBox(height: 4),
 
           /// Displays overall game statistics.
           _buildGameStats(

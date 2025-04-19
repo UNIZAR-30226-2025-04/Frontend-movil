@@ -10,11 +10,14 @@ class PurchasableItemInfo {
     required this.id,
     required this.index,
     required this.type,
+    required this.subtype,
   });
   final int price;
   final int id;
   int index;
   final String type;
+  // TODO, add a description of the joker
+  final String subtype;
 }
 
 class Joker extends StatefulWidget {
@@ -66,7 +69,7 @@ class JokerState extends State<Joker> {
                 final renderBox = jokerContext.findRenderObject() as RenderBox;
                 final size = renderBox.size;
                 final position = renderBox.localToGlobal(Offset(size.width, 0));
-                _showJokerDescription(widget.purchasableItemInfo, position);
+                _showItemDescription(widget.purchasableItemInfo, position);
               },
               onLongPressEnd: (_) => _hideJokerDescription(),
               child: _buildJokerCard(),
@@ -75,31 +78,25 @@ class JokerState extends State<Joker> {
     );
   }
 
-  Widget _buildJokerCard({double height = 75}) {
+  Widget _buildJokerCard({double height = 68}) {
     return Container(
       width: 57,
       height: height,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.grey.shade800,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.white24),
+        border: Border.all(color: Colors.transparent),
       ),
       //TODO, Add images of jokers next
       child:
           // Consumables images
           (widget.purchasableItemInfo.type == "consumable" ||
                   widget.purchasableItemInfo.type == "owned consumable")
-              ? consumablesMap[widget.purchasableItemInfo.id]['consumable']! !=
-                      "no consumable"
-                  ? Image.asset(
-                    consumablesMap[widget
-                        .purchasableItemInfo
-                        .id]['consumable']!,
-                    fit: BoxFit.cover,
-                  )
-                  // Replace in case it doenst have image
-                  : Text(
+              ? Image.asset(
+                getConsumableImageById(widget.purchasableItemInfo.subtype),
+                errorBuilder: (context, error, stackTrace) {
+                  return Text(
                     "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
@@ -107,17 +104,15 @@ class JokerState extends State<Joker> {
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
-                  )
-              // Jokers images
+                  );
+                },
+              )
               : (widget.purchasableItemInfo.type == "joker" ||
                   widget.purchasableItemInfo.type == "owned joker")
-              ? jokersMap[widget.purchasableItemInfo.id]['joker'] != "no joker"
-                  ? Image.asset(
-                    jokersMap[widget.purchasableItemInfo.id]['joker']!,
-                    //fit: BoxFit.fitWidth,
-                  )
-                  // Replace in case it doenst have image
-                  : Text(
+              ? Image.asset(
+                getJokerImageById(widget.purchasableItemInfo.subtype),
+                errorBuilder: (context, error, stackTrace) {
+                  return Text(
                     "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
@@ -125,8 +120,24 @@ class JokerState extends State<Joker> {
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
-                  )
-              // Replace in case it doenst have image
+                  );
+                },
+              )
+              : (widget.purchasableItemInfo.type == "package")
+              ? Image.asset(
+                getPackageImageBySubtype(widget.purchasableItemInfo.subtype),
+                errorBuilder: (context, error, stackTrace) {
+                  return Text(
+                    "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  );
+                },
+              )
               : Text(
                 "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
                 textAlign: TextAlign.center,
@@ -139,7 +150,7 @@ class JokerState extends State<Joker> {
     );
   }
 
-  void _showJokerDescription(PurchasableItemInfo purchasable, Offset position) {
+  void _showItemDescription(PurchasableItemInfo purchasable, Offset position) {
     _overlayEntry?.remove();
 
     late OverlayEntry entry;
@@ -199,9 +210,39 @@ class JokerState extends State<Joker> {
   }
 
   Widget _buildDescription(PurchasableItemInfo purchasable) {
+    String? name;
+    String? description;
+    Color rarityColor = Colors.red;
+
+    switch (purchasable.type.replaceAll('owned ', '')) {
+      case 'joker':
+        final item = jokersMap.firstWhere(
+          (e) => e['jokerName'] == purchasable.subtype,
+          orElse: () => {},
+        );
+        name = item['jokerName'];
+        description = item['jokerDescription'];
+        break;
+      case 'consumable':
+        final item = consumablesMap.firstWhere(
+          (e) => e['consumableName'] == purchasable.subtype,
+          orElse: () => {},
+        );
+        name = item['consumableName'];
+        description = item['consumableDescription'];
+        break;
+      case 'package':
+        final item = packagesMap.firstWhere(
+          (e) => e['packageName'] == purchasable.subtype,
+          orElse: () => {},
+        );
+        name = item['packageName'];
+        description = item['packageDescription'];
+        rarityColor = Colors.purple; // Ejemplo: cambiar color por tipo
+        break;
+    }
+
     return Container(
-      //width: 100,
-      //height ?
       decoration: BoxDecoration(
         color: Colors.grey.shade700,
         border: Border.all(color: Colors.white, width: 2),
@@ -209,49 +250,46 @@ class JokerState extends State<Joker> {
       ),
       child: Column(
         children: [
-          // Container to show the card played
-          Text(
-            jokersMap[purchasable.id]['jokerName']!,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-
-          // Container to show the chips gained and aditional effects triggered when the card is played
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Colors.grey.shade700, width: 2),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Container(
-              // Container to add some margin
-              margin: const EdgeInsets.all(4),
-              child: Text.rich(
-                TextSpan(
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-                  children: [
-                    TextSpan(
-                      text: jokersMap[purchasable.id]['jokerDescription'],
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  ],
-                ),
-                textAlign: TextAlign.center,
+          if (name != null)
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
-          ),
+          if (description != null && description.isNotEmpty)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.grey.shade700, width: 2),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              margin: const EdgeInsets.only(top: 4),
+              child: Container(
+                margin: const EdgeInsets.all(4),
+                child: Text(
+                  description,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.red,
+              color: rarityColor,
               border: Border.all(color: Colors.grey.shade700, width: 2),
               borderRadius: BorderRadius.circular(6),
             ),
+            margin: const EdgeInsets.only(top: 4),
             child: Container(
               margin: const EdgeInsets.all(4),
-              child: Text(
+              child: const Text(
                 "Rare",
                 style: TextStyle(
                   fontSize: 10,
@@ -265,70 +303,102 @@ class JokerState extends State<Joker> {
       ),
     );
   }
+
+  // List of consumables with their image path, internal name, and description
+  List<Map<String, String>> consumablesMap = [
+    {
+      // Clearance sale consumable
+      'consumable': 'images/consumables/Clearance_Sale.png',
+      'consumableName': 'ClearanceSale',
+      'consumableDescription': 'Clearence sell:Next shop its 50% off!',
+    },
+    {
+      // Death consumable
+      'consumable': 'images/consumables/death.png',
+      'consumableName': 'death',
+      'consumableDescription': '',
+    },
+    {
+      // Crystal ball consumable
+      'consumable': 'images/consumables/Crystal_Ball.png',
+      'consumableName': 'CrystalBall',
+      'consumableDescription':
+          'Crystal Ball: 25% chance to replace a normal card with an ace next round',
+    },
+  ];
+
+  // List of jokers with image path, name, and description
+  List<Map<String, String>> jokersMap = [
+    {
+      // Average size Michael joker
+      'joker': 'images/jokers/AVERAGE_SIZE_MICHAEL.png',
+      'jokerName': 'AverageSizeMichael',
+      'jokerDescription':
+          'Average size Michael +13 mult.1/13 chance of being sold each round. Glass:This is a tooltip For the glass overlay',
+    },
+    {
+      // Solid Seven joker
+      'joker': 'images/jokers/solid_seven.png',
+      'jokerName': 'SolidSeven',
+      'jokerDescription': '',
+    },
+  ];
+
+  // List of packages with image path, internal name, and description
+  List<Map<String, String>> packagesMap = [
+    {
+      'package': 'images/packages/Buffoon_Normal_2.png',
+      'packageName': 'BuffoonNormal',
+      'packageDescription': '',
+    },
+    {
+      'package': 'images/packages/Spectral_Jumbo_1.png',
+      'packageName': 'SpectralJumbo',
+      'packageDescription': '',
+    },
+    {
+      'package': 'images/packages/Standard_Normal_1.png',
+      'packageName': 'StandardNormal',
+      'packageDescription': '',
+    },
+  ];
+
+  /// Get the image path for a package by its subtype
+  String getPackageImageBySubtype(String? subtype) {
+    if (subtype == null) return 'no package';
+
+    // Search for the package in the list using the subtype
+    final package = packagesMap.firstWhere(
+      (pkg) => pkg['packageName'] == subtype,
+      orElse: () => {'package': 'no package'}, // Default value if not found
+    );
+
+    return package['package'] ??
+        'no package'; // Return the image path or default value
+  }
+
+  /// Get the image path for a consumable by its subtype
+  String getConsumableImageById(String? subtype) {
+    // Search for the consumable in the list using the subtype
+    final consumable = consumablesMap.firstWhere(
+      (consumable) => consumable['consumableName'] == subtype,
+      orElse:
+          () => {'consumable': 'no consumable'}, // Default value if not found
+    );
+
+    return consumable['consumable'] ??
+        'no consumable'; // Return the image path or default value
+  }
+
+  /// Get the image path for a joker by its subtype
+  String getJokerImageById(String? subtype) {
+    // Search for the joker in the list using the subtype
+    final joker = jokersMap.firstWhere(
+      (joker) => joker['jokerName'] == subtype,
+      orElse: () => {'joker': 'no joker'}, // Default value if not found
+    );
+
+    return joker['joker'] ??
+        'no joker'; // Return the image path or default value
+  }
 }
-
-List<Map<String, String>> consumablesMap = [
-  {
-    // No consumable
-    'consumable': 'no consumable',
-    'consumableName': '',
-    'consumableDescription': '',
-  },
-  {
-    // 1. Death consumable
-    'consumable': 'images/consumables/death.png',
-    'consumableName': 'no consumable',
-    'consumableDescription': '',
-  },
-  {
-    // No consumable
-    'consumable': 'no consumable',
-    'consumableName': '',
-    'consumableDescription': '',
-  },
-  {
-    // No consumable
-    'consumable': 'no consumable',
-    'consumableName': '',
-    'consumableDescription': '',
-  },
-  {
-    // No consumable
-    'consumable': 'no consumable',
-    'consumableName': '',
-    'consumableDescription': '',
-  },
-];
-
-List<Map<String, String>> jokersMap = [
-  {
-    // No joker
-    'joker': 'no joker',
-    'jokerName': '',
-    'jokerDescription': '',
-  },
-  {
-    // 1. Solid seven joker
-    'joker': 'images/jokers/solid_seven.png',
-    'jokerName': 'Solid Seven',
-    'jokerDescription': '',
-  },
-  {
-    // No joker
-    'joker': 'no joker',
-    'jokerName': '',
-    'jokerDescription': '',
-  },
-  {
-    // No joker
-    'joker': 'no joker',
-    'jokerName': '',
-    'jokerDescription': '',
-  },
-  {
-    // No joker
-    'joker': 'no joker',
-    'jokerName': '',
-    'jokerDescription': '',
-  },
-];

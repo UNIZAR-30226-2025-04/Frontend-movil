@@ -182,8 +182,8 @@ class MainCardsState extends State<MainCards> {
     final suit = cardData['Suit'].toString().toLowerCase();
 
     // Convert the suit and rank to the appropriate enum values
-    final cardValue = _valueFromString(rank);
-    final cardSuit = _suitFromString(suit);
+    final cardValue = valueFromString(rank);
+    final cardSuit = suitFromString(suit);
 
     // Create a SelectableCard object with the extracted data
     return SelectableCard(
@@ -195,7 +195,7 @@ class MainCardsState extends State<MainCards> {
   }
 
   /// Converts a string representation of a suit to the corresponding Suit enum value.
-  Suit _suitFromString(String suit) {
+  Suit suitFromString(String suit) {
     switch (suit) {
       case 'h':
         return Suit.hearts;
@@ -211,7 +211,7 @@ class MainCardsState extends State<MainCards> {
   }
 
   /// Converts a string representation of a rank to the corresponding CardValue enum value.
-  CardValue _valueFromString(String rank) {
+  CardValue valueFromString(String rank) {
     switch (rank) {
       case 'A':
         return CardValue.ace;

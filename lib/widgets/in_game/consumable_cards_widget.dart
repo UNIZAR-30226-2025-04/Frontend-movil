@@ -36,17 +36,24 @@ class ConsumableCardsState extends State<ConsumableCards> {
   /// if it is we do nothing
   ///   this function is called from "buy_widget"
   //TODO, comprobar dinero tambien del usuario
-  Future<void> addConsumableOwned(PurchasableItemInfo jokerInfo) async {
+  Future<void> addConsumableOwned(
+    PurchasableItemInfo jokerInfo,
+    bool isPackage,
+  ) async {
     setState(() {
       if (consumableOwned.length != 5) {
         // Remove the bought consumable
-        widget.shopWidgetKey.currentState?.removeConsumable(jokerInfo.index);
+        widget.shopWidgetKey.currentState?.removeConsumable(
+          jokerInfo.index,
+          isPackage,
+        );
         // Add it to your owned list
         final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
           price: jokerInfo.price,
           id: jokerInfo.id,
           index: -1, // Not used
           type: "owned consumable",
+          subtype: jokerInfo.subtype,
         );
         consumableOwned.add(auxJokerInfo);
         debugPrint("Consumible añadido en la lista");
@@ -69,15 +76,18 @@ class ConsumableCardsState extends State<ConsumableCards> {
     });
   }
 
-  //TODO, placeholder del backend de momento
+  // Function used to generate random consumables when we enter game fase
   void _generateRandomConsumable() {
     final random = Random();
+    const subtypes = ["ClearanceSale", "death", "CrystalBall"];
     consumableOwned = List.generate(2, (int index) {
+      final randomSubtype = subtypes[random.nextInt(subtypes.length)];
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
         index: -1,
         type: "owned consumable",
+        subtype: randomSubtype,
       );
     });
   }
@@ -123,27 +133,32 @@ class ConsumableCardsState extends State<ConsumableCards> {
           scrollDirection: Axis.horizontal,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(consumableOwned.length, (index) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                margin: const EdgeInsets.symmetric(horizontal: 5),
-                child: Joker(
-                  purchasableItemInfo: consumableOwned[index],
-                  // Display sell widget
-                  onDraggedItem: () {
-                    widget.shopFaseWidgetKey.currentState?.onDraggedSellItem();
-                    return;
-                  },
-                  // Hide sell widget
-                  onDroppedItem: () {
-                    widget.shopFaseWidgetKey.currentState?.onDropSellItem();
-                    return;
-                  },
-                  keyWidget: widget.sellWidgetKey,
-                ),
-              );
-            }),
+            children:
+                consumableOwned.isEmpty
+                    ? [SizedBox(height: 75)]
+                    : List.generate(consumableOwned.length, (index) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Joker(
+                          purchasableItemInfo: consumableOwned[index],
+                          // Display sell widget
+                          onDraggedItem: () {
+                            widget.shopFaseWidgetKey.currentState
+                                ?.onDraggedSellItem();
+                            return;
+                          },
+                          // Hide sell widget
+                          onDroppedItem: () {
+                            widget.shopFaseWidgetKey.currentState
+                                ?.onDropSellItem();
+                            return;
+                          },
+                          keyWidget: widget.sellWidgetKey,
+                        ),
+                      );
+                    }),
           ),
         ),
       ],

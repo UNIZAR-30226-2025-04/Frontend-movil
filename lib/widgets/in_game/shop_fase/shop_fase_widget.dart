@@ -5,6 +5,7 @@ import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
+
 class ShopFaseWidget extends StatefulWidget {
   const ShopFaseWidget({
     super.key,
@@ -14,7 +15,7 @@ class ShopFaseWidget extends StatefulWidget {
     required this.consumableCardsKey,
     required this.sellWidgetKey,
   });
-
+  
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final GlobalKey<ConsumableCardsState> consumableCardsKey;

@@ -31,12 +31,15 @@ class ShopWidgetState extends State<ShopWidget> {
   // Function used to generate random jokers when we enter shop fase and refresh the shop
   void _generateRandomJoker() {
     final random = Random();
+    const subtypes = ["SolidSeven", "AverageSizeMichael"];
     shopJokers = List.generate(4, (int index) {
+      final randomSubtype = subtypes[random.nextInt(subtypes.length)];
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
         index: -1,
         type: "joker",
+        subtype: randomSubtype,
       );
     });
   }
@@ -44,12 +47,15 @@ class ShopWidgetState extends State<ShopWidget> {
   // Function used to generate random consumables when we enter shop fase
   void _generateRandomConsumable() {
     final random = Random();
+    const subtypes = ["ClearanceSale", "death", "CrystalBall"];
     shopConsumables = List.generate(2, (int index) {
+      final randomSubtype = subtypes[random.nextInt(subtypes.length)];
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
         index: -1,
         type: "consumable",
+        subtype: randomSubtype,
       );
     });
   }
@@ -57,12 +63,17 @@ class ShopWidgetState extends State<ShopWidget> {
   // Function used to generate random packages when we enter shop fase
   void _generateRandomPackage() {
     final random = Random();
+    const subtypes = ["BuffoonNormal", "SpectralJumbo", "StandardNormal"];
+
     shopPackages = List.generate(3, (int index) {
+      final randomSubtype = subtypes[random.nextInt(subtypes.length)];
+
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
         index: -1,
         type: "package",
+        subtype: randomSubtype,
       );
     });
   }
@@ -72,18 +83,22 @@ class ShopWidgetState extends State<ShopWidget> {
     return item;
   }
 
-  Future<void> removeJoker(int index) async {
-    setState(() {
-      shopJokers.removeAt(index);
-      debugPrint("Eliminado joker tienda en indice $index");
-    });
+  Future<void> removeJoker(int index, bool isPackage) async {
+    if (!isPackage) {
+      setState(() {
+        shopJokers.removeAt(index);
+        debugPrint("Eliminado joker tienda en indice $index");
+      });
+    }
   }
 
-  Future<void> removeConsumable(int index) async {
-    setState(() {
-      shopConsumables.removeAt(index);
-      debugPrint("Eliminado consumible $index");
-    });
+  Future<void> removeConsumable(int index, bool isPackage) async {
+    if (!isPackage) {
+      setState(() {
+        shopConsumables.removeAt(index);
+        debugPrint("Eliminado consumible $index");
+      });
+    }
   }
 
   Future<void> removePackage(int index) async {
@@ -105,7 +120,7 @@ class ShopWidgetState extends State<ShopWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: 400,
-      //height: 270,
+      height: 250,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -157,7 +172,7 @@ class ShopWidgetState extends State<ShopWidget> {
                             8,
                           ), // Smooth the border shape
                         ),
-                        minimumSize: const Size.fromHeight(55),
+                        minimumSize: const Size.fromHeight(50),
                       ),
                       child: const Text(
                         "Reroll\n\$5",
@@ -177,7 +192,7 @@ class ShopWidgetState extends State<ShopWidget> {
                 flex: 8,
                 child: Container(
                   width: 276,
-                  height: 119,
+                  height: 111,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.redAccent, width: 2),
                     borderRadius: BorderRadius.circular(12),
@@ -212,7 +227,7 @@ class ShopWidgetState extends State<ShopWidget> {
             children: [
               Container(
                 width: 145,
-                height: 115,
+                height: 108,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.redAccent, width: 2),
                   borderRadius: BorderRadius.circular(12),
@@ -239,7 +254,7 @@ class ShopWidgetState extends State<ShopWidget> {
               Expanded(
                 child: Container(
                   width: 145,
-                  height: 115,
+                  height: 108,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.redAccent, width: 2),
                     borderRadius: BorderRadius.circular(12),
@@ -285,6 +300,7 @@ class ShopWidgetState extends State<ShopWidget> {
             style: const TextStyle(
               color: Colors.amber,
               fontWeight: FontWeight.bold,
+              fontSize: 13
             ),
           ),
         ),
