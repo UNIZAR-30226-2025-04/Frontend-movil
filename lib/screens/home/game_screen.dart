@@ -62,7 +62,7 @@ class GameScreenState extends State<GameScreen> {
   bool _isShopPhase = false;
 
   int _remainingCards = 0;
-  int _discardingCards = 0;
+  int _discardingCards = 3;
   int _playingCards = 3;
   int animationTime = 500;
 

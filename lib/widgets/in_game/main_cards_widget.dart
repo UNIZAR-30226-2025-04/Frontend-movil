@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
@@ -33,7 +32,6 @@ class MainCardsState extends State<MainCards> {
   int get remainingCards => remainingDeck.length;
   final WebSocketClient wsClient = WebSocketClient();
   int gold = 0;
-  bool isDiscarding = false;
 
   /// Overlay for card description
   OverlayEntry? _overlayEntry;
@@ -42,48 +40,30 @@ class MainCardsState extends State<MainCards> {
   void initState() {
     super.initState();
     _setupWebSocketListeners();
-    _drawCards();
+    _getCards();
   }
 
   /// Starts the game by drawing cards from the deck
-  void _drawCards() {
-    // Create a new deck of cards
-    final handData = {
-      'cards':
-          handCards
-              .map(
-                (card) => {
-                  'rank': card.rank,
-                  'suit': card.suit.toLowerCase(), // Ensure lowercase suits
-                },
-              )
-              .toList(),
-      'jokers': {
-        'juglares': [0, 0, 0, 0, 0],
-      },
-      'gold': gold,
-    };
+  void _getCards() {
     // Send the request to the server to draw cards
-    wsClient.sendMessage("draw_cards", {handData, isDiscarding});
+    wsClient.sendMessage("get_cards", {});
   }
 
   /// Sets up the WebSocket listener to receive card data from the server.
   void _setupWebSocketListeners() {
-    // Listen for the 'deck' event to receive the deck of cards
-    wsClient.addEventListener('drawed_cards', (data) async {
+    // Listen for the 'get_cardsno' event to receive the deck of cards
+    wsClient.addEventListener('got_cards', (data) async {
       try {
         // Parse the data received from the server
         final deckSize = data['deck_size'] as int;
-        final leftDraws = data['left_draws'] as int;
-        setState(() {
+        /*setState(() {
           discardingCards = leftDraws;
         });
         // Notify the parent widget about the number of cards left to draw
-        widget.onDiscardUpdated?.call(leftDraws);
-        final cardsJson = data['new_cards'] as String;
+        widget.onDiscardUpdated?.call(leftDraws);*/
 
-        // Decode the JSON string into a list of dynamic objects
-        final List<dynamic> parsedList = jsonDecode(cardsJson);
+        // new_cards is a List
+        final List<dynamic> parsedList = data['new_cards'] as List<dynamic>;
 
         // Filter and map the parsed list to create a new list of cards
         final newCards =
@@ -136,6 +116,31 @@ class MainCardsState extends State<MainCards> {
       }
     });
 
+    wsClient.addEventListener('discarted_cards', (data) async {
+      final selected = handCards.where((c) => c.isSelected).toList();
+
+      // Notify the parent widget about the discarded cards
+      setState(() {
+        for (var c in selected) {
+          c.isDiscarding = true;
+        }
+      });
+
+      // Simulate a delay for the animation effect
+      await Future.delayed(const Duration(milliseconds: 350));
+
+      // Notify the parent widget about the discarded cards
+      setState(() {
+        handCards.removeWhere((c) => c.isDiscarding);
+      });
+
+      // Simulate a delay for the animation effect
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      // Get the new cards from the server
+      _getCards();
+    });
+
     // Listen for the 'played_hand' event to receive the played hand data
     wsClient.addEventListener('played_hand', (data) async {
       final selected = handCards.where((c) => c.isSelected).toList();
@@ -171,7 +176,7 @@ class MainCardsState extends State<MainCards> {
       widget.onPlayCards?.call([]);
 
       // Get the new cards from the server
-      _drawCards();
+      _getCards();
     });
   }
 
@@ -247,51 +252,34 @@ class MainCardsState extends State<MainCards> {
   /// Discards selected cards and replaces them with new ones from the deck.
   void discardSelectedCards() async {
     if (discardingCards == 0) return;
-
     final selected = handCards.where((c) => c.isSelected).toList();
-
-    // Notify the parent widget about the discarded cards
-    setState(() {
-      for (var c in selected) {
-        c.isDiscarding = true;
-      }
-      // Indicate that the cards are being discarded and decrease the dicarding hands
-      isDiscarding = true;
-    });
-
-    // Simulate a delay for the animation effect
-    await Future.delayed(const Duration(milliseconds: 350));
-
-    // Notify the parent widget about the discarded cards
-    setState(() {
-      handCards.removeWhere((c) => c.isDiscarding);
-    });
-
-    // Simulate a delay for the animation effect
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    // Get the new cards from the server
-    _drawCards();
+    final discards = selected
+      .map((card) => {
+            'Rank': card.rank,
+            'Suit': card.suit.toLowerCase(),
+          })
+      .toList();
+    wsClient.sendMessage("discard_cards", discards);
   }
 
   /// Plays selected cards and replaces them with new ones from the deck.
   void playSelectedCards() async {
     if (playingCards == 0) return;
     final selected = handCards.where((c) => c.isSelected).toList();
-    // Indicate that the cards are being discarded but not decrease the dicarding hands
-    setState(() {
-      isDiscarding = false;
-    });
+
     // Data to send to the server
     final handData = {
       'cards':
           selected
               .map(
-                (card) => {'rank': card.rank, 'suit': card.suit.toLowerCase()},
+                (card) => {
+                  'rank': card.rank,
+                  'suit': card.suit.toLowerCase(), // Ensure lowercase suits
+                },
               )
               .toList(),
       'jokers': {
-        'Juglares': [0, 0, 0, 0, 0], // Default empty jokers
+        'Juglares': List.filled(5, 0), // Initialize 5 jokers with value 0
       },
       'gold': gold,
     };
