@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/game_background_widget.dart';
+import 'package:nogler/widgets/in_game/choose_blind_fase/choose_blind_fase_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/game_fase_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
@@ -53,13 +54,16 @@ class GameScreenState extends State<GameScreen> {
       GlobalKey<ShopFaseWidgetState>();
 
   // Variables to animate the exit of the elements off screen
-  bool _animateShowGameFaseWidgets = true;
+  bool _animateShowChooseBlindFaseWidget = true;
+  bool _animateShowGameFaseWidgets = false;
   bool _animateShowShopFaseWidgets = false;
 
-  // Show game fase widgets visibly
-  bool _showGameFaseWidget = true;
+  // Show fase widgets visibly
+  bool _showChooseBlindFaseWidget = true;
+  bool _showGameFaseWidget = false;
   bool _showShopFaseWidget = false;
-  bool _isShopPhase = false;
+
+  String _currentFase = "chooseBlindFase";
 
   int _remainingCards = 0;
   int _discardingCards = 3;
@@ -115,7 +119,8 @@ class GameScreenState extends State<GameScreen> {
                     round: widget.round,
                     discardingCards: _discardingCards,
                     playingCards: _playingCards,
-                     isShopPhase: _isShopPhase,
+                    currentFase: _currentFase,
+                    isShopPhase: _showShopFaseWidget,
                   ), // Sidebar for navigation and game info
 
                   Expanded(
@@ -143,7 +148,25 @@ class GameScreenState extends State<GameScreen> {
                           ),
                         ),
 
-                        if (_showGameFaseWidget)
+                        if (_showChooseBlindFaseWidget)
+                          // Widget set to introduce the threshold to superpass in this round
+                          // Show the widget if we're in choose blind fase
+                          Visibility(
+                            visible: _showChooseBlindFaseWidget,
+                            // Animate its entry and exit off screen
+                            child: AnimatedSlide(
+                              offset:
+                                  _animateShowChooseBlindFaseWidget
+                                      ? Offset(0, 0)
+                                      : Offset(0, 1),
+                              duration: Duration(milliseconds: animationTime),
+                              curve: Curves.easeInOut,
+                              child: ChooseBlindFaseWidget(
+                                lobbyCode: widget.lobbyCode,
+                              ),
+                            ),
+                          )
+                        else if (_showGameFaseWidget)
                           // Widget with all game fase widgets included
                           // Show the widget if we're in game fase
                           Visibility(
@@ -245,13 +268,38 @@ class GameScreenState extends State<GameScreen> {
                     SettingsButton(
                       //TODO, puesto para cambiar entre fase de juego y tienda, cambiar a posteriori
                       onPressed: () {
+                        // Animate Choose Blind Fase Widget
+                        if (_animateShowChooseBlindFaseWidget) {
+                          setState(() {
+                            _animateShowChooseBlindFaseWidget =
+                                !_animateShowChooseBlindFaseWidget;
+                            _currentFase = "gameFase";
+                          });
+                          Future.delayed(
+                            Duration(milliseconds: animationTime),
+                            () {
+                              setState(() {
+                                // Change visible state of widgets
+                                _showChooseBlindFaseWidget =
+                                    !_showChooseBlindFaseWidget;
+                                _animateShowGameFaseWidgets =
+                                    !_animateShowGameFaseWidgets;
+                              });
+                              Future.delayed(Duration(milliseconds: 1), () {
+                                setState(() {
+                                  _showGameFaseWidget = !_showGameFaseWidget;
+                                });
+                              });
+                            },
+                          );
+                        }
                         // Animate Game Fase Widgets
-                        if (_animateShowGameFaseWidgets) {
+                        else if (_animateShowGameFaseWidgets) {
                           setState(() {
                             // Init animation game fase
                             _animateShowGameFaseWidgets =
                                 !_animateShowGameFaseWidgets;
-                                _isShopPhase = true; // Set to shop phase
+                            _currentFase = "shopFase";
                           });
                           Future.delayed(
                             Duration(milliseconds: animationTime),
@@ -272,8 +320,9 @@ class GameScreenState extends State<GameScreen> {
                         } else if (_animateShowShopFaseWidgets) {
                           setState(() {
                             // Init animation shop fase
-                            _animateShowShopFaseWidgets = !_showShopFaseWidget;
-                            _isShopPhase = false; // Set to game phase
+                            _animateShowShopFaseWidgets =
+                                !_animateShowShopFaseWidgets;
+                            _currentFase = "chooseBlindFase";
                           });
                           Future.delayed(
                             Duration(milliseconds: animationTime),
@@ -282,12 +331,13 @@ class GameScreenState extends State<GameScreen> {
                                 // Change visible state of widgets
                                 _showShopFaseWidget = !_showShopFaseWidget;
                                 // Init animation of game fase
-                                _animateShowGameFaseWidgets =
-                                    !_animateShowGameFaseWidgets;
+                                _animateShowChooseBlindFaseWidget =
+                                    !_animateShowChooseBlindFaseWidget;
                               });
                               Future.delayed(Duration(milliseconds: 1), () {
                                 setState(() {
-                                  _showGameFaseWidget = !_showGameFaseWidget;
+                                  _showChooseBlindFaseWidget =
+                                      !_showChooseBlindFaseWidget;
                                 });
                               });
                             },

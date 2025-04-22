@@ -19,6 +19,7 @@ class Sidebar extends StatefulWidget {
     required this.round,
     required this.discardingCards,
     required this.playingCards,
+    required this.currentFase,
     required this.isShopPhase,
   });
 
@@ -30,6 +31,7 @@ class Sidebar extends StatefulWidget {
   final int round;
   final int discardingCards;
   final int playingCards;
+  final String currentFase;
   final bool isShopPhase;
 
   @override
@@ -37,6 +39,24 @@ class Sidebar extends StatefulWidget {
 }
 
 class SidebarState extends State<Sidebar> {
+  final Map<String, dynamic> phaseTextInfo = {
+    'chooseBlindFase': "CHOOSE BLIND",
+    'gameFase': "ROUND",
+    'shopFase': "SHOP",
+  };
+
+  final Map<String, dynamic> phaseIconInfo = {
+    'chooseBlindFase': Icons.blind,
+    'gameFase': Icons.casino,
+    'shopFase': Icons.shopping_cart,
+  };
+
+  final Map<String, dynamic> phaseColorInfo = {
+    'chooseBlindFase': Colors.purple[800],
+    'gameFase': Colors.purple[800],
+    'shopFase': Colors.blue[800],
+  };
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -53,8 +73,8 @@ class SidebarState extends State<Sidebar> {
               height: 24,
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color:
-                    widget.isShopPhase ? Colors.blue[800] : Colors.purple[800],
+                // Get the color dependent on which fase is ongoing
+                color: phaseColorInfo[widget.currentFase],
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -67,16 +87,21 @@ class SidebarState extends State<Sidebar> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Display a shopping cart icon if it's the shop phase
-                  if (widget.isShopPhase)
-                    Icon(Icons.shopping_cart, size: 16, color: Colors.white),
-                  // Otherwise, display a casino icon if it's the round phase
-                  if (!widget.isShopPhase)
-                    Icon(Icons.casino, size: 16, color: Colors.white),
+                  // Display the fase dependent icon
+                  Icon(
+                    phaseIconInfo[widget.currentFase],
+                    size: 16,
+                    color: Colors.white,
+                  ),
+
                   SizedBox(width: 4),
-                  // Display the label: "SHOP" if it's the shop phase, otherwise show the round number
+                  // Display the label dependent on the ongoing phase
+                  // If the fase is game fase we display a round dependent label
                   Text(
-                    widget.isShopPhase ? "SHOP" : "ROUND ${widget.round}/10",
+                    widget.currentFase == "gameFase"
+                        ? "ROUND ${widget.round}/10"
+                        : phaseTextInfo[widget.currentFase],
+                    //widget.isShopPhase ? "SHOP" : "ROUND ${widget.round}/10",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

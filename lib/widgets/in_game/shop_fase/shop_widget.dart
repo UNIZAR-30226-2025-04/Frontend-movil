@@ -300,7 +300,7 @@ class ShopWidgetState extends State<ShopWidget> {
             style: const TextStyle(
               color: Colors.amber,
               fontWeight: FontWeight.bold,
-              fontSize: 13
+              fontSize: 13,
             ),
           ),
         ),
