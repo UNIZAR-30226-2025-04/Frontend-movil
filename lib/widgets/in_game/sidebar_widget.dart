@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/dialogs/game_dialogs.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
+import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
@@ -15,6 +16,7 @@ class Sidebar extends StatefulWidget {
     required this.buyWidgetKey,
     required this.consumableCardsKey,
     required this.shopFaseWidgetKey,
+    required this.consumableFaseWidgetKey,
     required this.sellWidgetKey,
     required this.round,
     required this.discardingCards,
@@ -27,6 +29,7 @@ class Sidebar extends StatefulWidget {
   final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<ConsumableCardsState> consumableCardsKey;
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
+  final GlobalKey<ConsumableFaseWidgetState> consumableFaseWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
   final int round;
   final int discardingCards;
@@ -43,18 +46,21 @@ class SidebarState extends State<Sidebar> {
     'chooseBlindFase': "CHOOSE BLIND",
     'gameFase': "ROUND",
     'shopFase': "SHOP",
+    'consumableFase': "CONSUMABLES",
   };
 
   final Map<String, dynamic> phaseIconInfo = {
     'chooseBlindFase': Icons.blind,
     'gameFase': Icons.casino,
     'shopFase': Icons.shopping_cart,
+    'consumableFase': Icons.card_giftcard,
   };
 
   final Map<String, dynamic> phaseColorInfo = {
     'chooseBlindFase': Colors.purple[800],
     'gameFase': Colors.purple[800],
     'shopFase': Colors.blue[800],
+    'consumableFase': Colors.blue[800],
   };
 
   @override
@@ -132,9 +138,10 @@ class SidebarState extends State<Sidebar> {
   Widget _buildModCards() {
     return ConsumableCards(
       key: widget.consumableCardsKey,
+      shopFaseWidgetKey: widget.shopFaseWidgetKey,
+      consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
       shopWidgetKey: widget.shopWidgetKey,
       buyWidgetKey: widget.buyWidgetKey,
-      shopFaseWidgetKey: widget.shopFaseWidgetKey,
       sellWidgetKey: widget.sellWidgetKey,
     );
   }

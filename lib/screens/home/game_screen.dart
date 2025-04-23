@@ -4,6 +4,7 @@ import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/game_background_widget.dart';
 import 'package:nogler/widgets/in_game/choose_blind_fase/choose_blind_fase_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
+import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/game_fase_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
@@ -37,6 +38,7 @@ class GameScreenState extends State<GameScreen> {
   // WebSocket
   final WebSocketClient wsClient = WebSocketClient();
   List<Map<String, dynamic>> chatMessages = [];
+  List<Map<String, dynamic>> lobbyUsers = [];
 
   final GlobalKey<MainCardsState> _mainCardsKey = GlobalKey();
   final GlobalKey<SelectedCardsState> _selectedCardsKey = GlobalKey();
@@ -52,16 +54,20 @@ class GameScreenState extends State<GameScreen> {
       GlobalKey<SellWidgetState>();
   final GlobalKey<ShopFaseWidgetState> _shopFaseWidgetKey =
       GlobalKey<ShopFaseWidgetState>();
+  final GlobalKey<ConsumableFaseWidgetState> _consumableFaseWidgetKey =
+      GlobalKey<ConsumableFaseWidgetState>();
 
   // Variables to animate the exit of the elements off screen
   bool _animateShowChooseBlindFaseWidget = true;
   bool _animateShowGameFaseWidgets = false;
   bool _animateShowShopFaseWidgets = false;
+  bool _animateShowConsumableFaseWidget = false;
 
   // Show fase widgets visibly
   bool _showChooseBlindFaseWidget = true;
   bool _showGameFaseWidget = false;
   bool _showShopFaseWidget = false;
+  bool _showConsumableFaseWidget = false;
 
   String _currentFase = "chooseBlindFase";
 
@@ -83,6 +89,22 @@ class GameScreenState extends State<GameScreen> {
           'avatarImage': data["user_icon"] ?? 0,
           'message': data["message"] ?? "",
           'time': TimeOfDay.now().format(context),
+        });
+      });
+
+      // Listen for lobby info
+      wsClient.addEventListener("lobby_info", (data) {
+        debugPrint("📡 Received lobby info: $data");
+
+        final players = data['players'] as List<dynamic>;
+        setState(() {
+          lobbyUsers =
+              players.map<Map<String, dynamic>>((player) {
+                return {
+                  'username': player['username'] ?? 'Unknown',
+                  'avatarImage': player['user_icon'] ?? 0,
+                };
+              }).toList();
         });
       });
 
@@ -115,6 +137,7 @@ class GameScreenState extends State<GameScreen> {
                     shopWidgetKey: _shopWidgetKey,
                     buyWidgetKey: _buyWidgetKey,
                     shopFaseWidgetKey: _shopFaseWidgetKey,
+                    consumableFaseWidgetKey: _consumableFaseWidgetKey,
                     sellWidgetKey: _sellWidgetKey,
                     round: widget.round,
                     discardingCards: _discardingCards,
@@ -239,6 +262,23 @@ class GameScreenState extends State<GameScreen> {
                                 sellWidgetKey: _sellWidgetKey,
                               ),
                             ),
+                          )
+                        else if (_showConsumableFaseWidget)
+                          Visibility(
+                            visible: _showConsumableFaseWidget,
+                            child: AnimatedSlide(
+                              offset:
+                                  _animateShowConsumableFaseWidget
+                                      ? Offset(0, 0)
+                                      : Offset(0, 1),
+                              duration: Duration(milliseconds: animationTime),
+                              curve: Curves.easeInOut,
+                              child: ConsumableFaseWidget(
+                                key: _consumableFaseWidgetKey,
+                                consumableCardsKey: _consumableCardsKey,
+                                lobbyUsers: lobbyUsers,
+                              ),
+                            ),
                           ),
                       ],
                     ),
@@ -317,12 +357,13 @@ class GameScreenState extends State<GameScreen> {
                               });
                             },
                           );
+                          // Animate Shop Fase Widgets
                         } else if (_animateShowShopFaseWidgets) {
                           setState(() {
                             // Init animation shop fase
                             _animateShowShopFaseWidgets =
                                 !_animateShowShopFaseWidgets;
-                            _currentFase = "chooseBlindFase";
+                            _currentFase = "consumableFase";
                           });
                           Future.delayed(
                             Duration(milliseconds: animationTime),
@@ -330,7 +371,35 @@ class GameScreenState extends State<GameScreen> {
                               setState(() {
                                 // Change visible state of widgets
                                 _showShopFaseWidget = !_showShopFaseWidget;
-                                // Init animation of game fase
+                                // Init animation of consumable fase
+                                _animateShowConsumableFaseWidget =
+                                    !_animateShowConsumableFaseWidget;
+                              });
+                              Future.delayed(Duration(milliseconds: 1), () {
+                                setState(() {
+                                  _showConsumableFaseWidget =
+                                      !_showConsumableFaseWidget;
+                                });
+                              });
+                            },
+                          );
+                        }
+                        // Animate Consumable Fase Widgets
+                        else if (_animateShowConsumableFaseWidget) {
+                          setState(() {
+                            // Init animation consumable fase
+                            _animateShowConsumableFaseWidget =
+                                !_animateShowConsumableFaseWidget;
+                            _currentFase = "chooseBlindFase";
+                          });
+                          Future.delayed(
+                            Duration(milliseconds: animationTime),
+                            () {
+                              setState(() {
+                                // Change visible state of widgets
+                                _showConsumableFaseWidget =
+                                    !_showConsumableFaseWidget;
+                                // Init animation of choose blind fase
                                 _animateShowChooseBlindFaseWidget =
                                     !_animateShowChooseBlindFaseWidget;
                               });

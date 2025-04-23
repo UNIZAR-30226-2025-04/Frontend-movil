@@ -24,14 +24,14 @@ class Joker extends StatefulWidget {
   const Joker({
     super.key,
     required this.purchasableItemInfo,
-    required this.onDraggedItem,
-    required this.onDroppedItem,
+    this.onDraggedItem,
+    this.onDroppedItem,
     required this.keyWidget,
   });
 
   final PurchasableItemInfo purchasableItemInfo;
-  final Future<void>? Function() onDraggedItem;
-  final Future<void>? Function() onDroppedItem;
+  final Future<void>? Function()? onDraggedItem;
+  final Future<void>? Function()? onDroppedItem;
   final GlobalKey<State<StatefulWidget>> keyWidget;
 
   @override
@@ -50,7 +50,9 @@ class JokerState extends State<Joker> {
       childWhenDragging: Opacity(opacity: 0, child: _buildJokerCard()),
 
       onDragUpdate: (details) {
-        widget.onDraggedItem();
+        if (widget.onDraggedItem != null) {
+          widget.onDraggedItem!();
+        }
         final state = widget.keyWidget.currentState;
         if (state is BuyWidgetState) {
           state.setDraggedItem(widget.purchasableItemInfo);
@@ -60,7 +62,9 @@ class JokerState extends State<Joker> {
       },
 
       onDragEnd: (details) {
-        widget.onDroppedItem();
+        if (widget.onDroppedItem != null) {
+          widget.onDroppedItem!();
+        }
       },
       child: Builder(
         builder:

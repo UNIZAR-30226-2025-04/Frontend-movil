@@ -253,12 +253,10 @@ class MainCardsState extends State<MainCards> {
   void discardSelectedCards() async {
     if (discardingCards == 0) return;
     final selected = handCards.where((c) => c.isSelected).toList();
-    final discards = selected
-      .map((card) => {
-            'Rank': card.rank,
-            'Suit': card.suit.toLowerCase(),
-          })
-      .toList();
+    final discards =
+        selected
+            .map((card) => {'Rank': card.rank, 'Suit': card.suit.toLowerCase()})
+            .toList();
     wsClient.sendMessage("discard_cards", discards);
   }
 
@@ -381,9 +379,7 @@ class MainCardsState extends State<MainCards> {
                   );
                 }),
               )
-              : const SizedBox(
-                height: 97,
-              ), // Placeholder para cuando no hay cartas
+              : const SizedBox(height: 97), // Placeholder if no cards available
     );
   }
 

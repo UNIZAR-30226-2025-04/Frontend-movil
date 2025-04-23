@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nogler/data/api/lobby_api.dart';
-import 'package:nogler/dialogs/game_dialogs.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/home_screen.dart';
@@ -160,11 +159,6 @@ class _LobbyScreen extends State<LobbyScreen> {
 
     // Listen for game start event
     wsClient.addEventListener("starting_next_blind", (data) async {
-      /*
-      debugPrint("📡 Starting next blind: $data");
-
-      showSimpleBlindDialog(context, widget.lobbyCode);
-      */
       debugPrint("📡 Starting round: $data");
       //final round = data['round_number'] as int;
       Navigator.of(context).pushReplacement(

@@ -6,6 +6,7 @@ import 'package:nogler/screens/loading/loading_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
+import 'package:nogler/widgets/player_box_consumables.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:playing_cards/playing_cards.dart';
 
@@ -469,6 +470,142 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
   );
 }
 
+Future<void> showUseConsumableDialog(
+  BuildContext context,
+  PurchasableItemInfo consumable,
+  GlobalKey<State<StatefulWidget>> key,
+  List<Map<String, dynamic>> lobbyUsers,
+) async {
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      debugPrint("${lobbyUsers.length}");
+      return Dialog(
+        backgroundColor: const Color(0xFF2C2F3D),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: 300,
+            maxWidth: 400,
+            minHeight: 200,
+            maxHeight: 300,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    // Name of the consumable chosen
+                    Text(
+                      "Nombre del voucher",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    SizedBox(height: 40),
+                    // Appearence of the consumable
+                    Transform.scale(
+                      scale: 2,
+                      child: Joker(
+                        purchasableItemInfo: consumable,
+                        keyWidget: key,
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    // Buttons
+                    Row(
+                      children: [
+                        // Use consumable button
+                        ElevatedButton(
+                          onPressed: () {
+                            //TODO
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0ea5e9),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                16,
+                              ), // Smooth the border shape
+                            ),
+                            minimumSize: const Size(50, 40),
+                          ),
+                          child: const Text(
+                            "Use",
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ),
+                        SizedBox(width: 6),
+
+                        // Close dialog button
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFd41976),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                16,
+                              ), // Smooth the border shape
+                            ),
+                            minimumSize: const Size(50, 40),
+                          ),
+                          child: const Text(
+                            "Close",
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+                SizedBox(width: 20),
+
+                // List of players to throw the consumable's action
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Choose up to 3",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+
+                      Expanded(
+                        child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent:
+                                    125, //width of the player's box
+                                crossAxisSpacing: 6,
+                                mainAxisExtent: 70, //height of the player's box
+                                mainAxisSpacing: 6,
+                                childAspectRatio: 3,
+                              ),
+                          itemCount: lobbyUsers.length,
+                          itemBuilder: (context, index) {
+                            final player = lobbyUsers[index];
+                            return PlayerBoxConsumables(
+                              playerName: player['username'],
+                              playerIcon: player['avatarImage'],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 /// Buils a selectable row of cards
 Widget _buildSelectableRow(
   List<PurchasableItemInfo> items,
@@ -565,7 +702,7 @@ Widget _buildCard(
                       ),
             ),
           ),
-          
+
           if (isSelected)
             Positioned(
               top: 5,

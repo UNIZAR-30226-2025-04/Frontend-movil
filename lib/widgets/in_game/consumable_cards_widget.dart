@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
@@ -12,15 +13,17 @@ import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 class ConsumableCards extends StatefulWidget {
   const ConsumableCards({
     super.key,
+    required this.shopFaseWidgetKey,
+    required this.consumableFaseWidgetKey,
     required this.shopWidgetKey,
     required this.buyWidgetKey,
-    required this.shopFaseWidgetKey,
     required this.sellWidgetKey,
   });
 
+  final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
+  final GlobalKey<ConsumableFaseWidgetState> consumableFaseWidgetKey;
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
-  final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
 
   @override
@@ -147,12 +150,16 @@ class ConsumableCardsState extends State<ConsumableCards> {
                           onDraggedItem: () {
                             widget.shopFaseWidgetKey.currentState
                                 ?.onDraggedSellItem();
+                            widget.consumableFaseWidgetKey.currentState
+                                ?.onDraggedConsumable();
                             return;
                           },
                           // Hide sell widget
                           onDroppedItem: () {
                             widget.shopFaseWidgetKey.currentState
                                 ?.onDropSellItem();
+                            widget.consumableFaseWidgetKey.currentState
+                                ?.onDroppedConsumable();
                             return;
                           },
                           keyWidget: widget.sellWidgetKey,
