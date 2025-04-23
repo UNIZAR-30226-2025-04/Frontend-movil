@@ -4,39 +4,57 @@ import 'dart:async';
 /// A widget that displays a countdown timer.
 /// The timer starts at 30 seconds and resets when it reaches 0.
 class TimerWidget extends StatefulWidget {
-  const TimerWidget({super.key});
-
+  const TimerWidget({super.key, required this.timeout});
+  final int timeout;
   @override
   TimerWidgetState createState() => TimerWidgetState();
 }
 
 class TimerWidgetState extends State<TimerWidget> {
   /// Timer duration in seconds.
-  int _seconds = 30;
-  late Timer _timer;
+  late int _seconds;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    _seconds = widget.timeout;
     _startTimer();
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(TimerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.timeout != widget.timeout) {
+      _resetTimer(widget.timeout);
+    }
+  }
+
+  /// Reset the timer
+  void _resetTimer(int newTimeout) {
+    setState(() {
+      _seconds = newTimeout;
+    });
+    _startTimer();
   }
 
   /// Starts the countdown timer.
   void _startTimer() {
+    _timer?.cancel(); // Cancel previous timers
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_seconds > 0) {
+      if (_seconds > 0) {
+        setState(() {
           _seconds--;
-        } else {
-          _seconds = 30; // Reset timer when it reaches 0
-        }
-      });
+        });
+      } else {
+        timer.cancel(); // Detiene cuando llega a 0
+      }
     });
   }
 

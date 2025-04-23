@@ -56,11 +56,6 @@ class MainCardsState extends State<MainCards> {
       try {
         // Parse the data received from the server
         final deckSize = data['deck_size'] as int;
-        /*setState(() {
-          discardingCards = leftDraws;
-        });
-        // Notify the parent widget about the number of cards left to draw
-        widget.onDiscardUpdated?.call(leftDraws);*/
 
         // new_cards is a List
         final List<dynamic> parsedList = data['new_cards'] as List<dynamic>;
@@ -116,14 +111,19 @@ class MainCardsState extends State<MainCards> {
       }
     });
 
-    wsClient.addEventListener('discarted_cards', (data) async {
+    wsClient.addEventListener('discarded_cards', (data) async {
       final selected = handCards.where((c) => c.isSelected).toList();
+      final leftDraws = data['left_discards'] as int;
+
+      // Notify the parent widget about the number of cards left to draw
+      widget.onDiscardUpdated?.call(leftDraws);
 
       // Notify the parent widget about the discarded cards
       setState(() {
         for (var c in selected) {
           c.isDiscarding = true;
         }
+        discardingCards = leftDraws;
       });
 
       // Simulate a delay for the animation effect
@@ -137,8 +137,62 @@ class MainCardsState extends State<MainCards> {
       // Simulate a delay for the animation effect
       await Future.delayed(const Duration(milliseconds: 300));
 
-      // Get the new cards from the server
-      _getCards();
+      try {
+        // Parse the data received from the server
+        var deckSize = data['unplayed_cards'] as int;
+
+        // new_cards is a List
+        final List<dynamic> parsedList = data['new_cards'] as List<dynamic>;
+        deckSize = deckSize - parsedList.length;
+        // Filter and map the parsed list to create a new list of cards
+        final newCards =
+            parsedList
+                .map((item) {
+                  return {
+                    'Rank': item['Rank']?.toString(),
+                    'Suit': item['Suit']?.toString().toLowerCase(),
+                  };
+                })
+                .where((card) => card['Rank'] != null && card['Suit'] != null)
+                .toList();
+
+        // Create a list of SelectableCard objects from the new cards
+        final receivedCards =
+            newCards.map((cardData) {
+              final card = _createCardFromServerData(cardData);
+              return card;
+            }).toList();
+
+        // Update the remaining deck with the new cards
+        widget.onDeckUpdated?.call(deckSize);
+
+        // Animate the new cards coming in
+        if (receivedCards.isNotEmpty) {
+          // Add cards one by one with animation
+          for (final card in receivedCards) {
+            card.isNew = true;
+
+            setState(() {
+              handCards.add(card);
+            });
+
+            await Future.delayed(const Duration(milliseconds: 200));
+
+            setState(() {
+              card.isNew = false;
+            });
+
+            await Future.delayed(const Duration(milliseconds: 300));
+          }
+        } else {
+          // No animation needed if no cards
+          setState(() {
+            handCards = receivedCards;
+          });
+        }
+      } catch (e) {
+        debugPrint("❌ Error parsing card data: $e");
+      }
     });
 
     // Listen for the 'played_hand' event to receive the played hand data
@@ -175,8 +229,62 @@ class MainCardsState extends State<MainCards> {
       // Clear the played cards from the parent widget
       widget.onPlayCards?.call([]);
 
-      // Get the new cards from the server
-      _getCards();
+      try {
+        // Parse the data received from the server
+        var deckSize = data['unplayed_cards'] as int;
+
+        // new_cards is a List
+        final List<dynamic> parsedList = data['new_cards'] as List<dynamic>;
+        deckSize = deckSize - parsedList.length;
+        // Filter and map the parsed list to create a new list of cards
+        final newCards =
+            parsedList
+                .map((item) {
+                  return {
+                    'Rank': item['Rank']?.toString(),
+                    'Suit': item['Suit']?.toString().toLowerCase(),
+                  };
+                })
+                .where((card) => card['Rank'] != null && card['Suit'] != null)
+                .toList();
+
+        // Create a list of SelectableCard objects from the new cards
+        final receivedCards =
+            newCards.map((cardData) {
+              final card = _createCardFromServerData(cardData);
+              return card;
+            }).toList();
+
+        // Update the remaining deck with the new cards
+        widget.onDeckUpdated?.call(deckSize);
+
+        // Animate the new cards coming in
+        if (receivedCards.isNotEmpty) {
+          // Add cards one by one with animation
+          for (final card in receivedCards) {
+            card.isNew = true;
+
+            setState(() {
+              handCards.add(card);
+            });
+
+            await Future.delayed(const Duration(milliseconds: 200));
+
+            setState(() {
+              card.isNew = false;
+            });
+
+            await Future.delayed(const Duration(milliseconds: 300));
+          }
+        } else {
+          // No animation needed if no cards
+          setState(() {
+            handCards = receivedCards;
+          });
+        }
+      } catch (e) {
+        debugPrint("❌ Error parsing card data: $e");
+      }
     });
   }
 
@@ -254,10 +362,8 @@ class MainCardsState extends State<MainCards> {
     if (discardingCards == 0) return;
     final selected = handCards.where((c) => c.isSelected).toList();
     final discards =
-        selected
-            .map((card) => {'Rank': card.rank, 'Suit': card.suit.toLowerCase()})
-            .toList();
-    wsClient.sendMessage("discard_cards", discards);
+        selected.map((card) => {'rank': card.rank, 'suit': card.suit}).toList();
+    wsClient.sendMessage("discard_cards", [discards]);
   }
 
   /// Plays selected cards and replaces them with new ones from the deck.

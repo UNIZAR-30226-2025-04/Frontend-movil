@@ -160,6 +160,7 @@ class _LobbyScreen extends State<LobbyScreen> {
     // Listen for game start event
     wsClient.addEventListener("starting_next_blind", (data) async {
       debugPrint("📡 Starting round: $data");
+      final timeout = data['timeout'] as int;
       //final round = data['round_number'] as int;
       Navigator.of(context).pushReplacement(
         PageTransition(
@@ -169,23 +170,7 @@ class _LobbyScreen extends State<LobbyScreen> {
             hostName: widget.hostName,
             hostAvatar: widget.hostAvatar,
             lobbyCode: widget.lobbyCode,
-          ),
-        ),
-      );
-    });
-
-    // Listen for round start event
-    wsClient.addEventListener("starting_round", (data) async {
-      debugPrint("📡 Starting round: $data");
-      final round = data['round_number'] as int;
-      Navigator.of(context).pushReplacement(
-        PageTransition(
-          type: PageTransitionType.fade,
-          child: GameScreen(
-            round: round,
-            hostName: widget.hostName,
-            hostAvatar: widget.hostAvatar,
-            lobbyCode: widget.lobbyCode,
+            timeout: timeout,
           ),
         ),
       );

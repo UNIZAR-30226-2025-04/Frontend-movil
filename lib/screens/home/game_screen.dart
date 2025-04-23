@@ -25,11 +25,13 @@ class GameScreen extends StatefulWidget {
     required this.hostName,
     required this.hostAvatar,
     required this.lobbyCode,
+    required this.timeout,
   });
   final int round;
   final String hostName;
   final int hostAvatar;
   final String lobbyCode;
+  final int timeout;
   @override
   GameScreenState createState() => GameScreenState();
 }
@@ -75,11 +77,14 @@ class GameScreenState extends State<GameScreen> {
   int _discardingCards = 3;
   int _playingCards = 3;
   int animationTime = 500;
+  late int _timeout;
 
   @override
   void initState() {
     super.initState();
+    _timeout = widget.timeout;
     wsClient.removeEventListener("new_lobby_message");
+    wsClient.removeEventListener("lobby_info");
     // Listen for new lobby messages
     wsClient.addEventListener("new_lobby_message", (data) {
       debugPrint("🟨 Message received");
@@ -109,6 +114,20 @@ class GameScreenState extends State<GameScreen> {
       });
 
       debugPrint("🟩 Total messages: ${chatMessages.length}");
+    });
+
+    // Listen for round start event
+    wsClient.addEventListener("starting_round", (data) async {
+      debugPrint("📡 Starting round: $data");
+      final newTimeout = data['timeout'] as int;
+      setState(() {
+        // Init game fase
+        _showChooseBlindFaseWidget = !_showChooseBlindFaseWidget;
+        _showGameFaseWidget = !_showGameFaseWidget;
+        _animateShowGameFaseWidgets = !_animateShowGameFaseWidgets;
+        _currentFase = "gameFase";
+        _timeout = newTimeout;
+      });
     });
   }
 
@@ -291,7 +310,7 @@ class GameScreenState extends State<GameScreen> {
                 right: 20,
                 child: Row(
                   children: [
-                    TimerWidget(),
+                    TimerWidget(timeout: _timeout),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(

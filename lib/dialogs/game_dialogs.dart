@@ -1,13 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:nogler/screens/loading/loading_screen.dart';
-import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/player_box_consumables.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:playing_cards/playing_cards.dart';
 
 /// Displays a dialog showing the types of hands in the game.
@@ -212,117 +208,6 @@ Widget _buildDataRow(
         ),
       ],
     ),
-  );
-}
-
-/// Displays a dialog to propose a blind value.
-Future<void> showSimpleBlindDialog(BuildContext context, String lobbyId) async {
-  final wsClient = WebSocketClient();
-  int proposedBlind = 1;
-  final TextEditingController controller = TextEditingController();
-
-  return showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return PopScope(
-        canPop: false,
-        child: AlertDialog(
-          scrollable: true,
-          backgroundColor: const Color(0xFF2C3454), // Custom background color
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Header
-              Center(
-                child: Text(
-                  'Enter Blind Value',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Numeric input field
-              TextField(
-                controller: controller,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Blind value',
-                  labelStyle: const TextStyle(color: Colors.white70),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.white),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.blue),
-                  ),
-                ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: (value) {
-                  proposedBlind = int.tryParse(value) ?? 1;
-                },
-              ),
-              const SizedBox(height: 30),
-
-              // Confirm button
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    backgroundColor: Colors.blue,
-                  ),
-                  onPressed: () {
-                    if (controller.text.isNotEmpty && proposedBlind > 0) {
-                      wsClient.sendMessage('propose_blind', {
-                        proposedBlind,
-                        lobbyId,
-                      });
-                      Navigator.pushReplacement(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.fade,
-                          child: const LoadingScreen(
-                            loadingMessage: 'Starting round ...',
-                          ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a valid blind value'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    'Confirm',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
   );
 }
 
