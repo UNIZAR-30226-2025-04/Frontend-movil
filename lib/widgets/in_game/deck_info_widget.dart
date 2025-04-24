@@ -4,13 +4,17 @@ import 'package:flutter/material.dart';
 /// The count updates when the widget is tapped.
 class DeckInfo extends StatelessWidget {
   final int remainingCards;
+  final int currentDeckSize;
 
-  const DeckInfo({super.key, required this.remainingCards});
+  const DeckInfo({
+    super.key,
+    required this.remainingCards,
+    required this.currentDeckSize,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-
       child: SizedBox(
         width: 60, // Width of the container
         height: 70, // Height of the container
@@ -30,7 +34,7 @@ class DeckInfo extends StatelessWidget {
               bottom: -5,
               left: 10,
               child: Text(
-                "$remainingCards / 52",
+                "$remainingCards / $currentDeckSize",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -54,9 +58,9 @@ class DeckInfo extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         border: Border.all(color: Colors.white, width: 2),
         image: DecorationImage(
-        image: AssetImage('images/Blue_Deck.png'), // Ruta de tu imagen
-        fit: BoxFit.cover, // Ajuste de la imagen
-      ),
+          image: AssetImage('images/Blue_Deck.png'), // Ruta de tu imagen
+          fit: BoxFit.cover, // Ajuste de la imagen
+        ),
       ),
     );
   }

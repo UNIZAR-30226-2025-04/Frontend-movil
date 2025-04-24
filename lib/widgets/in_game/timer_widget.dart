@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 /// A widget that displays a countdown timer.
-/// The timer starts at 30 seconds and resets when it reaches 0.
 class TimerWidget extends StatefulWidget {
   const TimerWidget({super.key, required this.timeout});
   final int timeout;

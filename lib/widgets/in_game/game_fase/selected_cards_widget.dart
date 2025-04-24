@@ -3,7 +3,8 @@ import 'package:nogler/widgets/in_game/card_widget.dart';
 
 /// A widget that displays a row of played cards temporarily.
 class SelectedCards extends StatefulWidget {
-  const SelectedCards({super.key});
+  final Function(int)? onBlueScore;
+  const SelectedCards({super.key, this.onBlueScore});
 
   @override
   SelectedCardsState createState() => SelectedCardsState();
@@ -16,7 +17,8 @@ class SelectedCardsState extends State<SelectedCards> {
   Set<int> scoringIndices = {};
   Set<int> appearingIndices = {};
 
-  /// Show cards temporarily when a hand is played
+  /// Displays a list of cards with animated effects.
+  /// Only cards marked with `isScored == true` will show the scoring animation
   Future<void> showCards(List<SelectableCard> newCards) async {
     setState(() {
       cards = newCards;
@@ -32,16 +34,23 @@ class SelectedCardsState extends State<SelectedCards> {
       });
     }
 
+    int score = 0;
     // After all cards are shown, animate them with a bounce effect
     for (int i = 0; i < newCards.length; i++) {
+      
       await Future.delayed(Duration(milliseconds: 200));
       if (!mounted) return;
 
-      setState(() {
-        bouncingIndices.add(i);
-        scoringIndices.add(i);
-      });
+      final card = newCards[i];
+      if (!card.isScored) continue; // Skip non-scoring cards
 
+      setState(() {
+        bouncingIndices.add(i); // Apply bounce effect
+        scoringIndices.add(i); // Show score animation
+      });
+      score += int.tryParse(card.score) ?? 0;
+      // Wait before resetting the bounce and score effect
+      widget.onBlueScore?.call(score);
       await Future.delayed(const Duration(milliseconds: 600));
 
       if (!mounted) return;
@@ -97,7 +106,7 @@ class SelectedCardsState extends State<SelectedCards> {
                 ),
               ),
             ),
-            if (isScoring)
+            if (card.isScored && isScoring)
               Positioned(
                 top: 0,
                 child: TweenAnimationBuilder<double>(
@@ -113,8 +122,8 @@ class SelectedCardsState extends State<SelectedCards> {
                       ),
                     );
                   },
-                  child: const Text(
-                    '+10',
+                  child: Text(
+                    '+${card.score}',
                     style: TextStyle(
                       color: Colors.yellow,
                       fontWeight: FontWeight.bold,

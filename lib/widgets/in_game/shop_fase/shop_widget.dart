@@ -32,7 +32,7 @@ class ShopWidgetState extends State<ShopWidget> {
   void _generateRandomJoker() {
     final random = Random();
     const subtypes = ["SolidSeven", "AverageSizeMichael"];
-    shopJokers = List.generate(4, (int index) {
+    shopJokers = List.generate(3, (int index) {
       final randomSubtype = subtypes[random.nextInt(subtypes.length)];
       return PurchasableItemInfo(
         price: random.nextInt(10),
@@ -65,7 +65,7 @@ class ShopWidgetState extends State<ShopWidget> {
     final random = Random();
     const subtypes = ["BuffoonNormal", "SpectralJumbo", "StandardNormal"];
 
-    shopPackages = List.generate(3, (int index) {
+    shopPackages = List.generate(2, (int index) {
       final randomSubtype = subtypes[random.nextInt(subtypes.length)];
 
       return PurchasableItemInfo(
@@ -124,8 +124,7 @@ class ShopWidgetState extends State<ShopWidget> {
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.black87,
-        border: Border.all(color: Colors.redAccent, width: 2),
+        color: const Color(0xFF2C3454),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -143,7 +142,7 @@ class ShopWidgetState extends State<ShopWidget> {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: const Color(0xFFd41976),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
@@ -165,8 +164,8 @@ class ShopWidgetState extends State<ShopWidget> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
+                        backgroundColor: const Color(0xFF0fba81),
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             8,
@@ -194,7 +193,7 @@ class ShopWidgetState extends State<ShopWidget> {
                   width: 276,
                   height: 111,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.redAccent, width: 2),
+                    color: const Color(0xFF495a8f),
                     borderRadius: BorderRadius.circular(12),
                   ),
 
@@ -229,7 +228,7 @@ class ShopWidgetState extends State<ShopWidget> {
                 width: 145,
                 height: 108,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.redAccent, width: 2),
+                  color: const Color(0xFF495a8f),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
@@ -256,7 +255,7 @@ class ShopWidgetState extends State<ShopWidget> {
                   width: 145,
                   height: 108,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.redAccent, width: 2),
+                    color: const Color(0xFF495a8f),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Padding(
@@ -292,7 +291,8 @@ class ShopWidgetState extends State<ShopWidget> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
-            color: Colors.black,
+            color: const Color(0xFF2C3454),
+            border: Border.all(color: Colors.amber, width: 2),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(

@@ -23,6 +23,10 @@ class Sidebar extends StatefulWidget {
     required this.playingCards,
     required this.currentFase,
     required this.isShopPhase,
+    required this.score,
+    required this.redScore,
+    required this.blueScore,
+    required this.handType,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -36,6 +40,10 @@ class Sidebar extends StatefulWidget {
   final int playingCards;
   final String currentFase;
   final bool isShopPhase;
+  final int score;
+  final int redScore;
+  final int blueScore;
+  final int handType;
 
   @override
   SidebarState createState() => SidebarState();
@@ -62,6 +70,34 @@ class SidebarState extends State<Sidebar> {
     'shopFase': Colors.blue[800],
     'consumableFase': Colors.blue[800],
   };
+
+  /// Returns the name of the level 1 hand based on its position (1 to 13).
+  String getHandTypeName(int number) {
+    // List of all level 1 hand names in order.
+    final List<String> rankNames = [
+      'Flush five',
+      'Flush house',
+      'Five of a kind',
+      'Royal flush',
+      'Straight flush',
+      'Four of a kind',
+      'Full house',
+      'Flush',
+      'Straight',
+      'Three of a kind',
+      'Two pair',
+      'One pair',
+      'High card',
+    ];
+
+    // If the input number is between 1 and 13, return the corresponding hand name.
+    if (number >= 1 && number <= 13) {
+      return 'lvl.1 ${rankNames[number - 1]}';
+    } else {
+      // Return an error message for out-of-range input.
+      return 'Number out of range (1-13)';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +164,10 @@ class SidebarState extends State<Sidebar> {
           _buildGameStats(
             widget.discardingCards.toString(),
             widget.playingCards.toString(),
+            widget.score.toString(),
+            widget.blueScore.toString(),
+            widget.redScore.toString(),
+            getHandTypeName(widget.handType),
           ),
         ],
       ),
@@ -147,7 +187,14 @@ class SidebarState extends State<Sidebar> {
   }
 
   /// Builds a section displaying game statistics such as round score and player stats.
-  Widget _buildGameStats(String remainingCards, String playingCards) {
+  Widget _buildGameStats(
+    String remainingCards,
+    String playingCards,
+    String score,
+    String blueScore,
+    String redScore,
+    String handType,
+  ) {
     return Column(
       children: [
         // Displays the round score
@@ -166,23 +213,7 @@ class SidebarState extends State<Sidebar> {
                 ),
               ),
               SizedBox(width: 10),
-
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2C3454),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                child: Text(
-                  "302.24€",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              _buildAnimatedScore(score), // Animated counter
             ],
           ),
         ),
@@ -199,7 +230,7 @@ class SidebarState extends State<Sidebar> {
             child: Column(
               children: [
                 Text(
-                  "Full House lvl 2",
+                  handType,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -209,7 +240,7 @@ class SidebarState extends State<Sidebar> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildStatBox("90", const Color(0xFF0ea5e9)),
+                    _buildStatBox(blueScore, const Color(0xFF0ea5e9)),
                     SizedBox(width: 5),
                     Text(
                       "X",
@@ -220,7 +251,7 @@ class SidebarState extends State<Sidebar> {
                       ),
                     ),
                     SizedBox(width: 2),
-                    _buildStatBox("8", const Color(0xFFd41976)),
+                    _buildStatBox(redScore, const Color(0xFFd41976)),
                   ],
                 ),
               ],
@@ -266,27 +297,65 @@ class SidebarState extends State<Sidebar> {
     );
   }
 
-  /// Builds a labeled value box for game statistics.
-  Widget _buildStatBox(String value, Color color) {
-    return Container(
-      width: 60,
-      height: 28,
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.black, width: 2),
-      ),
-      child: Center(
-        child: Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+  /// Builds the animated round score counter with a styled container
+  Widget _buildAnimatedScore(String score) {
+    final int parsedScore = int.tryParse(score) ?? 0;
+
+    return TweenAnimationBuilder<int>(
+      tween: IntTween(begin: 0, end: parsedScore),
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutExpo,
+      builder: (context, value, child) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+          decoration: BoxDecoration(
+            color: const Color(0xFF2C3454),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.black, width: 2),
           ),
-        ),
-      ),
+          child: Text(
+            value.toString(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Builds a stat box with animated score.
+  Widget _buildStatBox(String value, Color color) {
+    final int parsedValue = int.tryParse(value) ?? 0;
+
+    return TweenAnimationBuilder<int>(
+      tween: IntTween(begin: 0, end: parsedValue),
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutExpo,
+      builder: (context, animatedValue, child) {
+        return Container(
+          width: 60,
+          height: 28,
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.black, width: 2),
+          ),
+          child: Center(
+            child: Text(
+              animatedValue.toString(),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

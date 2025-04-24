@@ -78,7 +78,11 @@ class GameScreenState extends State<GameScreen> {
   int _playingCards = 3;
   int animationTime = 500;
   late int _timeout;
-
+  int _blueScore = 0;
+  int _redScore = 0;
+  int _score = 0;
+  int _handType = 1;
+  int _currentDeckSize = 0;
   @override
   void initState() {
     super.initState();
@@ -120,13 +124,16 @@ class GameScreenState extends State<GameScreen> {
     wsClient.addEventListener("starting_round", (data) async {
       debugPrint("📡 Starting round: $data");
       final newTimeout = data['timeout'] as int;
+      final deckSize = data['current_deck_size'] as int;
       setState(() {
         // Init game fase
         _showChooseBlindFaseWidget = !_showChooseBlindFaseWidget;
         _showGameFaseWidget = !_showGameFaseWidget;
         _animateShowGameFaseWidgets = !_animateShowGameFaseWidgets;
+        _animateShowChooseBlindFaseWidget = !_animateShowChooseBlindFaseWidget;
         _currentFase = "gameFase";
         _timeout = newTimeout;
+        _currentDeckSize = deckSize;
       });
     });
   }
@@ -163,6 +170,10 @@ class GameScreenState extends State<GameScreen> {
                     playingCards: _playingCards,
                     currentFase: _currentFase,
                     isShopPhase: _showShopFaseWidget,
+                    score: _score,
+                    blueScore: _blueScore,
+                    redScore: _redScore,
+                    handType: _handType,
                   ), // Sidebar for navigation and game info
 
                   Expanded(
@@ -258,6 +269,43 @@ class GameScreenState extends State<GameScreen> {
                                     });
                                   });
                                 },
+                                onScore: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _score = value;
+                                    });
+                                  });
+                                },
+                                onBlueScore: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _blueScore = value;
+                                    });
+                                  });
+                                },
+                                onRedScore: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _redScore = value;
+                                    });
+                                  });
+                                },
+                                onHandType: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _handType = value;
+                                    });
+                                  });
+                                },
+                                currentDeckSize: _currentDeckSize,
                               ),
                             ),
                           )

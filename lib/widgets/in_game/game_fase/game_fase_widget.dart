@@ -15,6 +15,11 @@ class GameFaseWidget extends StatelessWidget {
     required this.onPlayCards,
     required this.onDiscardUpdated,
     required this.onPlayingUpdated,
+    required this.onBlueScore,
+    required this.onRedScore,
+    required this.onScore,
+    required this.onHandType,
+    required this.currentDeckSize
   });
 
   final GlobalKey<MainCardsState> mainCardsKey;
@@ -24,6 +29,11 @@ class GameFaseWidget extends StatelessWidget {
   final Function(List<SelectableCard>) onPlayCards;
   final Function(int) onDiscardUpdated;
   final Function(int) onPlayingUpdated;
+  final Function(int)? onScore;
+  final Function(int)? onBlueScore;
+  final Function(int)? onRedScore;
+  final Function(int)? onHandType;
+  final int currentDeckSize;
   
 
   @override
@@ -35,6 +45,7 @@ class GameFaseWidget extends StatelessWidget {
 
         SelectedCards(
           key: selectedCardsKey,
+          onBlueScore: onBlueScore,
         ), // Widget displaying selected cards
 
         const SizedBox(height: 5),
@@ -46,6 +57,10 @@ class GameFaseWidget extends StatelessWidget {
           onPlayCards: onPlayCards,
           onDiscardUpdated: onDiscardUpdated,
           onPlayingdUpdated: onPlayingUpdated,
+          onBlueScore: onBlueScore,
+          onRedScore: onRedScore,
+          onScore: onScore,
+          onHandType: onHandType,
         ),
 
         // Action buttons and deck info at the bottom
@@ -63,7 +78,7 @@ class GameFaseWidget extends StatelessWidget {
               mainCardsKey: mainCardsKey,
             ),
             SizedBox(width: 15),
-            DeckInfo(remainingCards: remainingCards),
+            DeckInfo(remainingCards: remainingCards, currentDeckSize: currentDeckSize),
           ],
         ),
       ],

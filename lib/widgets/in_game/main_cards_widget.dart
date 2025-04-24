@@ -9,12 +9,20 @@ class MainCards extends StatefulWidget {
   final void Function(List<SelectableCard>)? onPlayCards;
   final Function(int)? onDiscardUpdated;
   final Function(int)? onPlayingdUpdated;
+  final Function(int)? onScore;
+  final Function(int)? onBlueScore;
+  final Function(int)? onRedScore;
+  final Function(int)? onHandType;
   const MainCards({
     super.key,
     this.onDeckUpdated,
     this.onPlayCards,
     this.onDiscardUpdated,
     this.onPlayingdUpdated,
+    this.onBlueScore,
+    this.onRedScore,
+    this.onScore,
+    this.onHandType,
   });
 
   @override
@@ -24,6 +32,7 @@ class MainCards extends StatefulWidget {
 class MainCardsState extends State<MainCards> {
   List<SelectableCard> handCards = [];
   List<PlayingCard> remainingDeck = [];
+  int totalScore = 0;
 
   /// Stores the index of the dragged card
   int? _draggedIndex;
@@ -143,7 +152,7 @@ class MainCardsState extends State<MainCards> {
 
         // new_cards is a List
         final List<dynamic> parsedList = data['new_cards'] as List<dynamic>;
-        deckSize = deckSize - parsedList.length;
+        deckSize = deckSize - 8;
         // Filter and map the parsed list to create a new list of cards
         final newCards =
             parsedList
@@ -199,11 +208,16 @@ class MainCardsState extends State<MainCards> {
     wsClient.addEventListener('played_hand', (data) async {
       final selected = handCards.where((c) => c.isSelected).toList();
       final selectedCards = selected.map((c) => c).toList();
-      final time = selectedCards.length + 1;
       final playedCards = data['left_plays'] as int;
-
+      final redScore = data['red_score'] as int;
+      final handType = data['hand_type'] as int;
+      final score = data['total_score'] as int;
+      final List<dynamic> scoreCards = data['scored_cards'] as List<dynamic>;
+      final time = scoreCards.length + 1;
       // Notify the parent widget about the played cards
       widget.onPlayCards?.call(selectedCards);
+      widget.onRedScore?.call(redScore);
+      widget.onHandType?.call(handType);
 
       // Notify the parent widget about the number of hands left to play
       widget.onPlayingdUpdated?.call(playedCards);
@@ -211,8 +225,18 @@ class MainCardsState extends State<MainCards> {
       setState(() {
         for (var c in selected) {
           c.isDiscarding = true;
+          // Check if this card is listed among the scored cards
+          final isInScored = scoreCards.any(
+            (scored) => scored['Rank'] == c.rank && scored['Suit'] == c.suit,
+          );
+
+          if (isInScored) {
+            // Mark the card as having scored
+            c.isScored = true;
+          }
         }
         playingCards = playedCards;
+        totalScore += score;
       });
 
       // Simulate a delay for the animation effect
@@ -229,13 +253,17 @@ class MainCardsState extends State<MainCards> {
       // Clear the played cards from the parent widget
       widget.onPlayCards?.call([]);
 
+      await Future.delayed(const Duration(milliseconds: 500));
+      widget.onScore?.call(totalScore);
+      widget.onRedScore?.call(0);
+      widget.onBlueScore?.call(0);
       try {
         // Parse the data received from the server
         var deckSize = data['unplayed_cards'] as int;
 
         // new_cards is a List
         final List<dynamic> parsedList = data['new_cards'] as List<dynamic>;
-        deckSize = deckSize - parsedList.length;
+        deckSize = deckSize - 8;
         // Filter and map the parsed list to create a new list of cards
         final newCards =
             parsedList
@@ -302,8 +330,9 @@ class MainCardsState extends State<MainCards> {
     return SelectableCard(
       rank: rank,
       suit: suit,
-      overlay: 1,
+      overlay: 0,
       card: PlayingCard(cardSuit, cardValue),
+      score: getCardValueFromRank(rank),
     );
   }
 
@@ -462,6 +491,40 @@ class MainCardsState extends State<MainCards> {
         return bSuitValue.compareTo(aSuitValue);
       });
     });
+  }
+
+  /// Returns the numeric value of a card rank as a string.
+  String getCardValueFromRank(String rank) {
+    switch (rank.toUpperCase()) {
+      case 'A':
+        return '1';
+      case 'K':
+        return '13';
+      case 'Q':
+        return '12';
+      case 'J':
+        return '11';
+      case '10':
+        return '10';
+      case '9':
+        return '9';
+      case '8':
+        return '8';
+      case '7':
+        return '7';
+      case '6':
+        return '6';
+      case '5':
+        return '5';
+      case '4':
+        return '4';
+      case '3':
+        return '3';
+      case '2':
+        return '2';
+      default:
+        return '0';
+    }
   }
 
   @override

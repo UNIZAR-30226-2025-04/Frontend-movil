@@ -177,19 +177,23 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                       ),
                                       onPressed: () async {
                                         final public = await joinLobby(lobbyId);
-                                        setState(() {
-                                          deleteLobbyInvitation(
-                                            lobbyId,
-                                            username,
-                                          );
-                                          invitationsList.removeAt(index);
-                                        });
+
                                         // Store the code in secure storage
                                         await const FlutterSecureStorage()
                                             .write(key: 'code', value: lobbyId);
                                         // Auto-connect when screen loads
                                         await wsClient.initialize();
                                         if (context.mounted) {
+                                          // Delete lobby invitation
+                                          setState(() {
+                                            deleteLobbyInvitation(
+                                              lobbyId,
+                                              username,
+                                            );
+                                            invitationsList.removeAt(index);
+                                          });
+
+                                          // Navigate to lobby screen
                                           Navigator.push(
                                             context,
                                             PageTransition(
@@ -204,12 +208,14 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                           );
                                         }
                                       },
-                                      child: Text("JOIN $numberOfPlayers/8", 
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          )),
+                                      child: Text(
+                                        "JOIN $numberOfPlayers/8",
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 );

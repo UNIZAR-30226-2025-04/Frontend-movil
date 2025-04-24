@@ -10,6 +10,8 @@ class SelectableCard {
   bool isSelected;
   bool isDiscarding;
   bool isNew;
+  bool isScored;
+  String score;
 
   SelectableCard({
     required this.rank,
@@ -19,6 +21,8 @@ class SelectableCard {
     this.isSelected = false,
     this.isDiscarding = false,
     this.isNew = false,
+    this.isScored = false,
+    this.score = ''
   });
 }
 
