@@ -57,6 +57,7 @@ class ConsumableCardsState extends State<ConsumableCards> {
           index: -1, // Not used
           type: "owned consumable",
           subtype: jokerInfo.subtype,
+          cardName: "",
         );
         consumableOwned.add(auxJokerInfo);
         debugPrint("Consumible añadido en la lista");
@@ -82,15 +83,15 @@ class ConsumableCardsState extends State<ConsumableCards> {
   // Function used to generate random consumables when we enter game fase
   void _generateRandomConsumable() {
     final random = Random();
-    const subtypes = ["ClearanceSale", "death", "CrystalBall"];
     consumableOwned = List.generate(2, (int index) {
-      final randomSubtype = subtypes[random.nextInt(subtypes.length)];
+      final randomSubtype = random.nextInt(3) + 1;
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
         index: -1,
         type: "owned consumable",
         subtype: randomSubtype,
+        cardName: "",
       );
     });
   }

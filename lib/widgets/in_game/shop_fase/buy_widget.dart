@@ -31,7 +31,8 @@ class BuyWidgetState extends State<BuyWidget> {
     id: -1,
     index: -1,
     type: "",
-    subtype: "",
+    subtype: 0,
+    cardName: "",
   );
 
   // Get the info of dragged item
@@ -42,50 +43,55 @@ class BuyWidgetState extends State<BuyWidget> {
   }
 
   // Generate items for the package
-  List<PurchasableItemInfo> _generateItemsForPackage(String subtype) {
+  List<PurchasableItemInfo> _generateItemsForPackage(int subtype) {
     switch (subtype) {
-      case "SpectralJumbo": // Spectral Jumbo Pack
+      case 2: // Spectral Jumbo Pack
         return [
           PurchasableItemInfo(
             price: 0,
             id: 1,
             index: -1,
             type: "consumable",
-            subtype: "CrystalBall",
+            subtype: 1,
+            cardName: "",
           ),
           PurchasableItemInfo(
             price: 0,
             id: 2,
             index: -1,
             type: "consumable",
-            subtype: "ClearanceSale",
+            subtype: 2,
+            cardName: "",
           ),
           PurchasableItemInfo(
             price: 0,
             id: 3,
             index: -1,
             type: "consumable",
-            subtype: "death",
+            subtype: 3,
+            cardName: "",
           ),
         ];
-      case "BuffoonNormal": // Buffoon Normal Pack
+      case 1: // Buffoon Normal Pack
         return [
           PurchasableItemInfo(
             price: 0,
             id: 1,
             index: -1,
             type: "joker",
-            subtype: "SolidSeven",
+            subtype: 1,
+            cardName: "",
           ),
           PurchasableItemInfo(
             price: 0,
             id: 2,
             index: -1,
             type: "joker",
-            subtype: "AverageSizeMichael",
+            subtype: 2,
+            cardName: "",
           ),
         ];
-      case "StandardNormal": // Standard Normal Pack - Ahora con cartas aleatorias
+      case 3: // Standard Normal Pack - Ahora con cartas aleatorias
         final random = Random();
         final suits = Suit.values;
         final values = CardValue.values;
@@ -104,7 +110,8 @@ class BuyWidgetState extends State<BuyWidget> {
             id: card.hashCode,
             index: -1,
             type: "card",
-            subtype: _playingCardToImageId(card),
+            subtype: 0,
+            cardName: _playingCardToImageId(card),
           );
         }).toList();
       default:

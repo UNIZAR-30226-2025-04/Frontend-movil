@@ -11,13 +11,15 @@ class PurchasableItemInfo {
     required this.index,
     required this.type,
     required this.subtype,
+    required this.cardName,
   });
   final int price;
   final int id;
   int index;
   final String type;
   // TODO, add a description of the joker
-  final String subtype;
+  final int subtype;
+  String cardName = "";
 }
 
 class Joker extends StatefulWidget {
@@ -92,13 +94,13 @@ class JokerState extends State<Joker> {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.transparent),
       ),
-      //TODO, Add images of jokers next
+
       child:
           // Consumables images
           (widget.purchasableItemInfo.type == "consumable" ||
                   widget.purchasableItemInfo.type == "owned consumable")
               ? Image.asset(
-                getConsumableImageById(widget.purchasableItemInfo.subtype),
+                getConsumableImageBySubtype(widget.purchasableItemInfo.subtype),
                 errorBuilder: (context, error, stackTrace) {
                   return Text(
                     "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
@@ -114,7 +116,7 @@ class JokerState extends State<Joker> {
               : (widget.purchasableItemInfo.type == "joker" ||
                   widget.purchasableItemInfo.type == "owned joker")
               ? Image.asset(
-                getJokerImageById(widget.purchasableItemInfo.subtype),
+                getJokerImageBySubtype(widget.purchasableItemInfo.subtype),
                 errorBuilder: (context, error, stackTrace) {
                   return Text(
                     "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
@@ -218,31 +220,29 @@ class JokerState extends State<Joker> {
     String? description;
     Color rarityColor = Colors.red;
 
+    int index = purchasable.subtype;
     switch (purchasable.type.replaceAll('owned ', '')) {
       case 'joker':
-        final item = jokersMap.firstWhere(
-          (e) => e['jokerName'] == purchasable.subtype,
-          orElse: () => {},
-        );
-        name = item['jokerName'];
-        description = item['jokerDescription'];
+        if (index >= 0 && index < jokersMap.length) {
+          final item = jokersMap[index];
+          name = item['jokerName'];
+          description = item['jokerDescription'];
+        }
         break;
       case 'consumable':
-        final item = consumablesMap.firstWhere(
-          (e) => e['consumableName'] == purchasable.subtype,
-          orElse: () => {},
-        );
-        name = item['consumableName'];
-        description = item['consumableDescription'];
+        if (index >= 0 && index < consumablesMap.length) {
+          final item = consumablesMap[index];
+          name = item['consumableName'];
+          description = item['consumableDescription'];
+        }
         break;
       case 'package':
-        final item = packagesMap.firstWhere(
-          (e) => e['packageName'] == purchasable.subtype,
-          orElse: () => {},
-        );
-        name = item['packageName'];
-        description = item['packageDescription'];
-        rarityColor = Colors.purple; // Ejemplo: cambiar color por tipo
+        if (index >= 0 && index < packagesMap.length) {
+          final item = packagesMap[index];
+          name = item['packageName'];
+          description = item['packageDescription'];
+          rarityColor = Colors.purple;
+        }
         break;
     }
 
@@ -311,21 +311,27 @@ class JokerState extends State<Joker> {
   // List of consumables with their image path, internal name, and description
   List<Map<String, String>> consumablesMap = [
     {
+      // No consumable
+      'consumable': 'No consumable',
+      'consumableName': '',
+      'consumableDescription': '',
+    },
+    {
       // Clearance sale consumable
       'consumable': 'images/consumables/Clearance_Sale.png',
-      'consumableName': 'ClearanceSale',
+      'consumableName': 'Clearance Sale',
       'consumableDescription': 'Clearence sell:Next shop its 50% off!',
     },
     {
       // Death consumable
       'consumable': 'images/consumables/death.png',
-      'consumableName': 'death',
+      'consumableName': 'Death',
       'consumableDescription': '',
     },
     {
       // Crystal ball consumable
       'consumable': 'images/consumables/Crystal_Ball.png',
-      'consumableName': 'CrystalBall',
+      'consumableName': 'Crystal Ball',
       'consumableDescription':
           'Crystal Ball: 25% chance to replace a normal card with an ace next round',
     },
@@ -334,16 +340,35 @@ class JokerState extends State<Joker> {
   // List of jokers with image path, name, and description
   List<Map<String, String>> jokersMap = [
     {
+      // No joker
+      'joker': 'No jocker',
+      'jokerName': 'No jocker',
+      'jokerDescription': '',
+    },
+    {
       // Average size Michael joker
       'joker': 'images/jokers/AVERAGE_SIZE_MICHAEL.png',
-      'jokerName': 'AverageSizeMichael',
+      'jokerName': 'Average SizeMichael',
       'jokerDescription':
           'Average size Michael +13 mult.1/13 chance of being sold each round. Glass:This is a tooltip For the glass overlay',
     },
     {
       // Solid Seven joker
       'joker': 'images/jokers/solid_seven.png',
-      'jokerName': 'SolidSeven',
+      'jokerName': 'Solid Seven',
+      'jokerDescription': '',
+    },
+    {
+      // Average size Michael joker
+      'joker': 'images/jokers/AVERAGE_SIZE_MICHAEL.png',
+      'jokerName': 'Average SizeMichael',
+      'jokerDescription':
+          'Average size Michael +13 mult.1/13 chance of being sold each round. Glass:This is a tooltip For the glass overlay',
+    },
+    {
+      // Solid Seven joker
+      'joker': 'images/jokers/solid_seven.png',
+      'jokerName': 'Solid Seven',
       'jokerDescription': '',
     },
   ];
@@ -351,58 +376,49 @@ class JokerState extends State<Joker> {
   // List of packages with image path, internal name, and description
   List<Map<String, String>> packagesMap = [
     {
+      // No package
+      'package': 'No package',
+      'packageName': 'No package',
+      'packageDescription': '',
+    },
+    {
+      // Buffon Normal
       'package': 'images/packages/Buffoon_Normal_2.png',
-      'packageName': 'BuffoonNormal',
+      'packageName': 'Buffoon Normal',
       'packageDescription': '',
     },
     {
+      // Spectral Jumbo
       'package': 'images/packages/Spectral_Jumbo_1.png',
-      'packageName': 'SpectralJumbo',
+      'packageName': 'Spectral Jumbo',
       'packageDescription': '',
     },
     {
+      // Standard Normal
       'package': 'images/packages/Standard_Normal_1.png',
-      'packageName': 'StandardNormal',
+      'packageName': 'Standard Normal',
       'packageDescription': '',
     },
   ];
 
   /// Get the image path for a package by its subtype
-  String getPackageImageBySubtype(String? subtype) {
-    if (subtype == null) return 'no package';
-
+  String getPackageImageBySubtype(int subtype) {
     // Search for the package in the list using the subtype
-    final package = packagesMap.firstWhere(
-      (pkg) => pkg['packageName'] == subtype,
-      orElse: () => {'package': 'no package'}, // Default value if not found
-    );
-
-    return package['package'] ??
-        'no package'; // Return the image path or default value
+    if (subtype < 0 || subtype >= packagesMap.length) return 'No package';
+    return packagesMap[subtype]['package'] ?? 'No package';
   }
 
   /// Get the image path for a consumable by its subtype
-  String getConsumableImageById(String? subtype) {
+  String getConsumableImageBySubtype(int subtype) {
     // Search for the consumable in the list using the subtype
-    final consumable = consumablesMap.firstWhere(
-      (consumable) => consumable['consumableName'] == subtype,
-      orElse:
-          () => {'consumable': 'no consumable'}, // Default value if not found
-    );
-
-    return consumable['consumable'] ??
-        'no consumable'; // Return the image path or default value
+    if (subtype < 0 || subtype >= consumablesMap.length) return 'No consumable';
+    return consumablesMap[subtype]['consumable'] ?? 'No consumable';
   }
 
   /// Get the image path for a joker by its subtype
-  String getJokerImageById(String? subtype) {
+  String getJokerImageBySubtype(int subtype) {
     // Search for the joker in the list using the subtype
-    final joker = jokersMap.firstWhere(
-      (joker) => joker['jokerName'] == subtype,
-      orElse: () => {'joker': 'no joker'}, // Default value if not found
-    );
-
-    return joker['joker'] ??
-        'no joker'; // Return the image path or default value
+    if (subtype < 0 || subtype >= jokersMap.length) return 'No joker';
+    return jokersMap[subtype]['joker'] ?? 'No joker';
   }
 }

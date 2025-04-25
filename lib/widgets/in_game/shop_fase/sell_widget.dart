@@ -24,7 +24,8 @@ class SellWidgetState extends State<SellWidget> {
     id: -1,
     index: -1,
     type: "",
-    subtype: "",
+    subtype: 0,
+    cardName: "",
   );
 
   // Get the info of dragged item

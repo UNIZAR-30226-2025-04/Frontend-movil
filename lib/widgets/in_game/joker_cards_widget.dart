@@ -55,6 +55,7 @@ class JokerCardsState extends State<JokerCards> {
           index: -1, // Not used
           type: "owned joker",
           subtype: jokerInfo.subtype,
+          cardName: "",
         );
         jokersOwned.add(auxJokerInfo);
         _updateIndex();
@@ -89,7 +90,8 @@ class JokerCardsState extends State<JokerCards> {
         id: index,
         index: index,
         type: "owned joker",
-        subtype: "SolidSeven",
+        subtype: 1,
+        cardName: "",
       );
     });
   }

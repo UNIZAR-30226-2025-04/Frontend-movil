@@ -31,15 +31,15 @@ class ShopWidgetState extends State<ShopWidget> {
   // Function used to generate random jokers when we enter shop fase and refresh the shop
   void _generateRandomJoker() {
     final random = Random();
-    const subtypes = ["SolidSeven", "AverageSizeMichael"];
     shopJokers = List.generate(3, (int index) {
-      final randomSubtype = subtypes[random.nextInt(subtypes.length)];
+      final randomSubtype = random.nextInt(2) + 1;
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
         index: -1,
         type: "joker",
         subtype: randomSubtype,
+        cardName: "",
       );
     });
   }
@@ -47,15 +47,15 @@ class ShopWidgetState extends State<ShopWidget> {
   // Function used to generate random consumables when we enter shop fase
   void _generateRandomConsumable() {
     final random = Random();
-    const subtypes = ["ClearanceSale", "death", "CrystalBall"];
     shopConsumables = List.generate(2, (int index) {
-      final randomSubtype = subtypes[random.nextInt(subtypes.length)];
+      final randomSubtype = random.nextInt(3) + 1;
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
         index: -1,
         type: "consumable",
         subtype: randomSubtype,
+        cardName: "",
       );
     });
   }
@@ -63,19 +63,22 @@ class ShopWidgetState extends State<ShopWidget> {
   // Function used to generate random packages when we enter shop fase
   void _generateRandomPackage() {
     final random = Random();
-    const subtypes = ["BuffoonNormal", "SpectralJumbo", "StandardNormal"];
 
     shopPackages = List.generate(2, (int index) {
-      final randomSubtype = subtypes[random.nextInt(subtypes.length)];
-
+      final randomSubtype = random.nextInt(3) + 1;
       return PurchasableItemInfo(
         price: random.nextInt(10),
         id: index,
         index: -1,
         type: "package",
         subtype: randomSubtype,
+        cardName: "",
       );
     });
+    // Debug print de la lista
+    for (var item in shopPackages) {
+      debugPrint('Package ${item.id} -> subtype: ${item.subtype}');
+    }
   }
 
   PurchasableItemInfo updateIndex(PurchasableItemInfo item, int index) {

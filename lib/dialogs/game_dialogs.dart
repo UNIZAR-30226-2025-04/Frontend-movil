@@ -214,7 +214,7 @@ Widget _buildDataRow(
 /// Displays a dialog to choose a joker, a consumible item or a card.
 Future<PurchasableItemInfo?> showVoucherPackDialog(
   BuildContext context,
-  String subtype,
+  int subtype,
   List<PurchasableItemInfo> availableItems,
 ) async {
   // Lists to hold the displayed items and selected index
@@ -236,17 +236,20 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
         // If subtype is "StandardNormal", "SpectralJumbo" or "BuffoonNormal"
         // set the max choices and displayed items accordingly
         switch (subtype) {
-          case "StandardNormal":
+          // Standard Normal
+          case 3:
             maxChoices = 3;
             displayedItems = _getRandomItems(availableItems, maxChoices);
             maxSelected = 3;
             break;
-          case "SpectralJumbo":
+          // Spectral Jumbo
+          case 2:
             maxChoices = 2;
             displayedItems = _getRandomItems(availableItems, maxChoices);
             maxSelected = 1;
             break;
-          case "BuffoonNormal":
+          // Buffoon Normal
+          case 1:
             maxChoices = 2;
             displayedItems = _getRandomItems(availableItems, maxChoices);
             maxSelected = 1;
@@ -258,15 +261,18 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
 
       // Set the title and subtitle based on the subtype
       switch (subtype) {
-        case "StandardNormal":
+        // Standard Normal
+        case 3:
           title = "Standard Pack";
           subtitle = "Choose up to 3";
           break;
-        case "SpectralJumbo":
+        // Spectral Jumbo
+        case 2:
           title = "Voucher Pack";
           subtitle = "SPECTRAL";
           break;
-        case "BuffoonNormal":
+        // Buffoon Normal
+        case 1:
           title = "Mystery Pack";
           subtitle = "BUFFOON";
           break;
@@ -277,17 +283,22 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
       // Set the content of the dialog based on the subtype
       content = StatefulBuilder(
         builder: (context, setState) {
-          return _buildSelectableRow(displayedItems, selectedIndexes, (index) {
-            setState(() {
-              if (selectedIndexes.contains(index)) {
-                selectedIndexes.remove(index);
-                debugPrint("Removed index: $index");
-              } else if (selectedIndexes.length < maxSelected) {
-                selectedIndexes.add(index);
-                debugPrint("Added index: $index");
-              }
-            });
-          }, maxChoices: maxChoices);
+          return _buildSelectableRow(
+            displayedItems,
+            selectedIndexes,
+            (index) {
+              setState(() {
+                if (selectedIndexes.contains(index)) {
+                  selectedIndexes.remove(index);
+                  debugPrint("Removed index: $index");
+                } else if (selectedIndexes.length < maxSelected) {
+                  selectedIndexes.add(index);
+                  debugPrint("Added index: $index");
+                }
+              });
+            },
+            maxChoices: maxChoices,
+          );
         },
       );
       // Show the dialog with the custom content
@@ -519,6 +530,7 @@ Widget _buildSelectableRow(
             child: _buildCard(
               item.type,
               item.subtype,
+              item.cardName,
               isSelected: isSelected,
               isDisabled: isDisabled,
             ),
@@ -530,7 +542,8 @@ Widget _buildSelectableRow(
 /// Builds a single card widget, either a playing card or an image-based item
 Widget _buildCard(
   String type,
-  String assetName, {
+  int assetName, 
+  String cardName,{
   bool isSelected = false,
   bool isDisabled = false,
 }) {
@@ -577,10 +590,10 @@ Widget _buildCard(
               child:
                   type == 'card'
                       // If the item is a card, build a card widget
-                      ? buildCard(getSelectableCardFromAssetName(assetName))
+                      ? buildCard(getSelectableCardFromAssetName(cardName))
                       // Otherwise, load the image from assets
                       : Image.asset(
-                        getImagePathBySubtype(assetName),
+                        getImagePathBySubtype(assetName, type),
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(Icons.error, color: Colors.red);
                         },
@@ -622,24 +635,14 @@ List<PurchasableItemInfo> _getRandomItems(
 }
 
 /// Returns the image path based on the item's subtype
-String getImagePathBySubtype(String subtype) {
-  switch (subtype) {
-    case "CrystalBall":
-      return "images/consumables/Crystal_Ball.png";
-    case "ClearanceSale":
-      return "images/consumables/Clearance_Sale.png";
-    case "death":
-      return "images/consumables/death.png";
-    case "SolidSeven":
-      return "images/jokers/solid_seven.png";
-    case "AverageSizeMichael":
-      return "images/jokers/AVERAGE_SIZE_MICHAEL.png";
-    case "Queen":
-      return "images/consumables/death.png";
-    case "Eight":
-      return "images/consumables/death.png";
-    case "Four":
-      return "images/consumables/death.png";
+String getImagePathBySubtype(int subtype, String type) {
+  switch (type) {
+    case "joker":
+      return JokerState().getJokerImageBySubtype(subtype);
+    case "consumable":
+      return JokerState().getConsumableImageBySubtype(subtype);
+    case "package":
+      return JokerState().getPackageImageBySubtype(subtype);
     default:
       return "images/consumables/death.png";
   }
