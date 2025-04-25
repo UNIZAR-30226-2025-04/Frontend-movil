@@ -19,7 +19,9 @@ class GameFaseWidget extends StatelessWidget {
     required this.onRedScore,
     required this.onScore,
     required this.onHandType,
-    required this.currentDeckSize
+    required this.currentDeckSize,
+    required this.blind,
+    required this.handCards,
   });
 
   final GlobalKey<MainCardsState> mainCardsKey;
@@ -34,7 +36,8 @@ class GameFaseWidget extends StatelessWidget {
   final Function(int)? onRedScore;
   final Function(int)? onHandType;
   final int currentDeckSize;
-  
+  final int blind;
+  final List<SelectableCard> handCards;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +64,8 @@ class GameFaseWidget extends StatelessWidget {
           onRedScore: onRedScore,
           onScore: onScore,
           onHandType: onHandType,
+          blind: blind,
+          handCards: handCards,
         ),
 
         // Action buttons and deck info at the bottom
@@ -78,7 +83,10 @@ class GameFaseWidget extends StatelessWidget {
               mainCardsKey: mainCardsKey,
             ),
             SizedBox(width: 15),
-            DeckInfo(remainingCards: remainingCards, currentDeckSize: currentDeckSize),
+            DeckInfo(
+              remainingCards: remainingCards,
+              currentDeckSize: currentDeckSize,
+            ),
           ],
         ),
       ],

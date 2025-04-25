@@ -1,13 +1,18 @@
+import 'package:nogler/data/api/lobby_api.dart';
 import 'package:nogler/data/api/users_api.dart';
 import 'package:nogler/dialogs/friends_dialogs.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
 import 'package:nogler/dialogs/party_dialog.dart';
 import 'package:nogler/dialogs/profile_dialog.dart';
+import 'package:nogler/screens/home/game_screen.dart';
 import 'package:nogler/screens/home/join_lobby_screen.dart';
 
 import 'package:flutter/material.dart';
+import 'package:nogler/screens/loading/loading_screen.dart';
+import 'package:nogler/screens/lobby/lobby_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadUserProfile(); // Obtain user profile information
+    _initLobbyStatus();
   }
 
   /// Method to load the user profile information
@@ -37,6 +43,110 @@ class _HomeScreenState extends State<HomeScreen> {
         _avatar = avatar; // Update the avatar
       });
     });
+  }
+
+  // Method to check if the user is in a lobby and initialize WebSocket if true
+  Future<void> _initLobbyStatus() async {
+    final result = await checkIfInLobby();
+    if (result["in_lobby"] == true) {
+      final wsClient = WebSocketClient();
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        PageTransition(
+          type: PageTransitionType.fade,
+          child: const LoadingScreen(
+            loadingMessage: 'Resuming your previous game...',
+          ),
+        ),
+      );
+
+      await wsClient.initialize();
+      wsClient.addEventListener("game_phase_player_info", (data) {
+        debugPrint("👤 New user joined: $data");
+        final round = data['current_round'] as int? ?? 0;
+        final parsedList =
+            (data['player_data']['current_hand'] as List<dynamic>?) ?? [];
+        final playerData = data['player_data'] ?? {};
+        final discardsLeft = playerData['discards_left'] ?? 0;
+        final playsLeft = playerData['hand_plays_left'] ?? 0;
+        final currentPoints = playerData['current_points'] ?? 0;
+        final playedCards = playerData['played_cards'] ?? 0;
+        final unplayedCards = playerData['unplayed_cards'] ?? 0;
+        if (data['phase'] == 'none') {
+          wsClient.sendMessage("get_lobby_info", result["lobby_id"]);
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: LobbyScreen(
+                  hostName: _username,
+                  hostAvatar: _avatar,
+                  lobbyState: result["private"],
+                  lobbyCode: result["lobby_id"],
+                ),
+              ),
+            );
+          }
+        } else {
+          if (context.mounted) {
+            final handCards =
+                parsedList.map((cardData) {
+                  final card = MainCardsState().createCardFromServerData(
+                    cardData,
+                  );
+                  return card;
+                }).toList();
+            Navigator.of(context).pushReplacement(
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: GameScreen(
+                  round: round,
+                  hostName: _username,
+                  hostAvatar: _avatar,
+                  lobbyCode: result["lobby_id"],
+                  timeout: 20,
+                  phase: data['phase'],
+                  baseBlind: data['current_base_blind'] ?? 0,
+                  discardingCards: discardsLeft,
+                  playingCards: playsLeft,
+                  handCards: handCards,
+                  currentPoints: currentPoints,
+                  currentDeckSize: playedCards + unplayedCards,
+                  remainingCards: unplayedCards - 8,
+                ),
+              ),
+            );
+          }
+        }
+      });
+      /*wsClient.addEventListener("error", (data) {
+        if (mounted) {
+          Navigator.of(context).pop(); // Cerrar pantalla de carga
+          // Show a error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Center(
+                child: Text(
+                  'Connection error',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              duration: Duration(seconds: 3),
+            ),
+          );
+          wsClient.disconnect();
+        }
+      });*/
+      wsClient.addEventListener("lobby_info", (data) {
+        wsClient.sendMessage(
+          "request_game_phase_player_info",
+          result["lobby_id"],
+        );
+        wsClient.removeEventListener("lobby_info");
+      });
+    }
   }
 
   @override
@@ -88,8 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     runSpacing: 16,
                     alignment: WrapAlignment.center, // Centers the buttons
                     children: [
-                      _buildMenuButton(context, 'VS AI', () async {
-                      }),
+                      _buildMenuButton(context, 'VS AI', () async {}),
 
                       _buildMenuButton(context, 'JOIN', () {
                         Navigator.push(

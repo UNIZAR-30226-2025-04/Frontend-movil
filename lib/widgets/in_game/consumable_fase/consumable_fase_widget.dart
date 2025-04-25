@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
-import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 
 class ConsumableFaseWidget extends StatefulWidget {
   const ConsumableFaseWidget({
@@ -55,7 +54,7 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
         // Space between
         SizedBox(height: 5),
         // TODO interaccion cartas con consumibles si es que lo hacemos
-        MainCards(),
+        
         // Space between
         SizedBox(height: 5),
         ElevatedButton(

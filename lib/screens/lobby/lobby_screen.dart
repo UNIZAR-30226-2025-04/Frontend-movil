@@ -161,6 +161,7 @@ class _LobbyScreen extends State<LobbyScreen> {
     wsClient.addEventListener("starting_next_blind", (data) async {
       debugPrint("📡 Starting round: $data");
       final timeout = data['timeout'] as int;
+      final baseBlind = data['base_blind'] as int;
       //final round = data['round_number'] as int;
       Navigator.of(context).pushReplacement(
         PageTransition(
@@ -171,6 +172,14 @@ class _LobbyScreen extends State<LobbyScreen> {
             hostAvatar: widget.hostAvatar,
             lobbyCode: widget.lobbyCode,
             timeout: timeout,
+            phase: "blind",
+            baseBlind: baseBlind,
+            discardingCards: 3,
+            playingCards: 3,
+            handCards: [],
+            currentPoints: 0,
+            currentDeckSize: 0,
+            remainingCards: 0,
           ),
         ),
       );

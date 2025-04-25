@@ -28,6 +28,8 @@ class Sidebar extends StatefulWidget {
     required this.blueScore,
     required this.handType,
     required this.gold,
+    required this.currentPot,
+    required this.blind,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -46,6 +48,8 @@ class Sidebar extends StatefulWidget {
   final int blueScore;
   final int handType;
   final int gold;
+  final int currentPot;
+  final int blind;
 
   @override
   SidebarState createState() => SidebarState();
@@ -171,6 +175,8 @@ class SidebarState extends State<Sidebar> {
             widget.redScore.toString(),
             getHandTypeName(widget.handType),
             widget.gold.toString(),
+            widget.currentPot.toString(),
+            widget.blind.toString(),
           ),
         ],
       ),
@@ -198,6 +204,8 @@ class SidebarState extends State<Sidebar> {
     String redScore,
     String handType,
     String gold,
+    String pot,
+    String blind,
   ) {
     return Column(
       children: [
@@ -217,7 +225,7 @@ class SidebarState extends State<Sidebar> {
                 ),
               ),
               SizedBox(width: 10),
-              _buildAnimatedScore(score), // Animated counter
+              _buildAnimatedScore(score, blind), // Animated counter
             ],
           ),
         ),
@@ -290,7 +298,7 @@ class SidebarState extends State<Sidebar> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildLabelAndValue("Pot", "5€", const Color(0xFFffffff)),
+                _buildLabelAndValue("Pot", "$pot€", const Color(0xFFffffff)),
                 SizedBox(width: 10),
                 _buildLabelAndValue("Money", "$gold€", const Color(0xFFf7e19c)),
               ],
@@ -302,9 +310,31 @@ class SidebarState extends State<Sidebar> {
   }
 
   /// Builds the animated round score counter with a styled container
-  Widget _buildAnimatedScore(String score) {
+  Widget _buildAnimatedScore(String score, String blind) {
     final int parsedScore = int.tryParse(score) ?? 0;
+    final int parsedBlind = int.tryParse(blind) ?? 0;
+    final bool isReached = parsedScore >= parsedBlind;
 
+    // If the score is higher or equal than the blind, display "Reached"
+    if (isReached) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+        decoration: BoxDecoration(
+          color: const Color(0xFF2C3454),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.black, width: 2),
+        ),
+        child: Text(
+          "Reached",
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      );
+    }
+    // Otherwise, animate the score counting up from 0 to the actual score
     return TweenAnimationBuilder<int>(
       tween: IntTween(begin: 0, end: parsedScore),
       duration: const Duration(milliseconds: 350),

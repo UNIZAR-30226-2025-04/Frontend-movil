@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/dio/dio_client.dart';
 
 /// Method to create a lobby
@@ -63,4 +64,31 @@ Future<void> updateVisibilityLobby(String lobbyId, String public) async {
   } catch (e) {
     debugPrint("❌ Error getting a lobby: $e");
   }
+}
+
+/// Method to check if the user is currently in a lobby
+Future<Map<String, dynamic>> checkIfInLobby() async {
+  final dioClient = DioClient(); // Create a new Dio client instance
+  try {
+    // Send a GET request to the endpoint
+    final response = await dioClient.dio.get('/auth/isUserInLobby');
+    if (response.statusCode == 200) {
+      final data = response.data;
+      final inLobby = data['in_lobby'] == true;
+      final lobbyId = inLobby ? data['lobby_id'] ?? "" : "";
+      final private = data['public'] != true;
+
+      await const FlutterSecureStorage().write(
+        key: 'code',
+        value: data['lobby_id'],
+      );
+
+      return {"in_lobby": inLobby, "lobby_id": lobbyId, "private": private};
+    }
+  } catch (e) {
+    debugPrint("❌ Error checking lobby status: $e");
+  }
+
+  // Default return if something goes wrong
+  return {"in_lobby": false, "lobby_id": ""};
 }

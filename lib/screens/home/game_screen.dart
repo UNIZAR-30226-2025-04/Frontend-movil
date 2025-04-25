@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/game_background_widget.dart';
+import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/choose_blind_fase/choose_blind_fase_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
@@ -26,12 +27,29 @@ class GameScreen extends StatefulWidget {
     required this.hostAvatar,
     required this.lobbyCode,
     required this.timeout,
+    required this.phase,
+    required this.baseBlind,
+    required this.discardingCards,
+    required this.playingCards,
+    required this.handCards,
+    required this.currentPoints,
+    required this.currentDeckSize,
+    required this.remainingCards,
   });
   final int round;
   final String hostName;
   final int hostAvatar;
   final String lobbyCode;
   final int timeout;
+  final String phase;
+  final int baseBlind;
+  final int discardingCards;
+  final int playingCards;
+  final List<SelectableCard> handCards;
+  final int currentPoints;
+  final int currentDeckSize;
+  final int remainingCards;
+
   @override
   GameScreenState createState() => GameScreenState();
 }
@@ -60,18 +78,18 @@ class GameScreenState extends State<GameScreen> {
       GlobalKey<ConsumableFaseWidgetState>();
 
   // Variables to animate the exit of the elements off screen
-  bool _animateShowChooseBlindFaseWidget = true;
+  bool _animateShowChooseBlindFaseWidget = false;
   bool _animateShowGameFaseWidgets = false;
   bool _animateShowShopFaseWidgets = false;
   bool _animateShowConsumableFaseWidget = false;
 
   // Show fase widgets visibly
-  bool _showChooseBlindFaseWidget = true;
+  bool _showChooseBlindFaseWidget = false;
   bool _showGameFaseWidget = false;
   bool _showShopFaseWidget = false;
   bool _showConsumableFaseWidget = false;
 
-  String _currentFase = "chooseBlindFase";
+  String _currentFase = "";
 
   int _remainingCards = 0;
   int _discardingCards = 3;
@@ -84,10 +102,22 @@ class GameScreenState extends State<GameScreen> {
   int _handType = 1;
   int _currentDeckSize = 0;
   int _gold = 400;
+  int _currentPot = 0;
+  int _blind = 0;
+  int _myBlind = 0;
+  int _minBlind = 0;
   @override
   void initState() {
     super.initState();
+    _blind = widget.baseBlind;
+    _minBlind = widget.baseBlind;
+    _currentDeckSize = widget.currentDeckSize;
+    _updatePhaseWidgets(widget.phase);
     _timeout = widget.timeout;
+    _discardingCards = widget.discardingCards;
+    _playingCards = widget.playingCards;
+    _score = widget.currentPoints;
+    _remainingCards = widget.remainingCards;
     wsClient.removeEventListener("new_lobby_message");
     wsClient.removeEventListener("lobby_info");
     // Listen for new lobby messages
@@ -126,6 +156,7 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("📡 Starting round: $data");
       final newTimeout = data['timeout'] as int;
       final deckSize = data['current_deck_size'] as int;
+      final currentPot = data['current_deck_size'] as int;
       setState(() {
         // Init game fase
         _showChooseBlindFaseWidget = !_showChooseBlindFaseWidget;
@@ -135,7 +166,64 @@ class GameScreenState extends State<GameScreen> {
         _currentFase = "gameFase";
         _timeout = newTimeout;
         _currentDeckSize = deckSize;
+        _currentPot = currentPot;
       });
+    });
+
+    // Listen for a blind
+    wsClient.addEventListener("blind_updated", (data) async {
+      if (_myBlind > _minBlind) {
+        setState(() {
+          _blind = data['new_blind'] as int;
+        });
+      } else {
+        setState(() {
+          _blind = _minBlind;
+        });
+      }
+    });
+  }
+
+  /// Updates the visibility and animation flags based on the current game phase.
+  void _updatePhaseWidgets(String phase) {
+    setState(() {
+      // Reset all animation flags to false first
+      _animateShowChooseBlindFaseWidget = false;
+      _animateShowGameFaseWidgets = false;
+      _animateShowShopFaseWidgets = false;
+      _animateShowConsumableFaseWidget = false;
+
+      // Reset all visibility flags to false
+      _showChooseBlindFaseWidget = false;
+      _showGameFaseWidget = false;
+      _showShopFaseWidget = false;
+      _showConsumableFaseWidget = false;
+
+      // Update flags based on the current phase
+      switch (phase) {
+        case "blind":
+          _animateShowChooseBlindFaseWidget = true;
+          _showChooseBlindFaseWidget = true;
+          _currentFase = "chooseBlindFase";
+          break;
+        case "play_round":
+          _animateShowGameFaseWidgets = true;
+          _showGameFaseWidget = true;
+          _currentFase = "gameFase";
+          break;
+        case "shop":
+          _animateShowShopFaseWidgets = true;
+          _showShopFaseWidget = true;
+          _currentFase = "shopFase";
+          break;
+        case "vouchers":
+          _animateShowConsumableFaseWidget = true;
+          _showConsumableFaseWidget = true;
+          _currentFase = "consumableFase";
+          break;
+        case "announce_winner":
+          break;
+      }
     });
   }
 
@@ -176,6 +264,8 @@ class GameScreenState extends State<GameScreen> {
                     redScore: _redScore,
                     handType: _handType,
                     gold: _gold,
+                    currentPot: _currentPot,
+                    blind: _blind,
                   ), // Sidebar for navigation and game info
 
                   Expanded(
@@ -218,6 +308,16 @@ class GameScreenState extends State<GameScreen> {
                               curve: Curves.easeInOut,
                               child: ChooseBlindFaseWidget(
                                 lobbyCode: widget.lobbyCode,
+                                minBlind: _minBlind,
+                                onBlind: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _myBlind = value;
+                                    });
+                                  });
+                                },
                               ),
                             ),
                           )
@@ -308,6 +408,8 @@ class GameScreenState extends State<GameScreen> {
                                   });
                                 },
                                 currentDeckSize: _currentDeckSize,
+                                blind: _blind,
+                                handCards: widget.handCards,
                               ),
                             ),
                           )
@@ -378,7 +480,7 @@ class GameScreenState extends State<GameScreen> {
                 right: 20,
                 child: Row(
                   children: [
-                    TimerWidget(timeout: _timeout),
+                    TimerWidget(timeout: _timeout - 1),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(

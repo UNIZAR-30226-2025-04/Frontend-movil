@@ -9,10 +9,11 @@ class WebSocketClient {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   // Map to store dynamic event handlers
   final Map<String, Function(dynamic)> _eventHandlers = {};
-  
+
   // Authentication credentials
   String? code;
   String? token;
+
   /// Factory constructor to always return the same instance
   factory WebSocketClient() {
     return _instance;
@@ -29,7 +30,10 @@ class WebSocketClient {
       code = await _storage.read(key: 'code');
 
       // If credentials are missing, do not attempt connection.
-      if (token == null || token?.isEmpty == true || code == null || code?.isEmpty == true) {
+      if (token == null ||
+          token?.isEmpty == true ||
+          code == null ||
+          code?.isEmpty == true) {
         debugPrint("⚠ Cannot connect: Missing token or username.");
         return;
       }

@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 
 class ChooseBlindFaseWidget extends StatefulWidget {
-  const ChooseBlindFaseWidget({super.key, required this.lobbyCode});
+  const ChooseBlindFaseWidget({
+    super.key,
+    required this.lobbyCode,
+    required this.minBlind,
+    required this.onBlind,
+  });
 
   final String lobbyCode;
+  final int minBlind;
+  final Function(int)? onBlind;
 
   @override
   ChooseBlindFaseWidgetState createState() => ChooseBlindFaseWidgetState();
@@ -17,7 +24,13 @@ class ChooseBlindFaseWidgetState extends State<ChooseBlindFaseWidget> {
 
   bool hasFetched = true;
 
-  int minScore = 10;
+  int minScore = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    minScore = widget.minBlind;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +176,7 @@ class ChooseBlindFaseWidgetState extends State<ChooseBlindFaseWidget> {
               setState(() {
                 minScore = int.tryParse(_controller.text) ?? minScore;
               });
+              widget.onBlind?.call(minScore);
               wsClient.sendMessage('propose_blind', {
                 minScore,
                 widget.lobbyCode,

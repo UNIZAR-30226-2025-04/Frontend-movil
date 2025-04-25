@@ -218,7 +218,6 @@ class JokerState extends State<Joker> {
   Widget _buildDescription(PurchasableItemInfo purchasable) {
     String? name;
     String? description;
-    Color rarityColor = Colors.red;
 
     int index = purchasable.subtype;
     switch (purchasable.type.replaceAll('owned ', '')) {
@@ -241,7 +240,6 @@ class JokerState extends State<Joker> {
           final item = packagesMap[index];
           name = item['packageName'];
           description = item['packageDescription'];
-          rarityColor = Colors.purple;
         }
         break;
     }
@@ -284,25 +282,6 @@ class JokerState extends State<Joker> {
                 ),
               ),
             ),
-          Container(
-            decoration: BoxDecoration(
-              color: rarityColor,
-              border: Border.all(color: Colors.grey.shade700, width: 2),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            margin: const EdgeInsets.only(top: 4),
-            child: Container(
-              margin: const EdgeInsets.all(4),
-              child: const Text(
-                "Rare",
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

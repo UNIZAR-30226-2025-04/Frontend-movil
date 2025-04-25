@@ -13,6 +13,8 @@ class MainCards extends StatefulWidget {
   final Function(int)? onBlueScore;
   final Function(int)? onRedScore;
   final Function(int)? onHandType;
+  final List<SelectableCard> handCards;
+  final int blind;
   const MainCards({
     super.key,
     this.onDeckUpdated,
@@ -23,6 +25,8 @@ class MainCards extends StatefulWidget {
     this.onRedScore,
     this.onScore,
     this.onHandType,
+    required this.blind,
+    required this.handCards,
   });
 
   @override
@@ -41,6 +45,7 @@ class MainCardsState extends State<MainCards> {
   int get remainingCards => remainingDeck.length;
   final WebSocketClient wsClient = WebSocketClient();
   int gold = 0;
+  bool isReached = false;
 
   /// Overlay for card description
   OverlayEntry? _overlayEntry;
@@ -50,6 +55,7 @@ class MainCardsState extends State<MainCards> {
     super.initState();
     _setupWebSocketListeners();
     _getCards();
+    handCards = widget.handCards;
   }
 
   /// Starts the game by drawing cards from the deck
@@ -84,7 +90,7 @@ class MainCardsState extends State<MainCards> {
         // Create a list of SelectableCard objects from the new cards
         final receivedCards =
             newCards.map((cardData) {
-              final card = _createCardFromServerData(cardData);
+              final card = createCardFromServerData(cardData);
               return card;
             }).toList();
 
@@ -168,7 +174,7 @@ class MainCardsState extends State<MainCards> {
         // Create a list of SelectableCard objects from the new cards
         final receivedCards =
             newCards.map((cardData) {
-              final card = _createCardFromServerData(cardData);
+              final card = createCardFromServerData(cardData);
               return card;
             }).toList();
 
@@ -254,6 +260,11 @@ class MainCardsState extends State<MainCards> {
       widget.onPlayCards?.call([]);
 
       await Future.delayed(const Duration(milliseconds: 500));
+      if (totalScore >= widget.blind) {
+        setState(() {
+          isReached = true;
+        });
+      }
       widget.onScore?.call(totalScore);
       widget.onRedScore?.call(0);
       widget.onBlueScore?.call(0);
@@ -279,7 +290,7 @@ class MainCardsState extends State<MainCards> {
         // Create a list of SelectableCard objects from the new cards
         final receivedCards =
             newCards.map((cardData) {
-              final card = _createCardFromServerData(cardData);
+              final card = createCardFromServerData(cardData);
               return card;
             }).toList();
 
@@ -317,7 +328,7 @@ class MainCardsState extends State<MainCards> {
   }
 
   /// Creates a SelectableCard object from the server data.
-  SelectableCard _createCardFromServerData(Map<String, dynamic> cardData) {
+  SelectableCard createCardFromServerData(Map<String, dynamic> cardData) {
     // Extract the rank and suit from the card data
     final rank = cardData['Rank'].toString();
     final suit = cardData['Suit'].toString().toLowerCase();
@@ -388,7 +399,8 @@ class MainCardsState extends State<MainCards> {
 
   /// Discards selected cards and replaces them with new ones from the deck.
   void discardSelectedCards() async {
-    if (discardingCards == 0) return;
+    // If there are no more discards or the player has reached the blind, do nothing
+    if (discardingCards == 0 || isReached) return;
     final selected = handCards.where((c) => c.isSelected).toList();
     final discards =
         selected.map((card) => {'rank': card.rank, 'suit': card.suit}).toList();
@@ -397,7 +409,8 @@ class MainCardsState extends State<MainCards> {
 
   /// Plays selected cards and replaces them with new ones from the deck.
   void playSelectedCards() async {
-    if (playingCards == 0) return;
+    // If there are no more plays or the player has reached the blind, do nothing
+    if (playingCards == 0 || isReached) return;
     final selected = handCards.where((c) => c.isSelected).toList();
 
     // Data to send to the server
