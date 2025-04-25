@@ -5,7 +5,6 @@ import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
-
 class ShopFaseWidget extends StatefulWidget {
   const ShopFaseWidget({
     super.key,
@@ -14,13 +13,17 @@ class ShopFaseWidget extends StatefulWidget {
     required this.jokerCardsKey,
     required this.consumableCardsKey,
     required this.sellWidgetKey,
+    required this.onBuy,
+    required this.onSell,
   });
-  
+
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final GlobalKey<ConsumableCardsState> consumableCardsKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
+  final Function(int)? onBuy;
+  final Function(int)? onSell;
 
   @override
   State<ShopFaseWidget> createState() => ShopFaseWidgetState();
@@ -71,6 +74,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
             shopWidgetKey: widget.shopWidgetKey,
             jokerCardsKey: widget.jokerCardsKey,
             consumableCardsKey: widget.consumableCardsKey,
+            onBuy: widget.onBuy,
           ),
         ),
         Visibility(
@@ -79,6 +83,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
             key: widget.sellWidgetKey,
             jokerCardsKey: widget.jokerCardsKey,
             consumableCardsKey: widget.consumableCardsKey,
+            onSell: widget.onSell,
           ),
         ),
       ],

@@ -27,6 +27,7 @@ class Sidebar extends StatefulWidget {
     required this.redScore,
     required this.blueScore,
     required this.handType,
+    required this.gold,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -44,6 +45,7 @@ class Sidebar extends StatefulWidget {
   final int redScore;
   final int blueScore;
   final int handType;
+  final int gold;
 
   @override
   SidebarState createState() => SidebarState();
@@ -168,6 +170,7 @@ class SidebarState extends State<Sidebar> {
             widget.blueScore.toString(),
             widget.redScore.toString(),
             getHandTypeName(widget.handType),
+            widget.gold.toString(),
           ),
         ],
       ),
@@ -194,6 +197,7 @@ class SidebarState extends State<Sidebar> {
     String blueScore,
     String redScore,
     String handType,
+    String gold,
   ) {
     return Column(
       children: [
@@ -288,7 +292,7 @@ class SidebarState extends State<Sidebar> {
               children: [
                 _buildLabelAndValue("Pot", "5€", const Color(0xFFffffff)),
                 SizedBox(width: 10),
-                _buildLabelAndValue("Money", "20€", const Color(0xFFf7e19c)),
+                _buildLabelAndValue("Money", "$gold€", const Color(0xFFf7e19c)),
               ],
             ),
           ],

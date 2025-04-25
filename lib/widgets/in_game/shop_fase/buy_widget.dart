@@ -14,11 +14,13 @@ class BuyWidget extends StatefulWidget {
     required this.shopWidgetKey,
     required this.jokerCardsKey,
     required this.consumableCardsKey,
+    required this.onBuy,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final GlobalKey<ConsumableCardsState> consumableCardsKey;
+  final Function(int)? onBuy;
 
   @override
   BuyWidgetState createState() => BuyWidgetState();
@@ -212,12 +214,14 @@ class BuyWidgetState extends State<BuyWidget> {
                 dragged.data,
                 false,
               );
+              widget.onBuy?.call(dragged.data.price);
               break;
             case "consumable":
               widget.consumableCardsKey.currentState?.addConsumableOwned(
                 dragged.data,
                 false,
               );
+              widget.onBuy?.call(dragged.data.price);
               break;
             case "package":
               // Create a list of items for the package
@@ -253,6 +257,7 @@ class BuyWidgetState extends State<BuyWidget> {
               widget.shopWidgetKey.currentState?.removePackage(
                 dragged.data.index,
               );
+              widget.onBuy?.call(dragged.data.price);
           }
         },
         builder: (

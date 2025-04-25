@@ -83,6 +83,7 @@ class GameScreenState extends State<GameScreen> {
   int _score = 0;
   int _handType = 1;
   int _currentDeckSize = 0;
+  int _gold = 400;
   @override
   void initState() {
     super.initState();
@@ -174,6 +175,7 @@ class GameScreenState extends State<GameScreen> {
                     blueScore: _blueScore,
                     redScore: _redScore,
                     handType: _handType,
+                    gold: _gold,
                   ), // Sidebar for navigation and game info
 
                   Expanded(
@@ -327,6 +329,24 @@ class GameScreenState extends State<GameScreen> {
                                 jokerCardsKey: _jokerCardsKey,
                                 consumableCardsKey: _consumableCardsKey,
                                 sellWidgetKey: _sellWidgetKey,
+                                onBuy: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _gold -= value;
+                                    });
+                                  });
+                                },
+                                onSell: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _gold += value;
+                                    });
+                                  });
+                                },
                               ),
                             ),
                           )

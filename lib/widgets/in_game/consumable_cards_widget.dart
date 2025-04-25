@@ -120,16 +120,6 @@ class ConsumableCardsState extends State<ConsumableCards> {
                 color: Colors.white,
               ),
             ),
-
-            // Displays the count of Consumable cards.
-            Text(
-              "${consumableOwned.length} / 5",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
           ],
         ),
         // Displays the row of Consumable cards.

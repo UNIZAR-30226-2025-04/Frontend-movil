@@ -8,11 +8,12 @@ class SellWidget extends StatefulWidget {
     super.key,
     required this.jokerCardsKey,
     required this.consumableCardsKey,
+    required this.onSell,
   });
 
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final GlobalKey<ConsumableCardsState> consumableCardsKey;
-
+  final Function(int)? onSell;
   @override
   SellWidgetState createState() => SellWidgetState();
 }
@@ -51,11 +52,13 @@ class SellWidgetState extends State<SellWidget> {
           switch (dragged.data.type) {
             case "owned joker":
               widget.jokerCardsKey.currentState?.removeJokerOwned(dragged.data);
+              widget.onSell?.call(dragged.data.price);
               break;
             case "owned consumable":
               widget.consumableCardsKey.currentState?.removeConsumableOwned(
                 dragged.data,
               );
+              widget.onSell?.call(dragged.data.price);
               break;
           }
         },
