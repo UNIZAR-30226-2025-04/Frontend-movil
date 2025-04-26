@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
@@ -84,22 +82,6 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
       } else {
         debugPrint("No hay consumibles para eliminar");
       }
-    });
-  }
-
-  // Function used to generate random consumables when we enter game fase
-  void _generateRandomConsumable() {
-    final random = Random();
-    _consumableOwned = List.generate(2, (int index) {
-      final randomSubtype = random.nextInt(3) + 1;
-      return PurchasableItemInfo(
-        price: random.nextInt(10),
-        id: index,
-        index: -1,
-        type: "owned consumable",
-        subtype: randomSubtype,
-        cardName: "",
-      );
     });
   }
 
@@ -196,10 +178,7 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
   List<PurchasableItemInfo> consumableUsed = [];
 
   /// Adds the used consumable to the consumableUsed list
-  Future<void> addConsumableUsed(
-    PurchasableItemInfo jokerInfo,
-    bool isPackage,
-  ) async {
+  Future<void> addConsumableUsed(PurchasableItemInfo jokerInfo) async {
     setState(() {
       // Add it to your owned list
       final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
@@ -224,22 +203,6 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
       } else {
         debugPrint("No hay consumibles para eliminar");
       }
-    });
-  }
-
-  // Function used to generate random consumables when we enter game fase
-  void _generateRandomConsumable() {
-    final random = Random();
-    consumableUsed = List.generate(2, (int index) {
-      final randomSubtype = random.nextInt(3) + 1;
-      return PurchasableItemInfo(
-        price: random.nextInt(10),
-        id: index,
-        index: -1,
-        type: "owned consumable",
-        subtype: randomSubtype,
-        cardName: "",
-      );
     });
   }
 

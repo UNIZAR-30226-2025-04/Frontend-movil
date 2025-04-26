@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_fields
+
 import 'package:flutter/material.dart';
 
 class PlayerBoxConsumables extends StatefulWidget {
@@ -5,60 +7,105 @@ class PlayerBoxConsumables extends StatefulWidget {
     super.key,
     required this.playerName,
     required this.playerIcon,
+    required this.onTap,
+    required this.onTapAgain,
   });
 
   final String playerName;
   final int playerIcon;
+  final bool Function() onTap;
+  final void Function() onTapAgain;
 
   @override
   PlayerBoxConsumablesState createState() => PlayerBoxConsumablesState();
 }
 
-class PlayerBoxConsumablesState extends State<PlayerBoxConsumables> {
-  Color _boxColor = Colors.blueAccent;
+class PlayerBoxConsumablesState extends State<PlayerBoxConsumables>
+    with SingleTickerProviderStateMixin {
+  // Animation parameters
+  late AnimationController _controller;
+  late Animation<double> _sizeAnimation;
+  late Animation<Color?> _colorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+
+    _sizeAnimation = Tween<double>(
+      begin: 50.0,
+      end: 85.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _colorAnimation = ColorTween(
+      begin: Colors.blueAccent,
+      end: Colors.greenAccent,
+    ).animate(_controller);
+  }
+
+  void _toggleAnimation() {
+    if (_controller.status == AnimationStatus.completed) {
+      _controller.reverse();
+    } else {
+      _controller.forward();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final boxHeight = 50.0;
         return GestureDetector(
           onTap: () {
-            setState(() {
-              _boxColor =
-                  _boxColor == Colors.blueAccent
-                      ? Colors.greenAccent
-                      : Colors.blueAccent;
-            });
+            if (_colorAnimation.value == Colors.blueAccent) {
+              if (widget.onTap()) {
+                _toggleAnimation();
+              }
+            } else {
+              widget.onTapAgain();
+              _toggleAnimation();
+            }
           },
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0),
-              color: _boxColor,
-            ),
-            child: Column(
-              children: [
-                //make some space between
-                SizedBox(height: boxHeight * 0.1),
-                Row(
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Container(
+                height: _sizeAnimation.value,
+                width: _sizeAnimation.value,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: _colorAnimation.value,
+                ),
+                child: Column(
                   children: [
                     //make some space between
-                    SizedBox(width: 30),
-                    _buildAvatarImage(widget.playerIcon),
+                    SizedBox(height: 7),
+                    Row(
+                      children: [
+                        //make some space between
+                        SizedBox(width: 30),
+                        _buildAvatarImage(widget.playerIcon),
+                      ],
+                    ),
+                    //make some space between
+                    SizedBox(height: 2),
+
+                    // Player name
+                    Text(
+                      widget.playerName,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
-                //make some space between
-                SizedBox(height: 2),
-
-                // Player name
-                Text(
-                  widget.playerName,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-                //make some space between
-                SizedBox(height: boxHeight * 0.1),
-              ],
-            ),
+              );
+            },
           ),
         );
       },

@@ -283,22 +283,17 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
       // Set the content of the dialog based on the subtype
       content = StatefulBuilder(
         builder: (context, setState) {
-          return _buildSelectableRow(
-            displayedItems,
-            selectedIndexes,
-            (index) {
-              setState(() {
-                if (selectedIndexes.contains(index)) {
-                  selectedIndexes.remove(index);
-                  debugPrint("Removed index: $index");
-                } else if (selectedIndexes.length < maxSelected) {
-                  selectedIndexes.add(index);
-                  debugPrint("Added index: $index");
-                }
-              });
-            },
-            maxChoices: maxChoices,
-          );
+          return _buildSelectableRow(displayedItems, selectedIndexes, (index) {
+            setState(() {
+              if (selectedIndexes.contains(index)) {
+                selectedIndexes.remove(index);
+                debugPrint("Removed index: $index");
+              } else if (selectedIndexes.length < maxSelected) {
+                selectedIndexes.add(index);
+                debugPrint("Added index: $index");
+              }
+            });
+          }, maxChoices: maxChoices);
         },
       );
       // Show the dialog with the custom content
@@ -369,9 +364,23 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
 Future<void> showUseConsumableDialog(
   BuildContext context,
   PurchasableItemInfo consumable,
+  int numMaxSelected,
   GlobalKey<State<StatefulWidget>> key,
   List<Map<String, dynamic>> lobbyUsers,
+  void Function() onUse,
 ) async {
+  int numSelected = 0;
+
+  bool onTap() {
+    bool tapped = numSelected < numMaxSelected;
+    if (tapped) numSelected++;
+    return tapped;
+  }
+
+  void onTapAgain() {
+    numSelected--;
+  }
+
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -380,6 +389,7 @@ Future<void> showUseConsumableDialog(
       return Dialog(
         backgroundColor: const Color(0xFF2C2F3D),
         child: ConstrainedBox(
+          // Box dimensions
           constraints: const BoxConstraints(
             minWidth: 300,
             maxWidth: 400,
@@ -392,6 +402,7 @@ Future<void> showUseConsumableDialog(
               children: [
                 Column(
                   children: [
+                    SizedBox(height: 35),
                     // Name of the consumable chosen
                     Text(
                       "Nombre del voucher",
@@ -413,8 +424,10 @@ Future<void> showUseConsumableDialog(
                         // Use consumable button
                         ElevatedButton(
                           onPressed: () {
-                            //TODO
-                            Navigator.of(context).pop();
+                            if (numSelected > 0) {
+                              onUse();
+                              Navigator.of(context).pop();
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF0ea5e9),
@@ -474,10 +487,10 @@ Future<void> showUseConsumableDialog(
                           gridDelegate:
                               SliverGridDelegateWithMaxCrossAxisExtent(
                                 maxCrossAxisExtent:
-                                    125, //width of the player's box
-                                crossAxisSpacing: 6,
+                                    100, //width of the player's box
+                                crossAxisSpacing: 10,
                                 mainAxisExtent: 70, //height of the player's box
-                                mainAxisSpacing: 6,
+                                mainAxisSpacing: 10,
                                 childAspectRatio: 3,
                               ),
                           itemCount: lobbyUsers.length,
@@ -486,6 +499,8 @@ Future<void> showUseConsumableDialog(
                             return PlayerBoxConsumables(
                               playerName: player['username'],
                               playerIcon: player['avatarImage'],
+                              onTap: onTap,
+                              onTapAgain: onTapAgain,
                             );
                           },
                         ),
@@ -542,8 +557,8 @@ Widget _buildSelectableRow(
 /// Builds a single card widget, either a playing card or an image-based item
 Widget _buildCard(
   String type,
-  int assetName, 
-  String cardName,{
+  int assetName,
+  String cardName, {
   bool isSelected = false,
   bool isDisabled = false,
 }) {

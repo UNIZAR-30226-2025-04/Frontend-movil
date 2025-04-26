@@ -16,6 +16,7 @@ class ConsumableFaseWidget extends StatefulWidget {
     required this.shopWidgetKey,
     required this.buyWidgetKey,
     required this.ownedConsumableCardsKey,
+    required this.usedConsumableCardsKey,
     required this.shopFaseWidgetKey,
     required this.consumableFaseWidgetKey,
     required this.sellWidgetKey,
@@ -27,6 +28,7 @@ class ConsumableFaseWidget extends StatefulWidget {
   final Function(PurchasableItemInfo)? onAddConsumableOwned;
   final Function(PurchasableItemInfo)? onRemoveConsumableOwned;
   final GlobalKey<OwnedConsumableCardsState> ownedConsumableCardsKey;
+  final GlobalKey<UsedConsumableCardsState> usedConsumableCardsKey;
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
@@ -65,7 +67,8 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
             : Visibility(
               visible: useConsumableWidgetVisible,
               child: UseConsumableWidget(
-                consumableCardsKey: widget.ownedConsumableCardsKey,
+                ownedConsumableCardsKey: widget.ownedConsumableCardsKey,
+                usedConsumableCardsKey: widget.usedConsumableCardsKey,
                 lobbyUsers: widget.lobbyUsers,
                 ownKey: widget.useConsumableWidgetKey,
               ),

@@ -546,6 +546,7 @@ class GameScreenState extends State<GameScreen> {
                                 },
                                 ownedConsumableCardsKey:
                                     _ownedConsumableCardsKey,
+                                usedConsumableCardsKey: _usedConsumableCardsKey,
                                 shopWidgetKey: _shopWidgetKey,
                                 buyWidgetKey: _buyWidgetKey,
                                 shopFaseWidgetKey: _shopFaseWidgetKey,

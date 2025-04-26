@@ -6,12 +6,14 @@ import 'package:nogler/widgets/in_game/joker_widget.dart';
 class UseConsumableWidget extends StatefulWidget {
   const UseConsumableWidget({
     super.key,
-    required this.consumableCardsKey,
+    required this.ownedConsumableCardsKey,
+    required this.usedConsumableCardsKey,
     required this.lobbyUsers,
     required this.ownKey,
   });
 
-  final GlobalKey<OwnedConsumableCardsState> consumableCardsKey;
+  final GlobalKey<OwnedConsumableCardsState> ownedConsumableCardsKey;
+  final GlobalKey<UsedConsumableCardsState> usedConsumableCardsKey;
   final GlobalKey<UseConsumableWidgetState> ownKey;
   final List<Map<String, dynamic>> lobbyUsers;
 
@@ -63,12 +65,25 @@ class UseConsumableWidgetState extends State<UseConsumableWidget> {
         onAcceptWithDetails: (DragTargetDetails<PurchasableItemInfo> dragged) {
           switch (dragged.data.type) {
             case "owned consumable":
-              showUseConsumableDialog(
-                context,
-                dragged.data,
-                widget.ownKey,
-                _lobbyUsers,
-              );
+              if (dragged.data.subtype == 1) {
+                widget.ownedConsumableCardsKey.currentState
+                    ?.removeConsumableOwned(dragged.data);
+                widget.usedConsumableCardsKey.currentState?.addConsumableUsed(
+                  dragged.data,
+                );
+              } else {
+                showUseConsumableDialog(
+                  context,
+                  dragged.data,
+                  3, //TODO, incluir el número máximo de elecciones
+                  widget.ownKey,
+                  _lobbyUsers,
+                  () {
+                    widget.ownedConsumableCardsKey.currentState
+                        ?.removeConsumableOwned(dragged.data);
+                  },
+                );
+              }
               /*
               // Delete consumable from the owned consumables list
               widget.consumableCardsKey.currentState?.removeConsumableOwned(
