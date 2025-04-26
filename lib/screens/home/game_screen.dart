@@ -6,6 +6,7 @@ import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/choose_blind_fase/choose_blind_fase_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
+import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/game_fase_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
@@ -64,11 +65,15 @@ class GameScreenState extends State<GameScreen> {
   final GlobalKey<SelectedCardsState> _selectedCardsKey = GlobalKey();
   final GlobalKey<JokerCardsState> _jokerCardsKey =
       GlobalKey<JokerCardsState>();
-  final GlobalKey<ConsumableCardsState> _consumableCardsKey =
-      GlobalKey<ConsumableCardsState>();
+  final GlobalKey<OwnedConsumableCardsState> _ownedConsumableCardsKey =
+      GlobalKey<OwnedConsumableCardsState>();
+  final GlobalKey<UsedConsumableCardsState> _usedConsumableCardsKey =
+      GlobalKey<UsedConsumableCardsState>();
   final GlobalKey<ShopWidgetState> _shopWidgetKey =
       GlobalKey<ShopWidgetState>();
   final GlobalKey<BuyWidgetState> _buyWidgetKey = GlobalKey<BuyWidgetState>();
+  final GlobalKey<UseConsumableWidgetState> _useConsumableWidgetKey =
+      GlobalKey<UseConsumableWidgetState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<SellWidgetState> _sellWidgetKey =
       GlobalKey<SellWidgetState>();
@@ -248,9 +253,11 @@ class GameScreenState extends State<GameScreen> {
               Row(
                 children: [
                   Sidebar(
-                    consumableCardsKey: _consumableCardsKey,
+                    ownedConsumableCardsKey: _ownedConsumableCardsKey,
+                    usedConsumableCardsKey: _usedConsumableCardsKey,
                     shopWidgetKey: _shopWidgetKey,
                     buyWidgetKey: _buyWidgetKey,
+                    useConsumableWidgetKey: _useConsumableWidgetKey,
                     shopFaseWidgetKey: _shopFaseWidgetKey,
                     consumableFaseWidgetKey: _consumableFaseWidgetKey,
                     sellWidgetKey: _sellWidgetKey,
@@ -429,7 +436,7 @@ class GameScreenState extends State<GameScreen> {
                                 shopWidgetKey: _shopWidgetKey,
                                 buyWidgetKey: _buyWidgetKey,
                                 jokerCardsKey: _jokerCardsKey,
-                                consumableCardsKey: _consumableCardsKey,
+                                consumableCardsKey: _ownedConsumableCardsKey,
                                 sellWidgetKey: _sellWidgetKey,
                                 onBuy: (value) {
                                   WidgetsBinding.instance.addPostFrameCallback((
@@ -464,7 +471,15 @@ class GameScreenState extends State<GameScreen> {
                               curve: Curves.easeInOut,
                               child: ConsumableFaseWidget(
                                 key: _consumableFaseWidgetKey,
-                                consumableCardsKey: _consumableCardsKey,
+                                ownedConsumableCardsKey:
+                                    _ownedConsumableCardsKey,
+                                shopWidgetKey: _shopWidgetKey,
+                                buyWidgetKey: _buyWidgetKey,
+                                shopFaseWidgetKey: _shopFaseWidgetKey,
+                                consumableFaseWidgetKey:
+                                    _consumableFaseWidgetKey,
+                                sellWidgetKey: _sellWidgetKey,
+                                useConsumableWidgetKey: _useConsumableWidgetKey,
                                 lobbyUsers: lobbyUsers,
                               ),
                             ),

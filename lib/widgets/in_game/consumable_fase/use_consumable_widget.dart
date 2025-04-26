@@ -11,7 +11,7 @@ class UseConsumableWidget extends StatefulWidget {
     required this.ownKey,
   });
 
-  final GlobalKey<ConsumableCardsState> consumableCardsKey;
+  final GlobalKey<OwnedConsumableCardsState> consumableCardsKey;
   final GlobalKey<UseConsumableWidgetState> ownKey;
   final List<Map<String, dynamic>> lobbyUsers;
 

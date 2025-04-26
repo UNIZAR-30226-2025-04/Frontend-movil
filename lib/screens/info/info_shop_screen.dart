@@ -64,14 +64,42 @@ class InfoShopScreen extends StatelessWidget {
                           12,
                         ), // Border radius of the container
                       ),
-                      child: const Center(
-                        // Center widget to center the text
-                        child: Text(
-                          // Text widget to display text
-                          'Explanation of what the store contains.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
-                        ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "In the shop we can difference three places with different cards to buy:                          ",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          Text(
+                            "First, we have the rerollable section, where the jokers and common consumables appear and can be refreshed",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            "Second, we have the voucher section, a premium consumable section where the effects become even crazier (only 2 per shop)",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            "And last we have the package section(only 2 per shop)                                                                           ",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

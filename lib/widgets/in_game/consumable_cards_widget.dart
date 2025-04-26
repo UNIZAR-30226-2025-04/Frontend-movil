@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
+import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
@@ -10,8 +11,8 @@ import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
 /// A widget that displays a row of Joker cards.
 /// The number of cards is generated dynamically and displayed below.
-class ConsumableCards extends StatefulWidget {
-  const ConsumableCards({
+class OwnedConsumableCards extends StatefulWidget {
+  const OwnedConsumableCards({
     super.key,
     required this.shopFaseWidgetKey,
     required this.consumableFaseWidgetKey,
@@ -27,10 +28,10 @@ class ConsumableCards extends StatefulWidget {
   final GlobalKey<SellWidgetState> sellWidgetKey;
 
   @override
-  ConsumableCardsState createState() => ConsumableCardsState();
+  OwnedConsumableCardsState createState() => OwnedConsumableCardsState();
 }
 
-class ConsumableCardsState extends State<ConsumableCards> {
+class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
   // List of Joker cards to be displayed
   List<PurchasableItemInfo> consumableOwned = [];
 
@@ -100,6 +101,7 @@ class ConsumableCardsState extends State<ConsumableCards> {
   void initState() {
     super.initState();
     _generateRandomConsumable();
+    debugPrint("Nueva Owned list creada");
   }
 
   @override
@@ -113,7 +115,7 @@ class ConsumableCardsState extends State<ConsumableCards> {
           children: [
             // Displays the label for active consumables.
             Text(
-              "Active consumables",
+              "Owned consumables",
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
@@ -141,19 +143,150 @@ class ConsumableCardsState extends State<ConsumableCards> {
                           onDraggedItem: () {
                             widget.shopFaseWidgetKey.currentState
                                 ?.onDraggedSellItem();
-                            widget.consumableFaseWidgetKey.currentState
-                                ?.onDraggedConsumable();
+                            //widget.consumableFaseWidgetKey.currentState
+                            //    ?.onDraggedConsumable();
                             return;
                           },
                           // Hide sell widget
                           onDroppedItem: () {
                             widget.shopFaseWidgetKey.currentState
                                 ?.onDropSellItem();
+                            //widget.consumableFaseWidgetKey.currentState
+                            //    ?.onDroppedConsumable();
+                            return;
+                          },
+                          keyWidget: widget.sellWidgetKey,
+                        ),
+                      );
+                    }),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class UsedConsuambleCards extends StatefulWidget {
+  const UsedConsuambleCards({
+    super.key,
+    required this.consumableFaseWidgetKey,
+    required this.useConsumableWidgetKey,
+  });
+
+  final GlobalKey<ConsumableFaseWidgetState> consumableFaseWidgetKey;
+  final GlobalKey<UseConsumableWidgetState> useConsumableWidgetKey;
+
+  @override
+  UsedConsumableCardsState createState() => UsedConsumableCardsState();
+}
+
+class UsedConsumableCardsState extends State<UsedConsuambleCards> {
+  // List of Joker cards to be displayed
+  List<PurchasableItemInfo> consumableUsed = [];
+
+  /// Adds the used consumable to the consumableUsed list
+  Future<void> addConsumableUsed(
+    PurchasableItemInfo jokerInfo,
+    bool isPackage,
+  ) async {
+    setState(() {
+      // Add it to your owned list
+      final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
+        price: jokerInfo.price,
+        id: jokerInfo.id,
+        index: -1, // Not used
+        type: "owned consumable",
+        subtype: jokerInfo.subtype,
+        cardName: "",
+      );
+      consumableUsed.add(auxJokerInfo);
+    });
+  }
+
+  /// This function removes the consumable from the owned list
+  Future<void> removeConsumableOwned(PurchasableItemInfo jokerInfo) async {
+    setState(() {
+      if (consumableUsed.isNotEmpty) {
+        // Remove the consumable from the owned list
+        consumableUsed.remove(jokerInfo);
+        debugPrint("Consumible eliminado de la lista");
+      } else {
+        debugPrint("No hay consumibles para eliminar");
+      }
+    });
+  }
+
+  // Function used to generate random consumables when we enter game fase
+  void _generateRandomConsumable() {
+    final random = Random();
+    consumableUsed = List.generate(2, (int index) {
+      final randomSubtype = random.nextInt(3) + 1;
+      return PurchasableItemInfo(
+        price: random.nextInt(10),
+        id: index,
+        index: -1,
+        type: "owned consumable",
+        subtype: randomSubtype,
+        cardName: "",
+      );
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _generateRandomConsumable();
+    debugPrint("Nueva Used list creada");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Displays the label for active consumables.
+            Text(
+              "Active effects",
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        // Displays the row of Consumable cards.
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children:
+                consumableUsed.isEmpty
+                    ? [SizedBox(height: 75)]
+                    : List.generate(consumableUsed.length, (index) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Joker(
+                          purchasableItemInfo: consumableUsed[index],
+                          // Display sell widget
+                          onDraggedItem: () {
+                            widget.consumableFaseWidgetKey.currentState
+                                ?.onDraggedConsumable();
+                            return;
+                          },
+                          // Hide sell widget
+                          onDroppedItem: () {
                             widget.consumableFaseWidgetKey.currentState
                                 ?.onDroppedConsumable();
                             return;
                           },
-                          keyWidget: widget.sellWidgetKey,
+                          keyWidget: widget.useConsumableWidgetKey,
                         ),
                       );
                     }),

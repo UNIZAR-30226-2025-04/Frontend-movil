@@ -19,7 +19,7 @@ class ShopFaseWidget extends StatefulWidget {
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
-  final GlobalKey<ConsumableCardsState> consumableCardsKey;
+  final GlobalKey<OwnedConsumableCardsState> consumableCardsKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
   final Function(int)? onBuy;

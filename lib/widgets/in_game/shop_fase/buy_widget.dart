@@ -19,7 +19,7 @@ class BuyWidget extends StatefulWidget {
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
-  final GlobalKey<ConsumableCardsState> consumableCardsKey;
+  final GlobalKey<OwnedConsumableCardsState> consumableCardsKey;
   final Function(int)? onBuy;
 
   @override

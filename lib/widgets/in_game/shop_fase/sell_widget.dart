@@ -12,7 +12,7 @@ class SellWidget extends StatefulWidget {
   });
 
   final GlobalKey<JokerCardsState> jokerCardsKey;
-  final GlobalKey<ConsumableCardsState> consumableCardsKey;
+  final GlobalKey<OwnedConsumableCardsState> consumableCardsKey;
   final Function(int)? onSell;
   @override
   SellWidgetState createState() => SellWidgetState();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nogler/dialogs/game_dialogs.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
+import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
@@ -14,7 +15,9 @@ class Sidebar extends StatefulWidget {
     super.key,
     required this.shopWidgetKey,
     required this.buyWidgetKey,
-    required this.consumableCardsKey,
+    required this.useConsumableWidgetKey,
+    required this.ownedConsumableCardsKey,
+    required this.usedConsumableCardsKey,
     required this.shopFaseWidgetKey,
     required this.consumableFaseWidgetKey,
     required this.sellWidgetKey,
@@ -34,7 +37,9 @@ class Sidebar extends StatefulWidget {
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
-  final GlobalKey<ConsumableCardsState> consumableCardsKey;
+  final GlobalKey<UseConsumableWidgetState> useConsumableWidgetKey;
+  final GlobalKey<OwnedConsumableCardsState> ownedConsumableCardsKey;
+  final GlobalKey<UsedConsumableCardsState> usedConsumableCardsKey;
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
   final GlobalKey<ConsumableFaseWidgetState> consumableFaseWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
@@ -149,7 +154,6 @@ class SidebarState extends State<Sidebar> {
                     widget.currentFase == "gameFase"
                         ? "ROUND ${widget.round}/10"
                         : phaseTextInfo[widget.currentFase],
-                    //widget.isShopPhase ? "SHOP" : "ROUND ${widget.round}/10",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -185,14 +189,45 @@ class SidebarState extends State<Sidebar> {
 
   /// Builds a horizontal list of modification cards.
   Widget _buildModCards() {
-    return ConsumableCards(
-      key: widget.consumableCardsKey,
-      shopFaseWidgetKey: widget.shopFaseWidgetKey,
-      consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
-      shopWidgetKey: widget.shopWidgetKey,
-      buyWidgetKey: widget.buyWidgetKey,
-      sellWidgetKey: widget.sellWidgetKey,
+    return Stack(
+      children: [
+        Visibility(
+          visible: widget.currentFase == "shopFase",
+          child: OwnedConsumableCards(
+            key: widget.ownedConsumableCardsKey,
+            shopFaseWidgetKey: widget.shopFaseWidgetKey,
+            consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
+            shopWidgetKey: widget.shopWidgetKey,
+            buyWidgetKey: widget.buyWidgetKey,
+            sellWidgetKey: widget.sellWidgetKey,
+          ),
+        ),
+        Visibility(
+          visible: widget.currentFase != "shopFase",
+          child: UsedConsuambleCards(
+            key: widget.usedConsumableCardsKey,
+            consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
+            useConsumableWidgetKey: widget.useConsumableWidgetKey,
+          ),
+        ),
+      ],
     );
+    /*
+    widget.currentFase == "shopFase"
+        ? OwnedConsumableCards(
+          key: widget.ownedConsumableCardsKey,
+          shopFaseWidgetKey: widget.shopFaseWidgetKey,
+          consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
+          shopWidgetKey: widget.shopWidgetKey,
+          buyWidgetKey: widget.buyWidgetKey,
+          sellWidgetKey: widget.sellWidgetKey,
+        )
+        : UsedConsuambleCards(
+          key: widget.usedConsumableCardsKey,
+          consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
+          useConsumableWidgetKey: widget.useConsumableWidgetKey,
+        );
+        */
   }
 
   /// Builds a section displaying game statistics such as round score and player stats.
