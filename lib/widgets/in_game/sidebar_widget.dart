@@ -3,6 +3,7 @@ import 'package:nogler/dialogs/game_dialogs.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
+import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
@@ -21,6 +22,12 @@ class Sidebar extends StatefulWidget {
     required this.shopFaseWidgetKey,
     required this.consumableFaseWidgetKey,
     required this.sellWidgetKey,
+    required this.consumableOwned,
+    required this.onAddConsumableOwned,
+    required this.onRemoveConsumableOwned,
+    required this.consumableUsed,
+    required this.onAddConsumableUsed,
+    required this.onRemoveConsumableUsed,
     required this.round,
     required this.discardingCards,
     required this.playingCards,
@@ -43,6 +50,12 @@ class Sidebar extends StatefulWidget {
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
   final GlobalKey<ConsumableFaseWidgetState> consumableFaseWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
+  final List<PurchasableItemInfo> consumableOwned;
+  final Function(PurchasableItemInfo)? onAddConsumableOwned;
+  final Function(PurchasableItemInfo)? onRemoveConsumableOwned;
+  final List<PurchasableItemInfo> consumableUsed;
+  final Function(PurchasableItemInfo)? onAddConsumableUsed;
+  final Function(PurchasableItemInfo)? onRemoveConsumableUsed;
   final int round;
   final int discardingCards;
   final int playingCards;
@@ -195,6 +208,9 @@ class SidebarState extends State<Sidebar> {
           visible: widget.currentFase == "shopFase",
           child: OwnedConsumableCards(
             key: widget.ownedConsumableCardsKey,
+            consumableOwned: widget.consumableOwned,
+            onAddConsumableOwned: widget.onAddConsumableOwned,
+            onRemoveConsumableOwned: widget.onRemoveConsumableOwned,
             shopFaseWidgetKey: widget.shopFaseWidgetKey,
             consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
             shopWidgetKey: widget.shopWidgetKey,
@@ -206,6 +222,9 @@ class SidebarState extends State<Sidebar> {
           visible: widget.currentFase != "shopFase",
           child: UsedConsuambleCards(
             key: widget.usedConsumableCardsKey,
+            consumableUsed: widget.consumableUsed,
+            onAddConsumableUsed: widget.onAddConsumableUsed,
+            onRemoveConsumableUsed: widget.onRemoveConsumableUsed,
             consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
             useConsumableWidgetKey: widget.useConsumableWidgetKey,
           ),

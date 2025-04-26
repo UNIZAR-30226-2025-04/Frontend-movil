@@ -14,6 +14,9 @@ import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 class OwnedConsumableCards extends StatefulWidget {
   const OwnedConsumableCards({
     super.key,
+    required this.consumableOwned,
+    required this.onAddConsumableOwned,
+    required this.onRemoveConsumableOwned,
     required this.shopFaseWidgetKey,
     required this.consumableFaseWidgetKey,
     required this.shopWidgetKey,
@@ -21,6 +24,9 @@ class OwnedConsumableCards extends StatefulWidget {
     required this.sellWidgetKey,
   });
 
+  final List<PurchasableItemInfo> consumableOwned;
+  final Function(PurchasableItemInfo)? onAddConsumableOwned;
+  final Function(PurchasableItemInfo)? onRemoveConsumableOwned;
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
   final GlobalKey<ConsumableFaseWidgetState> consumableFaseWidgetKey;
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -33,7 +39,7 @@ class OwnedConsumableCards extends StatefulWidget {
 
 class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
   // List of Joker cards to be displayed
-  List<PurchasableItemInfo> consumableOwned = [];
+  List<PurchasableItemInfo> _consumableOwned = [];
 
   /// This function checks if the list is full (5 elements)
   /// if it isn't, we add the consumable to the list and remove it from the shop
@@ -45,7 +51,7 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
     bool isPackage,
   ) async {
     setState(() {
-      if (consumableOwned.length != 5) {
+      if (_consumableOwned.length != 5) {
         // Remove the bought consumable
         widget.shopWidgetKey.currentState?.removeConsumable(
           jokerInfo.index,
@@ -60,7 +66,7 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
           subtype: jokerInfo.subtype,
           cardName: "",
         );
-        consumableOwned.add(auxJokerInfo);
+        _consumableOwned.add(auxJokerInfo);
         debugPrint("Consumible añadido en la lista");
       } else {
         debugPrint("La lista de consumibles esta llena");
@@ -71,9 +77,9 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
   /// This function removes the consumable from the owned list
   Future<void> removeConsumableOwned(PurchasableItemInfo jokerInfo) async {
     setState(() {
-      if (consumableOwned.isNotEmpty) {
+      if (_consumableOwned.isNotEmpty) {
         // Remove the consumable from the owned list
-        consumableOwned.remove(jokerInfo);
+        _consumableOwned.remove(jokerInfo);
         debugPrint("Consumible eliminado de la lista");
       } else {
         debugPrint("No hay consumibles para eliminar");
@@ -84,7 +90,7 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
   // Function used to generate random consumables when we enter game fase
   void _generateRandomConsumable() {
     final random = Random();
-    consumableOwned = List.generate(2, (int index) {
+    _consumableOwned = List.generate(2, (int index) {
       final randomSubtype = random.nextInt(3) + 1;
       return PurchasableItemInfo(
         price: random.nextInt(10),
@@ -100,8 +106,7 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
   @override
   void initState() {
     super.initState();
-    _generateRandomConsumable();
-    debugPrint("Nueva Owned list creada");
+    _consumableOwned = widget.consumableOwned;
   }
 
   @override
@@ -130,29 +135,29 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children:
-                consumableOwned.isEmpty
+                _consumableOwned.isEmpty
                     ? [SizedBox(height: 75)]
-                    : List.generate(consumableOwned.length, (index) {
+                    : List.generate(_consumableOwned.length, (index) {
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
                         margin: const EdgeInsets.symmetric(horizontal: 5),
                         child: Joker(
-                          purchasableItemInfo: consumableOwned[index],
+                          purchasableItemInfo: _consumableOwned[index],
                           // Display sell widget
                           onDraggedItem: () {
                             widget.shopFaseWidgetKey.currentState
                                 ?.onDraggedSellItem();
-                            //widget.consumableFaseWidgetKey.currentState
-                            //    ?.onDraggedConsumable();
+                            widget.consumableFaseWidgetKey.currentState
+                                ?.onDraggedConsumable();
                             return;
                           },
                           // Hide sell widget
                           onDroppedItem: () {
                             widget.shopFaseWidgetKey.currentState
                                 ?.onDropSellItem();
-                            //widget.consumableFaseWidgetKey.currentState
-                            //    ?.onDroppedConsumable();
+                            widget.consumableFaseWidgetKey.currentState
+                                ?.onDroppedConsumable();
                             return;
                           },
                           keyWidget: widget.sellWidgetKey,
@@ -169,10 +174,16 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
 class UsedConsuambleCards extends StatefulWidget {
   const UsedConsuambleCards({
     super.key,
+    required this.consumableUsed,
+    required this.onAddConsumableUsed,
+    required this.onRemoveConsumableUsed,
     required this.consumableFaseWidgetKey,
     required this.useConsumableWidgetKey,
   });
 
+  final List<PurchasableItemInfo> consumableUsed;
+  final Function(PurchasableItemInfo)? onAddConsumableUsed;
+  final Function(PurchasableItemInfo)? onRemoveConsumableUsed;
   final GlobalKey<ConsumableFaseWidgetState> consumableFaseWidgetKey;
   final GlobalKey<UseConsumableWidgetState> useConsumableWidgetKey;
 
@@ -235,8 +246,7 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
   @override
   void initState() {
     super.initState();
-    _generateRandomConsumable();
-    debugPrint("Nueva Used list creada");
+    consumableUsed = widget.consumableUsed;
   }
 
   @override
@@ -274,18 +284,6 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
                         margin: const EdgeInsets.symmetric(horizontal: 5),
                         child: Joker(
                           purchasableItemInfo: consumableUsed[index],
-                          // Display sell widget
-                          onDraggedItem: () {
-                            widget.consumableFaseWidgetKey.currentState
-                                ?.onDraggedConsumable();
-                            return;
-                          },
-                          // Hide sell widget
-                          onDroppedItem: () {
-                            widget.consumableFaseWidgetKey.currentState
-                                ?.onDroppedConsumable();
-                            return;
-                          },
                           keyWidget: widget.useConsumableWidgetKey,
                         ),
                       );

@@ -10,6 +10,7 @@ import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dar
 import 'package:nogler/widgets/in_game/game_fase/game_fase_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
+import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 import 'package:nogler/widgets/in_game/setting_button_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
@@ -95,6 +96,9 @@ class GameScreenState extends State<GameScreen> {
   bool _showConsumableFaseWidget = false;
 
   String _currentFase = "";
+
+  List<PurchasableItemInfo> _consumablesOwned = [];
+  List<PurchasableItemInfo> _consumablesUsed = [];
 
   int _remainingCards = 0;
   int _discardingCards = 3;
@@ -232,6 +236,26 @@ class GameScreenState extends State<GameScreen> {
     });
   }
 
+  void onAddConsumableOwned(PurchasableItemInfo jokerInfo) {
+    _consumablesOwned.add(jokerInfo);
+  }
+
+  void onRemoveConsumableOwned(PurchasableItemInfo jokerInfo) {
+    if (_consumablesOwned.isNotEmpty) {
+      _consumablesOwned.remove(jokerInfo);
+    }
+  }
+
+  void onAddConsumableUsed(PurchasableItemInfo jokerInfo) {
+    _consumablesUsed.add(jokerInfo);
+  }
+
+  void onRemoveConsumableUsed(PurchasableItemInfo jokerInfo) {
+    if (_consumablesUsed.isNotEmpty) {
+      _consumablesUsed.remove(jokerInfo);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -261,6 +285,36 @@ class GameScreenState extends State<GameScreen> {
                     shopFaseWidgetKey: _shopFaseWidgetKey,
                     consumableFaseWidgetKey: _consumableFaseWidgetKey,
                     sellWidgetKey: _sellWidgetKey,
+                    consumableOwned: _consumablesOwned,
+                    onAddConsumableOwned: (value) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          onAddConsumableOwned(value);
+                        });
+                      });
+                    },
+                    onRemoveConsumableOwned: (value) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          onRemoveConsumableOwned(value);
+                        });
+                      });
+                    },
+                    consumableUsed: _consumablesUsed,
+                    onAddConsumableUsed: (value) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          onAddConsumableUsed(value);
+                        });
+                      });
+                    },
+                    onRemoveConsumableUsed: (value) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          onRemoveConsumableUsed(value);
+                        });
+                      });
+                    },
                     round: widget.round,
                     discardingCards: _discardingCards,
                     playingCards: _playingCards,
@@ -471,6 +525,25 @@ class GameScreenState extends State<GameScreen> {
                               curve: Curves.easeInOut,
                               child: ConsumableFaseWidget(
                                 key: _consumableFaseWidgetKey,
+                                consumableOwned: _consumablesOwned,
+                                onAddConsumableOwned: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      onAddConsumableOwned(value);
+                                    });
+                                  });
+                                },
+                                onRemoveConsumableOwned: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      onRemoveConsumableOwned(value);
+                                    });
+                                  });
+                                },
                                 ownedConsumableCardsKey:
                                     _ownedConsumableCardsKey,
                                 shopWidgetKey: _shopWidgetKey,

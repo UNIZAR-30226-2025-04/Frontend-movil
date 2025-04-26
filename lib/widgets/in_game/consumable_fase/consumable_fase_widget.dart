@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
+import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
@@ -9,6 +10,9 @@ import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 class ConsumableFaseWidget extends StatefulWidget {
   const ConsumableFaseWidget({
     super.key,
+    required this.consumableOwned,
+    required this.onAddConsumableOwned,
+    required this.onRemoveConsumableOwned,
     required this.shopWidgetKey,
     required this.buyWidgetKey,
     required this.ownedConsumableCardsKey,
@@ -19,6 +23,9 @@ class ConsumableFaseWidget extends StatefulWidget {
     required this.lobbyUsers,
   });
 
+  final List<PurchasableItemInfo> consumableOwned;
+  final Function(PurchasableItemInfo)? onAddConsumableOwned;
+  final Function(PurchasableItemInfo)? onRemoveConsumableOwned;
   final GlobalKey<OwnedConsumableCardsState> ownedConsumableCardsKey;
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
@@ -72,6 +79,9 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
           children: [
             OwnedConsumableCards(
               key: widget.ownedConsumableCardsKey,
+              consumableOwned: widget.consumableOwned,
+              onAddConsumableOwned: widget.onAddConsumableOwned,
+              onRemoveConsumableOwned: widget.onRemoveConsumableOwned,
               shopFaseWidgetKey: widget.shopFaseWidgetKey,
               consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
               shopWidgetKey: widget.shopWidgetKey,
