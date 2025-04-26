@@ -97,8 +97,8 @@ class GameScreenState extends State<GameScreen> {
 
   String _currentFase = "";
 
-  List<PurchasableItemInfo> _consumablesOwned = [];
-  List<PurchasableItemInfo> _consumablesUsed = [];
+  List<PurchasableItemInfo> consumablesOwned = [];
+  List<PurchasableItemInfo> consumablesUsed = [];
 
   int _remainingCards = 0;
   int _discardingCards = 3;
@@ -237,22 +237,22 @@ class GameScreenState extends State<GameScreen> {
   }
 
   void onAddConsumableOwned(PurchasableItemInfo jokerInfo) {
-    _consumablesOwned.add(jokerInfo);
+    consumablesOwned.add(jokerInfo);
   }
 
   void onRemoveConsumableOwned(PurchasableItemInfo jokerInfo) {
-    if (_consumablesOwned.isNotEmpty) {
-      _consumablesOwned.remove(jokerInfo);
+    if (consumablesOwned.isNotEmpty) {
+      consumablesOwned.remove(jokerInfo);
     }
   }
 
   void onAddConsumableUsed(PurchasableItemInfo jokerInfo) {
-    _consumablesUsed.add(jokerInfo);
+    consumablesUsed.add(jokerInfo);
   }
 
   void onRemoveConsumableUsed(PurchasableItemInfo jokerInfo) {
-    if (_consumablesUsed.isNotEmpty) {
-      _consumablesUsed.remove(jokerInfo);
+    if (consumablesUsed.isNotEmpty) {
+      consumablesUsed.remove(jokerInfo);
     }
   }
 
@@ -285,7 +285,7 @@ class GameScreenState extends State<GameScreen> {
                     shopFaseWidgetKey: _shopFaseWidgetKey,
                     consumableFaseWidgetKey: _consumableFaseWidgetKey,
                     sellWidgetKey: _sellWidgetKey,
-                    consumableOwned: _consumablesOwned,
+                    consumableOwned: consumablesOwned,
                     onAddConsumableOwned: (value) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         setState(() {
@@ -300,7 +300,7 @@ class GameScreenState extends State<GameScreen> {
                         });
                       });
                     },
-                    consumableUsed: _consumablesUsed,
+                    consumableUsed: consumablesUsed,
                     onAddConsumableUsed: (value) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         setState(() {
@@ -525,7 +525,7 @@ class GameScreenState extends State<GameScreen> {
                               curve: Curves.easeInOut,
                               child: ConsumableFaseWidget(
                                 key: _consumableFaseWidgetKey,
-                                consumableOwned: _consumablesOwned,
+                                consumableOwned: consumablesOwned,
                                 onAddConsumableOwned: (value) {
                                   WidgetsBinding.instance.addPostFrameCallback((
                                     _,
