@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
@@ -19,6 +20,7 @@ class SellWidget extends StatefulWidget {
 }
 
 class SellWidgetState extends State<SellWidget> {
+  final WebSocketClient wsClient = WebSocketClient();
   // Initialized because the compiler is mad
   PurchasableItemInfo draggedItem = PurchasableItemInfo(
     price: 0,
@@ -51,14 +53,9 @@ class SellWidgetState extends State<SellWidget> {
         onAcceptWithDetails: (DragTargetDetails<PurchasableItemInfo> dragged) {
           switch (dragged.data.type) {
             case "owned joker":
+              wsClient.sendMessage("sell_joker", {dragged.data.subtype});
               widget.jokerCardsKey.currentState?.removeJokerOwned(dragged.data);
-              widget.onSell?.call(dragged.data.price);
-              break;
-            case "owned consumable":
-              widget.consumableCardsKey.currentState?.removeConsumableOwned(
-                dragged.data,
-              );
-              widget.onSell?.call(dragged.data.price);
+
               break;
           }
         },

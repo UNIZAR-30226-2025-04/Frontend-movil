@@ -1,6 +1,3 @@
-//import 'dart:ffi';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
@@ -17,12 +14,14 @@ class JokerCards extends StatefulWidget {
     required this.buyWidgetKey,
     required this.shopFaseWidgetKey,
     required this.sellWidgetKey,
+    required this.jokersOwned,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
+  final List<PurchasableItemInfo> jokersOwned;
 
   @override
   JokerCardsState createState() => JokerCardsState();
@@ -43,11 +42,6 @@ class JokerCardsState extends State<JokerCards> {
   ) async {
     setState(() {
       if (jokersOwned.length != 5) {
-        // Remove the bought joker
-        widget.shopWidgetKey.currentState?.removeJoker(
-          jokerInfo.index,
-          isPackage,
-        );
         // Add it to your owned list
         final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
           price: jokerInfo.price,
@@ -82,20 +76,6 @@ class JokerCardsState extends State<JokerCards> {
     });
   }
 
-  void _generateRandomJoker() {
-    final random = Random();
-    jokersOwned = List.generate(1, (int index) {
-      return PurchasableItemInfo(
-        price: random.nextInt(10),
-        id: index,
-        index: index,
-        type: "owned joker",
-        subtype: 1,
-        cardName: "",
-      );
-    });
-  }
-
   void _updateIndex() {
     for (int i = 0; i < jokersOwned.length; i++) {
       jokersOwned[i].index = i;
@@ -105,7 +85,7 @@ class JokerCardsState extends State<JokerCards> {
   @override
   void initState() {
     super.initState();
-    _generateRandomJoker();
+    jokersOwned = widget.jokersOwned;
     _updateIndex();
   }
 

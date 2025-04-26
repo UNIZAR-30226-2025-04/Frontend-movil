@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
+import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
@@ -15,6 +17,9 @@ class ShopFaseWidget extends StatefulWidget {
     required this.sellWidgetKey,
     required this.onBuy,
     required this.onSell,
+    required this.onReroll,
+    required this.shopJokers,
+    required this.gold,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -24,6 +29,9 @@ class ShopFaseWidget extends StatefulWidget {
   final GlobalKey<SellWidgetState> sellWidgetKey;
   final Function(int)? onBuy;
   final Function(int)? onSell;
+  final Function(int)? onReroll;
+  final List<PurchasableItemInfo> shopJokers;
+  final int gold;
 
   @override
   State<ShopFaseWidget> createState() => ShopFaseWidgetState();
@@ -32,9 +40,43 @@ class ShopFaseWidget extends StatefulWidget {
 class ShopFaseWidgetState extends State<ShopFaseWidget> {
   bool buyWidgetVisible = false;
   bool sellWidgetVisible = false;
+  // Websocket client
+  final WebSocketClient wsClient = WebSocketClient();
   Future<void> onDraggedItem() async {
     setState(() {
       buyWidgetVisible = true;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listerner for a bought joker
+    wsClient.addEventListener("joker_purchased", (data) {
+      int itemId = data["item_id"];
+      int jokerId = data["joker_id"];
+      int sellPrice = data["sell_price"];
+      int remainingMoney = data["remaining_money"];
+
+      // Create the new PurchasableItemInfo
+      PurchasableItemInfo purchasedJoker = PurchasableItemInfo(
+        price: sellPrice,
+        id: itemId,
+        index: -1,
+        type: "owned joker",
+        subtype: jokerId,
+        cardName: "",
+      );
+
+      widget.jokerCardsKey.currentState?.addJokerOwned(purchasedJoker, false);
+
+      widget.onBuy?.call(remainingMoney);
+    });
+    // Listerner for a sold joker
+    wsClient.addEventListener("joker_sold", (data) {
+      int remainingMoney = data["remaining_money"];
+      widget.onSell?.call(remainingMoney);
     });
   }
 
@@ -66,6 +108,8 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
           ownedJokersWidgetKey: widget.jokerCardsKey,
           onDraggedItem: onDraggedItem,
           onDroppedItem: onDroppedItem,
+          onReroll: widget.onReroll,
+          shopJokers: widget.shopJokers,
         ),
         Visibility(
           visible: buyWidgetVisible,
@@ -75,6 +119,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
             jokerCardsKey: widget.jokerCardsKey,
             consumableCardsKey: widget.consumableCardsKey,
             onBuy: widget.onBuy,
+            gold: widget.gold,
           ),
         ),
         Visibility(

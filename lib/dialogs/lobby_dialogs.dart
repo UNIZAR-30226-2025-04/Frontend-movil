@@ -361,7 +361,7 @@ Future<void> showCreateLobbyButton(
                                 );
                               }
                             },
-                            isSwitched ? 'false' : 'true',
+                            isSwitched ? '0' : '1',
                           ); // Create the lobby with the selected privacy
                         },
                         child: Text(

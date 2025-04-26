@@ -76,7 +76,7 @@ Future<Map<String, dynamic>> checkIfInLobby() async {
       final data = response.data;
       final inLobby = data['in_lobby'] == true;
       final lobbyId = inLobby ? data['lobby_id'] ?? "" : "";
-      final private = data['public'] != true;
+      final private = data['public'] != 1;
 
       await const FlutterSecureStorage().write(
         key: 'code',

@@ -12,6 +12,7 @@ import 'package:nogler/screens/loading/loading_screen.dart';
 import 'package:nogler/screens/lobby/lobby_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/background_widget.dart';
+import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -63,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       await wsClient.initialize();
       wsClient.addEventListener("game_phase_player_info", (data) {
+        wsClient.removeEventListener("error");
         debugPrint("👤 New user joined: $data");
         final round = data['current_round'] as int? ?? 0;
         final parsedList =
@@ -73,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final currentPoints = playerData['current_points'] ?? 0;
         final playedCards = playerData['played_cards'] ?? 0;
         final unplayedCards = playerData['unplayed_cards'] ?? 0;
+
         if (data['phase'] == 'none') {
           wsClient.sendMessage("get_lobby_info", result["lobby_id"]);
           if (context.mounted) {
@@ -91,6 +94,77 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         } else {
           if (context.mounted) {
+            List<PurchasableItemInfo> jokersOwned = [];
+            List<PurchasableItemInfo> shopJokers = [];
+            if (data['phase'] == 'shop') {
+              // Parse owned jokers with correct id from shop items
+              final rerollableItems =
+                  data['shop_items']['rerollable_items'] as List<dynamic>? ??
+                  [];
+
+              jokersOwned =
+                  (data['player_data']['current_jokers'] as List<dynamic>?)?.map((
+                    jokerData,
+                  ) {
+                    // Find the matching joker in rerollable_items where 'joker_id' matches the current_joker's 'id'
+                    final matchingShopJoker = rerollableItems.firstWhere(
+                      (shopJoker) => shopJoker['joker_id'] == jokerData['id'],
+                      orElse: () => null,
+                    );
+
+                    return PurchasableItemInfo(
+                      price: jokerData['sell_price'] ?? 0,
+                      id:
+                          matchingShopJoker != null
+                              ? matchingShopJoker['id']
+                              : -1,
+                      index: -1,
+                      type: "owned joker",
+                      subtype:
+                          jokerData['id'], // subtype sigue siendo el id original
+                      cardName: '',
+                    );
+                  }).toList() ??
+                  [];
+
+              // Parse the shop jokers from rerollable_items
+
+              for (var joker in data['shop_items']['rerollable_items']) {
+                shopJokers.add(
+                  PurchasableItemInfo(
+                    price: joker['price'],
+                    id: joker['id'],
+                    index: 0,
+                    type: joker['type'],
+                    subtype: joker['joker_id'],
+                    cardName: '',
+                  ),
+                );
+              }
+
+              // Filter: remove from shopJokers the jokers already owned
+              shopJokers.removeWhere(
+                (shopJoker) => jokersOwned.any(
+                  (ownedJoker) => ownedJoker.id == shopJoker.id,
+                ),
+              );
+            } else {
+              jokersOwned =
+                  (data['player_data']['current_jokers'] as List<dynamic>?)?.map((
+                    jokerData,
+                  ) {
+                    return PurchasableItemInfo(
+                      price: jokerData['sell_price'] ?? 0,
+                      id: 0,
+                      index: -1,
+                      type: "owned joker",
+                      subtype:
+                          jokerData['id'], // subtype sigue siendo el id original
+                      cardName: '',
+                    );
+                  }).toList() ??
+                  [];
+            }
             final handCards =
                 parsedList.map((cardData) {
                   final card = MainCardsState().createCardFromServerData(
@@ -115,15 +189,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   currentPoints: currentPoints,
                   currentDeckSize: playedCards + unplayedCards,
                   remainingCards: unplayedCards - 8,
+                  jokersOwned: jokersOwned,
+                  shopJokers: shopJokers,
+                  gold: data['player_data']['players_money'],
+                  myBlind : data['player_data']['actual_current_bet'],
                 ),
               ),
             );
           }
         }
       });
-      /*wsClient.addEventListener("error", (data) {
+      wsClient.addEventListener("error", (data) {
         if (mounted) {
-          Navigator.of(context).pop(); // Cerrar pantalla de carga
+          Navigator.of(context).pop(); // Close loading screen
           // Show a error message
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -138,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
           wsClient.disconnect();
         }
-      });*/
+      });
       wsClient.addEventListener("lobby_info", (data) {
         wsClient.sendMessage(
           "request_game_phase_player_info",

@@ -49,26 +49,22 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
     bool isPackage,
   ) async {
     setState(() {
-      if (_consumableOwned.length != 5) {
-        // Remove the bought consumable
-        widget.shopWidgetKey.currentState?.removeConsumable(
-          jokerInfo.index,
-          isPackage,
-        );
-        // Add it to your owned list
-        final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
-          price: jokerInfo.price,
-          id: jokerInfo.id,
-          index: -1, // Not used
-          type: "owned consumable",
-          subtype: jokerInfo.subtype,
-          cardName: "",
-        );
-        _consumableOwned.add(auxJokerInfo);
-        debugPrint("Consumible añadido en la lista");
-      } else {
-        debugPrint("La lista de consumibles esta llena");
-      }
+      // Remove the bought consumable
+      widget.shopWidgetKey.currentState?.removeConsumable(
+        jokerInfo.index,
+        isPackage,
+      );
+      // Add it to your owned list
+      final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
+        price: jokerInfo.price,
+        id: jokerInfo.id,
+        index: -1, // Not used
+        type: "owned consumable",
+        subtype: jokerInfo.subtype,
+        cardName: "",
+      );
+      _consumableOwned.add(auxJokerInfo);
+      debugPrint("Consumible añadido en la lista");
     });
   }
 
@@ -128,16 +124,12 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
                           purchasableItemInfo: _consumableOwned[index],
                           // Display sell widget
                           onDraggedItem: () {
-                            widget.shopFaseWidgetKey.currentState
-                                ?.onDraggedSellItem();
                             widget.consumableFaseWidgetKey.currentState
                                 ?.onDraggedConsumable();
                             return;
                           },
                           // Hide sell widget
                           onDroppedItem: () {
-                            widget.shopFaseWidgetKey.currentState
-                                ?.onDropSellItem();
                             widget.consumableFaseWidgetKey.currentState
                                 ?.onDroppedConsumable();
                             return;

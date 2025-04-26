@@ -259,13 +259,13 @@ class MainCardsState extends State<MainCards> {
       // Clear the played cards from the parent widget
       widget.onPlayCards?.call([]);
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      widget.onScore?.call(totalScore);
       if (totalScore >= widget.blind) {
+      if (!mounted) return;
         setState(() {
           isReached = true;
         });
       }
-      widget.onScore?.call(totalScore);
       widget.onRedScore?.call(0);
       widget.onBlueScore?.call(0);
       try {
@@ -510,33 +510,15 @@ class MainCardsState extends State<MainCards> {
   String getCardValueFromRank(String rank) {
     switch (rank.toUpperCase()) {
       case 'A':
-        return '1';
-      case 'K':
-        return '13';
-      case 'Q':
-        return '12';
-      case 'J':
         return '11';
-      case '10':
+      case 'K':
         return '10';
-      case '9':
-        return '9';
-      case '8':
-        return '8';
-      case '7':
-        return '7';
-      case '6':
-        return '6';
-      case '5':
-        return '5';
-      case '4':
-        return '4';
-      case '3':
-        return '3';
-      case '2':
-        return '2';
+      case 'Q':
+        return '10';
+      case 'J':
+        return '10';
       default:
-        return '0';
+        return rank;
     }
   }
 

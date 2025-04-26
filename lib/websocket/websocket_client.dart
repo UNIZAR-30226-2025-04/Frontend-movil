@@ -118,6 +118,7 @@ class WebSocketClient {
 
   /// Add a dynamic event listener.
   void addEventListener(String event, Function(dynamic) callback) {
+    removeEventListener(event);
     _eventHandlers[event] = callback;
     socket.on(event, callback);
     debugPrint("✅ Added listener for event: $event");

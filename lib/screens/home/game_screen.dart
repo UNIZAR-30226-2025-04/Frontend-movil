@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/game_background_widget.dart';
@@ -19,6 +20,7 @@ import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 import 'package:nogler/widgets/in_game/sidebar_widget.dart';
 import 'package:nogler/widgets/in_game/timer_widget.dart';
+import 'package:page_transition/page_transition.dart';
 
 /// Represents the main game screen with UI components for gameplay.
 class GameScreen extends StatefulWidget {
@@ -37,6 +39,10 @@ class GameScreen extends StatefulWidget {
     required this.currentPoints,
     required this.currentDeckSize,
     required this.remainingCards,
+    required this.jokersOwned,
+    required this.shopJokers,
+    required this.gold,
+    required this.myBlind,
   });
   final int round;
   final String hostName;
@@ -51,6 +57,10 @@ class GameScreen extends StatefulWidget {
   final int currentPoints;
   final int currentDeckSize;
   final int remainingCards;
+  final List<PurchasableItemInfo> jokersOwned;
+  final List<PurchasableItemInfo> shopJokers;
+  final int gold;
+  final int myBlind;
 
   @override
   GameScreenState createState() => GameScreenState();
@@ -95,6 +105,9 @@ class GameScreenState extends State<GameScreen> {
   bool _showShopFaseWidget = false;
   bool _showConsumableFaseWidget = false;
 
+  List<SelectableCard> _handCards = [];
+  List<PurchasableItemInfo> _jokersOwned = [];
+
   String _currentFase = "";
 
   List<PurchasableItemInfo> consumablesOwned = [];
@@ -115,11 +128,18 @@ class GameScreenState extends State<GameScreen> {
   int _blind = 0;
   int _myBlind = 0;
   int _minBlind = 0;
+  int _round = 0;
+  List<PurchasableItemInfo> _shopJokers = [];
+  //List<PurchasableItemInfo> _shopConsumables = [];
+  //List<PurchasableItemInfo> _shopPackages = [];
   @override
   void initState() {
     super.initState();
-    _blind = widget.baseBlind;
+    _jokersOwned = widget.jokersOwned;
+    _handCards = widget.handCards;
+    _blind = widget.myBlind;
     _minBlind = widget.baseBlind;
+    _myBlind = widget.myBlind;
     _currentDeckSize = widget.currentDeckSize;
     _updatePhaseWidgets(widget.phase);
     _timeout = widget.timeout;
@@ -127,8 +147,12 @@ class GameScreenState extends State<GameScreen> {
     _playingCards = widget.playingCards;
     _score = widget.currentPoints;
     _remainingCards = widget.remainingCards;
+    _round = widget.round;
+    _shopJokers = widget.shopJokers;
+    _gold = widget.gold;
     wsClient.removeEventListener("new_lobby_message");
     wsClient.removeEventListener("lobby_info");
+    wsClient.removeEventListener("starting_next_blind");
     // Listen for new lobby messages
     wsClient.addEventListener("new_lobby_message", (data) {
       debugPrint("🟨 Message received");
@@ -141,31 +165,113 @@ class GameScreenState extends State<GameScreen> {
         });
       });
 
-      // Listen for lobby info
-      wsClient.addEventListener("lobby_info", (data) {
-        debugPrint("📡 Received lobby info: $data");
-
-        final players = data['players'] as List<dynamic>;
-        setState(() {
-          lobbyUsers =
-              players.map<Map<String, dynamic>>((player) {
-                return {
-                  'username': player['username'] ?? 'Unknown',
-                  'avatarImage': player['user_icon'] ?? 0,
-                };
-              }).toList();
-        });
-      });
-
       debugPrint("🟩 Total messages: ${chatMessages.length}");
     });
+    // Listen for lobby info
+    wsClient.addEventListener("lobby_info", (data) {
+      debugPrint("📡 Received lobby info: $data");
 
+      final players = data['players'] as List<dynamic>;
+      setState(() {
+        lobbyUsers =
+            players.map<Map<String, dynamic>>((player) {
+              return {
+                'username': player['username'] ?? 'Unknown',
+                'avatarImage': player['user_icon'] ?? 0,
+              };
+            }).toList();
+      });
+    });
+    // Listen for starting shop phase
+    wsClient.addEventListener("starting_shop", (data) {
+      debugPrint("🏪 Received starting shop phase: $data");
+
+      setState(() {
+        // Switch to the shop phase
+        _animateShowShopFaseWidgets = true;
+        _showShopFaseWidget = true;
+
+        // Hide the game phase
+        _animateShowGameFaseWidgets = false;
+        _showGameFaseWidget = false;
+
+        _currentFase = "shopFase";
+        _timeout = data['timeout'];
+        _gold = data['money'];
+        // Parse the shop items from the response
+        _shopJokers = [];
+        //_shopConsumables = [];
+        //_shopPackages = [];
+
+        // Extracting jokers from the event data
+        if (data['shop']['rerollable_items'] != null) {
+          for (var joker in data['shop']['rerollable_items']) {
+            _shopJokers.add(
+              PurchasableItemInfo(
+                price: joker['price'],
+                id: joker['id'],
+                index: 0,
+                type: joker['type'],
+                subtype: joker['joker_id'],
+                cardName: '',
+              ),
+            );
+          }
+        }
+
+        /*// Extracting packs from the event data
+    if (data['shop']['fixed_packs'] != null) {
+      for (var pack in data['shop']['fixed_packs']) {
+        _shopPackages.add(PurchasableItemInfo(
+          price: pack['price'],
+          id: pack['id'],
+          index: 0, // Assuming index is not available in the event data
+          type: pack['type'],
+          subtype: 0, // Assuming subtype is not available in the event data
+          cardName: "Pack ${pack['id']}", // Default naming, can be updated
+        ));
+      }
+    }
+
+    // Extracting consumables from the event data if necessary
+    // Assuming there are consumables in the event data (it wasn't in the sample response)
+    if (data['shop']['fixed_modifiers'] != null) {
+      for (var modifier in data['shop']['fixed_modifiers']) {
+        _shopConsumables.add(PurchasableItemInfo(
+          price: modifier['price'],
+          id: modifier['id'],
+          index: 0, // Assuming index is not available in the event data
+          type: modifier['type'],
+          subtype: modifier['modifier_id'],
+          cardName: "Modifier ${modifier['id']}", // Default naming, can be updated
+        ));
+      }
+    }*/
+      });
+    });
+    wsClient.addEventListener("starting_vouchers", (data) {
+      debugPrint("🎴 Received starting voucher phase: $data");
+      final newTimeout = data['timeout'] as int;
+      setState(() {
+        // Switch to the voucher phase
+        _animateShowConsumableFaseWidget = true;
+        _showConsumableFaseWidget = true;
+
+        // Hide the shop phase
+        _animateShowShopFaseWidgets = false;
+        _showShopFaseWidget = false;
+
+        _currentFase = "consumableFase";
+        _timeout = newTimeout;
+      });
+    });
     // Listen for round start event
     wsClient.addEventListener("starting_round", (data) async {
       debugPrint("📡 Starting round: $data");
       final newTimeout = data['timeout'] as int;
       final deckSize = data['current_deck_size'] as int;
       final currentPot = data['current_deck_size'] as int;
+      final round = data['round_number'] as int;
       setState(() {
         // Init game fase
         _showChooseBlindFaseWidget = !_showChooseBlindFaseWidget;
@@ -176,6 +282,7 @@ class GameScreenState extends State<GameScreen> {
         _timeout = newTimeout;
         _currentDeckSize = deckSize;
         _currentPot = currentPot;
+        _round = round;
       });
     });
 
@@ -189,6 +296,76 @@ class GameScreenState extends State<GameScreen> {
         setState(() {
           _blind = _minBlind;
         });
+      }
+    });
+
+    // Listen for the next round
+    wsClient.addEventListener("starting_next_blind", (data) async {
+      debugPrint("📡 Next round: $data");
+      final timeout = data['timeout'] as int;
+      final baseBlind = data['base_blind'] as int;
+      final newTimeout = data['timeout'];
+      setState(() {
+        // Switch to the game phase
+        _animateShowChooseBlindFaseWidget = true;
+        _showChooseBlindFaseWidget = true;
+        _currentFase = "chooseBlindFase";
+        _timeout = newTimeout;
+
+        // Hide the shop phase
+        _animateShowConsumableFaseWidget = false;
+        _showConsumableFaseWidget = false;
+        _timeout = timeout;
+
+        _blind = baseBlind;
+        _minBlind = baseBlind;
+        _score = 0;
+        _discardingCards = 3;
+        _playingCards = 3;
+        _handCards = [];
+        _currentDeckSize = 0;
+        _remainingCards = 0;
+      });
+    });
+
+    /// Listen for game end
+    wsClient.addEventListener("game_end", (data) {
+      debugPrint("📡 Received game end: $data");
+
+      final List<dynamic> winners = data['winners'] ?? [];
+
+      // Check if I am the winner
+      final bool isWinner = winners.any((winnerData) {
+        return winnerData['winner_username'] == widget.hostName;
+      });
+
+      if (isWinner) {
+        wsClient.disconnect();
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: const HomeScreen(),
+          ),
+        );
+      }
+    });
+
+    /// Listen for players eliminated
+    wsClient.addEventListener("players_eliminated", (data) {
+      debugPrint("📡 Received players eliminated: $data");
+
+      final eliminatedPlayers = List<String>.from(data['eliminated_players']);
+
+      if (eliminatedPlayers.contains(widget.hostName)) {
+        wsClient.disconnect();
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: const HomeScreen(),
+          ),
+        );
       }
     });
   }
@@ -315,7 +492,7 @@ class GameScreenState extends State<GameScreen> {
                         });
                       });
                     },
-                    round: widget.round,
+                    round: _round,
                     discardingCards: _discardingCards,
                     playingCards: _playingCards,
                     currentFase: _currentFase,
@@ -349,6 +526,7 @@ class GameScreenState extends State<GameScreen> {
                                 buyWidgetKey: _buyWidgetKey,
                                 shopFaseWidgetKey: _shopFaseWidgetKey,
                                 sellWidgetKey: _sellWidgetKey,
+                                jokersOwned: _jokersOwned,
                               ),
                             ],
                           ),
@@ -470,7 +648,7 @@ class GameScreenState extends State<GameScreen> {
                                 },
                                 currentDeckSize: _currentDeckSize,
                                 blind: _blind,
-                                handCards: widget.handCards,
+                                handCards: _handCards,
                               ),
                             ),
                           )
@@ -497,7 +675,7 @@ class GameScreenState extends State<GameScreen> {
                                     _,
                                   ) {
                                     setState(() {
-                                      _gold -= value;
+                                      _gold = value;
                                     });
                                   });
                                 },
@@ -506,10 +684,21 @@ class GameScreenState extends State<GameScreen> {
                                     _,
                                   ) {
                                     setState(() {
-                                      _gold += value;
+                                      _gold = value;
                                     });
                                   });
                                 },
+                                onReroll: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _gold = value;
+                                    });
+                                  });
+                                },
+                                shopJokers: _shopJokers,
+                                gold: _gold,
                               ),
                             ),
                           )
