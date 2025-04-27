@@ -38,7 +38,7 @@ Future<bool> joinLobby(String lobbyId) async {
     if (response.statusCode == 200) {
       // Print success message if the user is successfully added to the lobby
       debugPrint('✅ User added to lobby: $lobbyId');
-      return response.data['lobby_info']['public'].toString() == 'true'?  true: false;
+      return response.data['lobby_info']['public'].toString() == '1'?  true: false;
     }
   } catch (e) {
     // Print error message if adding the user to the lobby fails

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
@@ -12,12 +13,16 @@ class ShopWidget extends StatefulWidget {
     required this.ownedJokersWidgetKey,
     required this.onDraggedItem,
     required this.onDroppedItem,
+    required this.onReroll,
+    required this.shopJokers,
   });
 
   final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<JokerCardsState> ownedJokersWidgetKey;
   final Future<void>? Function() onDraggedItem;
   final Future<void>? Function() onDroppedItem;
+  final Function(int)? onReroll;
+  final List<PurchasableItemInfo> shopJokers;
 
   @override
   State<ShopWidget> createState() => ShopWidgetState();
@@ -27,22 +32,6 @@ class ShopWidgetState extends State<ShopWidget> {
   List<PurchasableItemInfo> shopJokers = [];
   List<PurchasableItemInfo> shopConsumables = [];
   List<PurchasableItemInfo> shopPackages = [];
-
-  // Function used to generate random jokers when we enter shop fase and refresh the shop
-  void _generateRandomJoker() {
-    final random = Random();
-    shopJokers = List.generate(3, (int index) {
-      final randomSubtype = random.nextInt(2) + 1;
-      return PurchasableItemInfo(
-        price: random.nextInt(10),
-        id: index,
-        index: -1,
-        type: "joker",
-        subtype: randomSubtype,
-        cardName: "",
-      );
-    });
-  }
 
   // Function used to generate random consumables when we enter shop fase
   void _generateRandomConsumable() {
@@ -81,6 +70,8 @@ class ShopWidgetState extends State<ShopWidget> {
     }
   }
 
+  // Websocket client
+  final WebSocketClient wsClient = WebSocketClient();
   PurchasableItemInfo updateIndex(PurchasableItemInfo item, int index) {
     item.index = index;
     return item;
@@ -92,6 +83,9 @@ class ShopWidgetState extends State<ShopWidget> {
         shopJokers.removeAt(index);
         debugPrint("Eliminado joker tienda en indice $index");
       });
+    }
+    else{
+      debugPrint("No eliminado joker tienda en indice $index");
     }
   }
 
@@ -114,16 +108,47 @@ class ShopWidgetState extends State<ShopWidget> {
   @override
   void initState() {
     super.initState();
-    _generateRandomJoker();
+    shopJokers = widget.shopJokers;
     _generateRandomConsumable();
     _generateRandomPackage();
+    /*wsClient.addEventListener("joker_purchased", (data) {
+      debugPrint("🃏 Received raw data: $data");
+      /*final itemId = data['item_id'];
+      final jokerId = data['joker_id'];
+      final sellPrice = data['sell_price'];
+      final remainingMoney = data['remaining_money'];
+
+      debugPrint("[Event] Received 'joker_purchased':");
+      debugPrint("  itemId (${itemId.runtimeType}): $itemId");
+      debugPrint("  jokerId (${jokerId.runtimeType}): $jokerId");
+      debugPrint("  sellPrice (${sellPrice.runtimeType}): $sellPrice");
+      debugPrint(
+        "  remainingMoney (${remainingMoney.runtimeType}): $remainingMoney",
+      );
+
+      // Create the new PurchasableItemInfo
+      /*PurchasableItemInfo purchasedJoker = PurchasableItemInfo(
+        price: sellPrice,
+        id: itemId,
+        index: -1,
+        type: "owned joker",
+        subtype: jokerId,
+        cardName: "",
+      );*/
+
+      debugPrint("[Action] Adding purchased Joker to the collection");
+      //widget.jokerCardsKey.currentState?.addJokerOwned(purchasedJoker, false);
+
+      debugPrint("[Action] Calling onBuy callback with remaining money");
+      //widget.onBuy?.call(remainingMoney);*/
+    });*/
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 400,
-      height: 250,
+      height: 244,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -162,9 +187,8 @@ class ShopWidgetState extends State<ShopWidget> {
                     // Reroll button
                     ElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          _generateRandomJoker();
-                        });
+                        widget.onReroll?.call(5);
+                        setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0fba81),
@@ -229,7 +253,7 @@ class ShopWidgetState extends State<ShopWidget> {
             children: [
               Container(
                 width: 145,
-                height: 108,
+                height: 106,
                 decoration: BoxDecoration(
                   color: const Color(0xFF495a8f),
                   borderRadius: BorderRadius.circular(12),
@@ -256,7 +280,7 @@ class ShopWidgetState extends State<ShopWidget> {
               Expanded(
                 child: Container(
                   width: 145,
-                  height: 108,
+                  height: 106,
                   decoration: BoxDecoration(
                     color: const Color(0xFF495a8f),
                     borderRadius: BorderRadius.circular(12),

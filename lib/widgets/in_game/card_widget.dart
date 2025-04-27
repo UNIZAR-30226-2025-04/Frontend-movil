@@ -12,6 +12,7 @@ class SelectableCard {
   bool isNew;
   bool isScored;
   String score;
+  String blueScore;
 
   SelectableCard({
     required this.rank,
@@ -22,7 +23,8 @@ class SelectableCard {
     this.isDiscarding = false,
     this.isNew = false,
     this.isScored = false,
-    this.score = ''
+    this.score = '',
+    this.blueScore = '',
   });
 }
 
@@ -42,7 +44,7 @@ Widget buildCard(SelectableCard selectable) {
           child: Opacity(
             opacity: 0.8,
             child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(12.0)),
+              borderRadius: BorderRadius.all(Radius.circular(12)),
               child: Image.asset(
                 cardOverlay[selectable.overlay]['overlay']!,
                 fit: BoxFit.cover,

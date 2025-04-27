@@ -180,6 +180,11 @@ class _LobbyScreen extends State<LobbyScreen> {
             currentPoints: 0,
             currentDeckSize: 0,
             remainingCards: 0,
+            jokersOwned: [],
+            shopJokers: [],
+            gold: 0,
+            myBlind: 0,
+            maxRounds: 0
           ),
         ),
       );
@@ -289,8 +294,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                                       await updateVisibilityLobby(
                                         widget.lobbyCode,
                                         _publicPrivateButton == 'Public'
-                                            ? 'true'
-                                            : 'false',
+                                            ? '0'
+                                            : '1',
                                       );
                                     }
                                   },
@@ -461,22 +466,26 @@ class _LobbyScreen extends State<LobbyScreen> {
                                     vertical: 15,
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   // Exit lobby in WebSocket
                                   wsClient.sendMessage("exit_lobby", {
                                     widget.lobbyCode,
                                     widget.hostName,
                                   });
-
+                                  await Future.delayed(
+                                    const Duration(milliseconds: 500),
+                                  );
                                   // Close the current WebSocket connection
                                   wsClient.disconnect();
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.fade,
-                                      child: const HomeScreen(),
-                                    ),
-                                  );
+                                  if (context.mounted) {
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.fade,
+                                        child: const HomeScreen(),
+                                      ),
+                                    );
+                                  }
                                 },
                                 child: Text(
                                   'Leave',

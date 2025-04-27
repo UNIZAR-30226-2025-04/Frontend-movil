@@ -3,6 +3,7 @@ import 'package:nogler/widgets/in_game/action_buttons_widget.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/deck_info_widget.dart';
 import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
+import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 
 class GameFaseWidget extends StatelessWidget {
@@ -22,6 +23,8 @@ class GameFaseWidget extends StatelessWidget {
     required this.currentDeckSize,
     required this.blind,
     required this.handCards,
+    required this.jokerCardsKey,
+    required this.gold,
   });
 
   final GlobalKey<MainCardsState> mainCardsKey;
@@ -38,6 +41,8 @@ class GameFaseWidget extends StatelessWidget {
   final int currentDeckSize;
   final int blind;
   final List<SelectableCard> handCards;
+  final GlobalKey<JokerCardsState> jokerCardsKey;
+  final int gold;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +71,8 @@ class GameFaseWidget extends StatelessWidget {
           onHandType: onHandType,
           blind: blind,
           handCards: handCards,
+          jokerCardsKey: jokerCardsKey,
+          gold: gold,
         ),
 
         // Action buttons and deck info at the bottom

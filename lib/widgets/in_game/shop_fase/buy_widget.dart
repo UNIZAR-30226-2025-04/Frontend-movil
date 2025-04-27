@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:nogler/dialogs/game_dialogs.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
@@ -15,12 +16,14 @@ class BuyWidget extends StatefulWidget {
     required this.jokerCardsKey,
     required this.consumableCardsKey,
     required this.onBuy,
+    required this.gold,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final GlobalKey<OwnedConsumableCardsState> consumableCardsKey;
   final Function(int)? onBuy;
+  final int gold;
 
   @override
   BuyWidgetState createState() => BuyWidgetState();
@@ -36,7 +39,8 @@ class BuyWidgetState extends State<BuyWidget> {
     subtype: 0,
     cardName: "",
   );
-
+  // Websocket client
+  final WebSocketClient wsClient = WebSocketClient();
   // Get the info of dragged item
   Future<void> setDraggedItem(PurchasableItemInfo currentDragged) async {
     setState(() {
@@ -210,11 +214,16 @@ class BuyWidgetState extends State<BuyWidget> {
         ) async {
           switch (dragged.data.type) {
             case "joker":
-              widget.jokerCardsKey.currentState?.addJokerOwned(
-                dragged.data,
-                false,
-              );
-              widget.onBuy?.call(dragged.data.price);
+              if (widget.gold >= dragged.data.price && widget.jokerCardsKey.currentState!.jokersOwned.length < 5) {
+                wsClient.sendMessage("buy_joker", {
+                  dragged.data.id,
+                  dragged.data.price,
+                });
+                widget.shopWidgetKey.currentState?.removeJoker(
+                  dragged.data.index,
+                  false,
+                );
+              }
               break;
             case "consumable":
               widget.consumableCardsKey.currentState?.addConsumableOwned(

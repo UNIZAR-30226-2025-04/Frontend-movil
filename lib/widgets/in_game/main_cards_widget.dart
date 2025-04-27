@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
+import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:playing_cards/playing_cards.dart';
 
 /// A widget that displays a set of main cards with draggable behavior.
@@ -14,7 +15,9 @@ class MainCards extends StatefulWidget {
   final Function(int)? onRedScore;
   final Function(int)? onHandType;
   final List<SelectableCard> handCards;
+  final GlobalKey<JokerCardsState> jokerCardsKey;
   final int blind;
+  final int gold;
   const MainCards({
     super.key,
     this.onDeckUpdated,
@@ -27,6 +30,8 @@ class MainCards extends StatefulWidget {
     this.onHandType,
     required this.blind,
     required this.handCards,
+    required this.jokerCardsKey,
+    required this.gold,
   });
 
   @override
@@ -53,6 +58,7 @@ class MainCardsState extends State<MainCards> {
   @override
   void initState() {
     super.initState();
+    gold = widget.gold;
     _setupWebSocketListeners();
     _getCards();
     handCards = widget.handCards;
@@ -82,6 +88,7 @@ class MainCardsState extends State<MainCards> {
                   return {
                     'Rank': item['Rank']?.toString(),
                     'Suit': item['Suit']?.toString().toLowerCase(),
+                    'Enhancement': item['Enhancement'],
                   };
                 })
                 .where((card) => card['Rank'] != null && card['Suit'] != null)
@@ -166,6 +173,7 @@ class MainCardsState extends State<MainCards> {
                   return {
                     'Rank': item['Rank']?.toString(),
                     'Suit': item['Suit']?.toString().toLowerCase(),
+                    'Enhancement': item['Enhancement'],
                   };
                 })
                 .where((card) => card['Rank'] != null && card['Suit'] != null)
@@ -209,7 +217,23 @@ class MainCardsState extends State<MainCards> {
         debugPrint("❌ Error parsing card data: $e");
       }
     });
-
+    // Score map by hand type
+    const handScoresList = [
+      0,
+      35, // 1: Flush five
+      32, // 2: Flush house
+      30, // 3: Five of a kind
+      65, // 4: Royal flush
+      50, // 5: Straight flush
+      25, // 6: Four of a kind
+      20, // 7: Full house
+      15, // 8: Flush
+      12, // 9: Straight
+      10, // 10: Three of a kind
+      8, // 11: Two pair
+      4, // 12: One pair
+      1, // 13: High card
+    ];
     // Listen for the 'played_hand' event to receive the played hand data
     wsClient.addEventListener('played_hand', (data) async {
       final selected = handCards.where((c) => c.isSelected).toList();
@@ -220,6 +244,13 @@ class MainCardsState extends State<MainCards> {
       final score = data['total_score'] as int;
       final List<dynamic> scoreCards = data['scored_cards'] as List<dynamic>;
       final time = scoreCards.length + 1;
+      final scoreToAdd = handScoresList[handType];
+
+      setState(() {
+        for (var c in selected) {
+          c.blueScore = (scoreToAdd).toString();
+        }
+      });
       // Notify the parent widget about the played cards
       widget.onPlayCards?.call(selectedCards);
       widget.onRedScore?.call(redScore);
@@ -259,13 +290,13 @@ class MainCardsState extends State<MainCards> {
       // Clear the played cards from the parent widget
       widget.onPlayCards?.call([]);
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      widget.onScore?.call(totalScore);
       if (totalScore >= widget.blind) {
+        if (!mounted) return;
         setState(() {
           isReached = true;
         });
       }
-      widget.onScore?.call(totalScore);
       widget.onRedScore?.call(0);
       widget.onBlueScore?.call(0);
       try {
@@ -282,6 +313,7 @@ class MainCardsState extends State<MainCards> {
                   return {
                     'Rank': item['Rank']?.toString(),
                     'Suit': item['Suit']?.toString().toLowerCase(),
+                    'Enhancement': item['Enhancement'],
                   };
                 })
                 .where((card) => card['Rank'] != null && card['Suit'] != null)
@@ -341,7 +373,7 @@ class MainCardsState extends State<MainCards> {
     return SelectableCard(
       rank: rank,
       suit: suit,
-      overlay: 0,
+      overlay: cardData['Enhancement'],
       card: PlayingCard(cardSuit, cardValue),
       score: getCardValueFromRank(rank),
     );
@@ -421,11 +453,15 @@ class MainCardsState extends State<MainCards> {
                 (card) => {
                   'rank': card.rank,
                   'suit': card.suit.toLowerCase(), // Ensure lowercase suits
+                  'Enhancement': card.overlay,
                 },
               )
               .toList(),
       'jokers': {
-        'Juglares': List.filled(5, 0), // Initialize 5 jokers with value 0
+        'Juglares':
+            widget.jokerCardsKey.currentState!.jokersOwned
+                .map((joker) => joker.subtype)
+                .toList(),
       },
       'gold': gold,
     };
@@ -510,33 +546,15 @@ class MainCardsState extends State<MainCards> {
   String getCardValueFromRank(String rank) {
     switch (rank.toUpperCase()) {
       case 'A':
-        return '1';
-      case 'K':
-        return '13';
-      case 'Q':
-        return '12';
-      case 'J':
         return '11';
-      case '10':
+      case 'K':
         return '10';
-      case '9':
-        return '9';
-      case '8':
-        return '8';
-      case '7':
-        return '7';
-      case '6':
-        return '6';
-      case '5':
-        return '5';
-      case '4':
-        return '4';
-      case '3':
-        return '3';
-      case '2':
-        return '2';
+      case 'Q':
+        return '10';
+      case 'J':
+        return '10';
       default:
-        return '0';
+        return rank;
     }
   }
 

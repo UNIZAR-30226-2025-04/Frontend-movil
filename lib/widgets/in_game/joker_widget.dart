@@ -325,30 +325,148 @@ class JokerState extends State<Joker> {
       'jokerDescription': '',
     },
     {
+      // Solid Seven joker
+      'joker': 'images/jokers/solid_seven.png',
+      'jokerName': 'Solid Seven',
+      'jokerDescription': 'Solid Seven +7 tokens +7 multi',
+    },
+    {
+      // Poor joker
+      'joker': 'images/jokers/poor_joker.png',
+      'jokerName': 'Poor joker',
+      'jokerDescription': 'Poor joker generates 4 gold each round',
+    },
+    {
+      // Botardo joker
+      'joker': 'images/jokers/poor_joker.png',
+      'jokerName': 'Botardo joker',
+      'jokerDescription': 'Botardo joker',
+    },
+    {
       // Average size Michael joker
       'joker': 'images/jokers/AVERAGE_SIZE_MICHAEL.png',
-      'jokerName': 'Average SizeMichael',
+      'jokerName': 'Average Size Michael',
       'jokerDescription':
           'Average size Michael +13 mult.1/13 chance of being sold each round. Glass:This is a tooltip For the glass overlay',
     },
     {
-      // Solid Seven joker
-      'joker': 'images/jokers/solid_seven.png',
-      'jokerName': 'Solid Seven',
-      'jokerDescription': '',
-    },
-    {
-      // Average size Michael joker
-      'joker': 'images/jokers/AVERAGE_SIZE_MICHAEL.png',
-      'jokerName': 'Average SizeMichael',
+      // Hell Cowboy joker
+      'joker': 'images/jokers/hell_cowboy.png',
+      'jokerName': 'Hell Cowboy',
       'jokerDescription':
-          'Average size Michael +13 mult.1/13 chance of being sold each round. Glass:This is a tooltip For the glass overlay',
+          'Hell Cowboy adds +mult equivalent to the highest scoring card',
     },
     {
-      // Solid Seven joker
-      'joker': 'images/jokers/solid_seven.png',
-      'jokerName': 'Solid Seven',
-      'jokerDescription': '',
+      // Carb Sponge joker
+      'joker': 'images/jokers/bob_spider.png',
+      'jokerName': 'Crab Sponge',
+      'jokerDescription':
+          'Crab Sponge adds +mult equivalent to the highest scoring card',
+    },
+    {
+      // Photograph joker
+      'joker': 'images/jokers/PHOTOGRAPH.png',
+      'jokerName': 'Photograph',
+      'jokerDescription': 'Photograph x2 multiplies the first figure you play',
+    },
+    {
+      // Petpet joker
+      'joker': 'images/jokers/petpet.png',
+      'jokerName': 'Petpet',
+      'jokerDescription': 'Petpet sums the number of gold the user has to mul',
+    },
+    {
+      // Empty joker
+      'joker': 'images/jokers/empty_joker.png',
+      'jokerName': 'Empty',
+      'jokerDescription':
+          'Empty 1/50 of adding 200 to the multiplier and 25 to the chips',
+    },
+    {
+      // Two Friends joker
+      'joker': 'images/jokers/2_friends.png',
+      'jokerName': 'Two Friends',
+      'jokerDescription':
+          'Two Friends takes 10 of your +fichas and changes them to +mult. BUT if your fichas < 10, doesnt subtract from fichas, just add 10-fichas to mult',
+    },
+    {
+      // Lirili Larila
+      'joker': 'images/jokers/lirili_larila.png',
+      'jokerName': 'Lirili Larila',
+      'jokerDescription':
+          'Lirili Larila +2 to to mult for each played / scoring 2 then x2 mult',
+    },
+    {
+      // BIRDIFICACION joker
+      'joker': 'images/jokers/birdification.png',
+      'jokerName': 'BIRDIFICACION',
+      'jokerDescription': 'BIRDIFICACION +50 chips for each 1,4,6,7',
+    },
+    {
+      // Rusty ahh joker
+      'joker': 'images/jokers/rusty_ahh_joker.png',
+      'jokerName': 'Rusty ahh joker',
+      'jokerDescription': 'Rusty ahh joker',
+    },
+    {
+      // Damn April joker
+      'joker': 'images/jokers/damn_april.jpg',
+      'jokerName': 'Damn April',
+      'jokerDescription': 'Damn April each played 4 does sm',
+    },
+    {
+      // Its so over joker
+      'joker': 'images/jokers/its_so_over.png',
+      'jokerName': 'Its so over',
+      'jokerDescription': 'Its so over',
+    },
+    {
+      // Paris joker
+      'joker': 'images/jokers/paris.png',
+      'jokerName': 'Paris',
+      'jokerDescription': 'Paris',
+    },
+    {
+      // Diego joker
+      'joker': 'images/jokers/diego_joker.png',
+      'jokerName': 'Diego',
+      'jokerDescription': 'Diego',
+    },
+    {
+      // Bicycle joker
+      'joker': 'images/jokers/bicicleta.png',
+      'jokerName': 'Bicycle',
+      'jokerDescription': 'Bicycle',
+    },
+    {
+      // Nasus joker
+      'joker': 'images/jokers/nasus.png',
+      'jokerName': 'Nasus',
+      'jokerDescription': 'Nasus',
+    },
+    {
+      // Umbrella joker
+      'joker': 'images/jokers/sombrilla.png',
+      'jokerName': 'Umbrella',
+      'jokerDescription': 'Umbrella',
+    },
+    {
+      // Balatrito comes out joker
+      'joker': 'images/jokers/salebalatrito.png',
+      'jokerName': 'Balatrito comes out',
+      'jokerDescription': 'Balatrito comes out',
+    },
+    {
+      // KFC joker
+      'joker': 'images/jokers/kaefece.png',
+      'jokerName': 'KFC',
+      'jokerDescription': 'KFC',
+    },
+    {
+      // Crowave joker
+      'joker': 'images/jokers/crowave.png',
+      'jokerName': 'Crowave',
+      'jokerDescription': 'Crowave',
     },
   ];
 
