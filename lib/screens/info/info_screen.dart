@@ -37,7 +37,7 @@ class InfoScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 Wrap(
                   // Wrap widget to align elements in a grid
                   spacing: 16, // Horizontal spacing between buttons
@@ -48,7 +48,7 @@ class InfoScreen extends StatelessWidget {
                     // The four buttons on the screen
 
                     // Button to navigate to InfoCardsScreen
-                    _buildMenuButton(context, 'Cards', () {
+                    _buildMenuButton(context, 'Cards', Icons.casino, () {
                       Navigator.push(
                         context,
                         PageTransition(
@@ -59,7 +59,7 @@ class InfoScreen extends StatelessWidget {
                     }),
 
                     // Button to navigate to InfoShopScreen
-                    _buildMenuButton(context, 'Shop', () {
+                    _buildMenuButton(context, 'Shop', Icons.shopping_cart, () {
                       Navigator.push(
                         context,
                         PageTransition(
@@ -70,7 +70,7 @@ class InfoScreen extends StatelessWidget {
                     }),
 
                     // Button to navigate to InfoFriendsScreen
-                    _buildMenuButton(context, 'Friends', () {
+                    _buildMenuButton(context, 'Friends', Icons.person, () {
                       Navigator.push(
                         context,
                         PageTransition(
@@ -81,15 +81,20 @@ class InfoScreen extends StatelessWidget {
                     }),
 
                     // Button to navigate to InfoCompeteScreen
-                    _buildMenuButton(context, 'Compete', () {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.fade,
-                          child: const InfoCompeteScreen(),
-                        ),
-                      );
-                    }),
+                    _buildMenuButton(
+                      context,
+                      'Compete',
+                      Icons.sports_esports,
+                      () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: const InfoCompeteScreen(),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ],
@@ -104,6 +109,7 @@ class InfoScreen extends StatelessWidget {
   Widget _buildMenuButton(
     BuildContext context,
     String title,
+    IconData? icon,
     VoidCallback onPressed,
   ) {
     return SizedBox(
@@ -124,9 +130,19 @@ class InfoScreen extends StatelessWidget {
         onPressed: onPressed,
         child: Center(
           // Center widget to center the text inside the button
-          child: Text(
-            title,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 25.0),
+              SizedBox(width: 5),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ),
       ),
