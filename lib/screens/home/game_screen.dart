@@ -43,6 +43,7 @@ class GameScreen extends StatefulWidget {
     required this.shopJokers,
     required this.gold,
     required this.myBlind,
+    required this.maxRounds,
   });
   final int round;
   final String hostName;
@@ -61,6 +62,7 @@ class GameScreen extends StatefulWidget {
   final List<PurchasableItemInfo> shopJokers;
   final int gold;
   final int myBlind;
+  final int maxRounds;
 
   @override
   GameScreenState createState() => GameScreenState();
@@ -129,12 +131,14 @@ class GameScreenState extends State<GameScreen> {
   int _myBlind = 0;
   int _minBlind = 0;
   int _round = 0;
+  int _maxRounds = 0;
   List<PurchasableItemInfo> _shopJokers = [];
   //List<PurchasableItemInfo> _shopConsumables = [];
   //List<PurchasableItemInfo> _shopPackages = [];
   @override
   void initState() {
     super.initState();
+    _maxRounds = widget.maxRounds;
     _jokersOwned = widget.jokersOwned;
     _handCards = widget.handCards;
     _blind = widget.myBlind;
@@ -198,6 +202,7 @@ class GameScreenState extends State<GameScreen> {
         _currentFase = "shopFase";
         _timeout = data['timeout'];
         _gold = data['money'];
+
         // Parse the shop items from the response
         _shopJokers = [];
         //_shopConsumables = [];
@@ -270,7 +275,7 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("📡 Starting round: $data");
       final newTimeout = data['timeout'] as int;
       final deckSize = data['current_deck_size'] as int;
-      final currentPot = data['current_deck_size'] as int;
+      final currentPot = data['current_pot'] as int;
       final round = data['round_number'] as int;
       setState(() {
         // Init game fase
@@ -283,6 +288,8 @@ class GameScreenState extends State<GameScreen> {
         _currentDeckSize = deckSize;
         _currentPot = currentPot;
         _round = round;
+        _maxRounds = data['max_rounds'];
+        _gold = data['players_money'];
       });
     });
 
@@ -329,7 +336,7 @@ class GameScreenState extends State<GameScreen> {
     });
 
     /// Listen for game end
-    wsClient.addEventListener("game_end", (data) {
+    wsClient.addEventListener("game_end", (data) async {
       debugPrint("📡 Received game end: $data");
 
       final List<dynamic> winners = data['winners'] ?? [];
@@ -340,7 +347,10 @@ class GameScreenState extends State<GameScreen> {
       });
 
       if (isWinner) {
+        await Future.delayed(const Duration(milliseconds: 5000));
         wsClient.disconnect();
+        if (!mounted) return;
+
         Navigator.pushReplacement(
           context,
           PageTransition(
@@ -352,13 +362,15 @@ class GameScreenState extends State<GameScreen> {
     });
 
     /// Listen for players eliminated
-    wsClient.addEventListener("players_eliminated", (data) {
+    wsClient.addEventListener("players_eliminated", (data) async {
       debugPrint("📡 Received players eliminated: $data");
 
       final eliminatedPlayers = List<String>.from(data['eliminated_players']);
 
       if (eliminatedPlayers.contains(widget.hostName)) {
+        await Future.delayed(const Duration(milliseconds: 1000));
         wsClient.disconnect();
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           PageTransition(
@@ -504,6 +516,7 @@ class GameScreenState extends State<GameScreen> {
                     gold: _gold,
                     currentPot: _currentPot,
                     blind: _blind,
+                    maxRounds: _maxRounds,
                   ), // Sidebar for navigation and game info
 
                   Expanded(
@@ -614,6 +627,7 @@ class GameScreenState extends State<GameScreen> {
                                   WidgetsBinding.instance.addPostFrameCallback((
                                     _,
                                   ) {
+                                    if (!mounted) return;
                                     setState(() {
                                       _score = value;
                                     });
@@ -649,6 +663,8 @@ class GameScreenState extends State<GameScreen> {
                                 currentDeckSize: _currentDeckSize,
                                 blind: _blind,
                                 handCards: _handCards,
+                                jokerCardsKey: _jokerCardsKey,
+                                gold: _gold,
                               ),
                             ),
                           )

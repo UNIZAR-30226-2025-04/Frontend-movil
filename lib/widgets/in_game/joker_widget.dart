@@ -351,7 +351,7 @@ class JokerState extends State<Joker> {
     },
     {
       // Hell Cowboy joker
-      'joker': 'images/jokers/AVERAGE_SIZE_MICHAEL.png',
+      'joker': 'images/jokers/hell_cowboy.png',
       'jokerName': 'Hell Cowboy',
       'jokerDescription':
           'Hell Cowboy adds +mult equivalent to the highest scoring card',
@@ -372,7 +372,7 @@ class JokerState extends State<Joker> {
     {
       // Petpet joker
       'joker': 'images/jokers/petpet.png',
-      'jokerName': 'Pepet',
+      'jokerName': 'Petpet',
       'jokerDescription': 'Petpet sums the number of gold the user has to mul',
     },
     {
@@ -398,7 +398,7 @@ class JokerState extends State<Joker> {
     },
     {
       // BIRDIFICACION joker
-      'joker': 'images/jokers/lirili_larila.png',
+      'joker': 'images/jokers/birdification.png',
       'jokerName': 'BIRDIFICACION',
       'jokerDescription': 'BIRDIFICACION +50 chips for each 1,4,6,7',
     },

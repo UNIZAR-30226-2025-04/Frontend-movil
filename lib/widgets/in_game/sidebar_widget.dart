@@ -40,6 +40,7 @@ class Sidebar extends StatefulWidget {
     required this.gold,
     required this.currentPot,
     required this.blind,
+    required this.maxRounds
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -68,6 +69,7 @@ class Sidebar extends StatefulWidget {
   final int gold;
   final int currentPot;
   final int blind;
+  final int maxRounds;
 
   @override
   SidebarState createState() => SidebarState();
@@ -165,7 +167,7 @@ class SidebarState extends State<Sidebar> {
                   // If the fase is game fase we display a round dependent label
                   Text(
                     widget.currentFase == "gameFase"
-                        ? "ROUND ${widget.round}/10"
+                        ? "ROUND ${widget.round}/${widget.maxRounds}"
                         : phaseTextInfo[widget.currentFase],
                     style: TextStyle(
                       fontSize: 14,
@@ -367,6 +369,7 @@ class SidebarState extends State<Sidebar> {
   Widget _buildAnimatedScore(String score, String blind) {
     final int parsedScore = int.tryParse(score) ?? 0;
     final int parsedBlind = int.tryParse(blind) ?? 0;
+    int currrentScore = parsedBlind - parsedScore;
     final bool isReached = parsedScore >= parsedBlind;
 
     // If the score is higher or equal than the blind, display "Reached"
@@ -390,7 +393,7 @@ class SidebarState extends State<Sidebar> {
     }
     // Otherwise, animate the score counting up from 0 to the actual score
     return TweenAnimationBuilder<int>(
-      tween: IntTween(begin: 0, end: parsedScore),
+      tween: IntTween(begin: 0, end: currrentScore),
       duration: const Duration(milliseconds: 350),
       curve: Curves.easeOutExpo,
       builder: (context, value, child) {

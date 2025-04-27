@@ -1,4 +1,6 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/data/api/lobby_api.dart';
+import 'package:nogler/data/api/party_api.dart';
 import 'package:nogler/data/api/users_api.dart';
 import 'package:nogler/dialogs/friends_dialogs.dart';
 import 'package:nogler/dialogs/lobby_dialogs.dart';
@@ -46,11 +48,64 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// Method to load the user profile information
+  Future<void> _playAgainstIA() async {
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.fade,
+        child: const LoadingScreen(
+          loadingMessage: 'Getting your match against the AI ready...',
+        ),
+      ),
+    );
+    createLobby((String code) async {
+      // Store the code in secure storage
+      await joinLobby(code);
+      await const FlutterSecureStorage().write(key: 'code', value: code);
+      // Auto-connect when screen loads
+      await wsClient.initialize();
+      wsClient.addEventListener("lobby_info", (data) {
+        wsClient.sendMessage("start_game", code);
+      });
+      // Listen for game start event
+      wsClient.addEventListener("starting_next_blind", (data) async {
+        debugPrint("📡 Starting round: $data");
+        final timeout = data['timeout'] as int;
+        final baseBlind = data['base_blind'] as int;
+        Navigator.of(context).pushReplacement(
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: GameScreen(
+              round: 1,
+              hostName: _username,
+              hostAvatar: _avatar,
+              lobbyCode: code,
+              timeout: timeout,
+              phase: "blind",
+              baseBlind: baseBlind,
+              discardingCards: 3,
+              playingCards: 3,
+              handCards: [],
+              currentPoints: 0,
+              currentDeckSize: 0,
+              remainingCards: 0,
+              jokersOwned: [],
+              shopJokers: [],
+              gold: 0,
+              myBlind: 0,
+              maxRounds: 0,
+            ),
+          ),
+        );
+      });
+    }, '2'); // Create the lobby with the selected privacy
+  }
+
   // Method to check if the user is in a lobby and initialize WebSocket if true
   Future<void> _initLobbyStatus() async {
     final result = await checkIfInLobby();
     if (result["in_lobby"] == true) {
-      final wsClient = WebSocketClient();
       if (!mounted) return;
       Navigator.push(
         context,
@@ -72,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final playerData = data['player_data'] ?? {};
         final discardsLeft = playerData['discards_left'] ?? 0;
         final playsLeft = playerData['hand_plays_left'] ?? 0;
-        final currentPoints = playerData['current_points'] ?? 0;
+        final currentPoints = playerData['total_points'] ?? 0;
         final playedCards = playerData['played_cards'] ?? 0;
         final unplayedCards = playerData['unplayed_cards'] ?? 0;
 
@@ -192,7 +247,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   jokersOwned: jokersOwned,
                   shopJokers: shopJokers,
                   gold: data['player_data']['players_money'],
-                  myBlind : data['player_data']['actual_current_bet'],
+                  myBlind: data['player_data']['actual_current_bet'],
+                  maxRounds: data['max_rounds'],
                 ),
               ),
             );
@@ -276,7 +332,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     runSpacing: 16,
                     alignment: WrapAlignment.center, // Centers the buttons
                     children: [
-                      _buildMenuButton(context, 'VS AI', () async {}),
+                      _buildMenuButton(context, 'VS AI', () async {
+                        _playAgainstIA();
+                      }),
 
                       _buildMenuButton(context, 'JOIN', () {
                         Navigator.push(

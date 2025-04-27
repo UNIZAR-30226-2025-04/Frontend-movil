@@ -40,7 +40,7 @@ class ChooseBlindFaseWidgetState extends State<ChooseBlindFaseWidget> {
     }
     return Container(
       width: 400,
-      height: 200,
+      height: 196,
       decoration: BoxDecoration(
         color: Color.fromRGBO(44, 54, 86, 1),
         borderRadius: BorderRadius.circular(12),

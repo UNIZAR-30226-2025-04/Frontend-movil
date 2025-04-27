@@ -184,6 +184,7 @@ class _LobbyScreen extends State<LobbyScreen> {
             shopJokers: [],
             gold: 0,
             myBlind: 0,
+            maxRounds: 0
           ),
         ),
       );
@@ -293,8 +294,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                                       await updateVisibilityLobby(
                                         widget.lobbyCode,
                                         _publicPrivateButton == 'Public'
-                                            ? 'true'
-                                            : 'false',
+                                            ? '0'
+                                            : '1',
                                       );
                                     }
                                   },

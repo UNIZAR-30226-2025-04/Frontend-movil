@@ -37,11 +37,13 @@ class SelectedCardsState extends State<SelectedCards> {
     int score = 0;
     // After all cards are shown, animate them with a bounce effect
     for (int i = 0; i < newCards.length; i++) {
-      
+      final card = newCards[i];
+      if (score == 0) {
+        score += int.tryParse(card.blueScore) ?? 0;
+      }
       await Future.delayed(Duration(milliseconds: 200));
       if (!mounted) return;
 
-      final card = newCards[i];
       if (!card.isScored) continue; // Skip non-scoring cards
 
       setState(() {

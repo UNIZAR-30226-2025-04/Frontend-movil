@@ -148,7 +148,7 @@ class ShopWidgetState extends State<ShopWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: 400,
-      height: 250,
+      height: 244,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -253,7 +253,7 @@ class ShopWidgetState extends State<ShopWidget> {
             children: [
               Container(
                 width: 145,
-                height: 108,
+                height: 106,
                 decoration: BoxDecoration(
                   color: const Color(0xFF495a8f),
                   borderRadius: BorderRadius.circular(12),
@@ -280,7 +280,7 @@ class ShopWidgetState extends State<ShopWidget> {
               Expanded(
                 child: Container(
                   width: 145,
-                  height: 108,
+                  height: 106,
                   decoration: BoxDecoration(
                     color: const Color(0xFF495a8f),
                     borderRadius: BorderRadius.circular(12),
