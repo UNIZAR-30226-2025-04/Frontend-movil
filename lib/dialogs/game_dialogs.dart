@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/player_box_consumables.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:playing_cards/playing_cards.dart';
 
 /// Displays a dialog showing the types of hands in the game.
@@ -361,6 +363,7 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
   );
 }
 
+/// Display a dialog where you can select among the users on the lobby who to throw the consumable used
 Future<void> showUseConsumableDialog(
   BuildContext context,
   PurchasableItemInfo consumable,
@@ -507,6 +510,96 @@ Future<void> showUseConsumableDialog(
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+/// Dialog to display wheter you won or lost the game
+Future<void> useWinLoseDialog(BuildContext context, bool winner) async {
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return PopScope(
+        canPop: false,
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Color(0xFF2A2A3B),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // jokerHat image and background
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFFFFD700),
+                  ),
+                  padding: EdgeInsets.all(8),
+                  child: Image.asset('images/jokerHat.png', height: 60),
+                ),
+                SizedBox(height: 5),
+                // dependent text wheter you lose or win
+                Text(
+                  winner ? "YOU WIN!" : "YOU LOSE 😿",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 2,
+                  ),
+                ),
+                SizedBox(height: 5),
+                // Dont know what is this (why points?)
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF3C3C4F),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Text("Points", style: TextStyle(color: Colors.white70)),
+                      Text(
+                        "90000",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 5),
+                // Home button to return to home menu
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.fade,
+                        child: const HomeScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Text("Home", style: TextStyle(color: Colors.white70)),
                 ),
               ],
             ),
