@@ -85,14 +85,18 @@ class JokerState extends State<Joker> {
   }
 
   Widget _buildJokerCard({double height = 68}) {
+    final isJoker =
+        widget.purchasableItemInfo.type == "joker" ||
+        widget.purchasableItemInfo.type == "owned joker";
+
     return Container(
-      width: 57,
+      width: isJoker? 49 : 57,
       height: height,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.transparent),
+        borderRadius: isJoker ? BorderRadius.circular(5) : null,
+        border: isJoker ? Border.all(color: Colors.white70, width: 1) : null,
       ),
 
       child:
@@ -298,21 +302,28 @@ class JokerState extends State<Joker> {
     {
       // Clearance sale consumable
       'consumable': 'images/consumables/Clearance_Sale.png',
-      'consumableName': 'Clearance Sale',
-      'consumableDescription': 'Clearence sell:Next shop its 50% off!',
+      'consumableName': 'Evil Eye',
+      'consumableDescription':
+          'Evil Eye -1 to the multiplier of the target’s most-used hand type',
     },
     {
       // Death consumable
       'consumable': 'images/consumables/death.png',
-      'consumableName': 'Death',
-      'consumableDescription': '',
+      'consumableName': 'Lucky Glove',
+      'consumableDescription': 'Lucky Glove +15 Chips to all Flush hands',
     },
     {
       // Crystal ball consumable
       'consumable': 'images/consumables/Crystal_Ball.png',
-      'consumableName': 'Crystal Ball',
+      'consumableName': 'Hot Streak',
+      'consumableDescription': 'Hot Streak 2x Multiplier',
+    },
+    {
+      // Crystal ball consumable
+      'consumable': 'images/consumables/Crystal_Ball.png',
+      'consumableName': 'Coin Purse',
       'consumableDescription':
-          'Crystal Ball: 25% chance to replace a normal card with an ace next round',
+          'Coin Purse gains+2 Gold at the start of each round',
     },
   ];
 

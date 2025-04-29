@@ -45,25 +45,20 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
   ///   this function is called from "buy_widget"
   //TODO, comprobar dinero tambien del usuario
   Future<void> addConsumableOwned(
-    PurchasableItemInfo jokerInfo,
+    PurchasableItemInfo consumableInfo,
     bool isPackage,
   ) async {
     setState(() {
-      // Remove the bought consumable
-      widget.shopWidgetKey.currentState?.removeConsumable(
-        jokerInfo.index,
-        isPackage,
-      );
       // Add it to your owned list
-      final PurchasableItemInfo auxJokerInfo = PurchasableItemInfo(
-        price: jokerInfo.price,
-        id: jokerInfo.id,
+      final PurchasableItemInfo auxConsumableInfo = PurchasableItemInfo(
+        price: consumableInfo.price,
+        id: consumableInfo.id,
         index: -1, // Not used
         type: "owned consumable",
-        subtype: jokerInfo.subtype,
+        subtype: consumableInfo.subtype,
         cardName: "",
       );
-      _consumableOwned.add(auxJokerInfo);
+      _consumableOwned.add(auxConsumableInfo);
       debugPrint("Consumible añadido en la lista");
     });
   }
@@ -114,7 +109,7 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
             mainAxisAlignment: MainAxisAlignment.center,
             children:
                 _consumableOwned.isEmpty
-                    ? [SizedBox(height: 75)]
+                    ? [SizedBox(height: 68)]
                     : List.generate(_consumableOwned.length, (index) {
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
@@ -128,7 +123,7 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
                                 ?.onDraggedConsumable();
                             return;
                           },
-                          // Hide sell widget
+
                           onDroppedItem: () {
                             widget.consumableFaseWidgetKey.currentState
                                 ?.onDroppedConsumable();
@@ -231,7 +226,7 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
             mainAxisAlignment: MainAxisAlignment.center,
             children:
                 consumableUsed.isEmpty
-                    ? [SizedBox(height: 75)]
+                    ? [SizedBox(height: 68)]
                     : List.generate(consumableUsed.length, (index) {
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 300),

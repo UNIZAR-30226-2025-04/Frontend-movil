@@ -161,6 +161,12 @@ class _LobbyScreen extends State<LobbyScreen> {
     wsClient.addEventListener("starting_next_blind", (data) async {
       debugPrint("📡 Starting round: $data");
       final timeout = data['timeout'] as int;
+      final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
+      final now = DateTime.now();
+      debugPrint("timeoutStart: $timeoutStart, now: $now");
+      debugPrint("Difference: ${timeoutStart.difference(now)}");
+      // Calculate how many seconds are left from now until that date
+      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
       final baseBlind = data['base_blind'] as int;
       //final round = data['round_number'] as int;
       Navigator.of(context).pushReplacement(
@@ -171,7 +177,7 @@ class _LobbyScreen extends State<LobbyScreen> {
             hostName: widget.hostName,
             hostAvatar: widget.hostAvatar,
             lobbyCode: widget.lobbyCode,
-            timeout: timeout,
+            timeout: timeUntilTimeout,
             phase: "blind",
             baseBlind: baseBlind,
             discardingCards: 3,
@@ -184,7 +190,10 @@ class _LobbyScreen extends State<LobbyScreen> {
             shopJokers: [],
             gold: 0,
             myBlind: 0,
-            maxRounds: 0
+            maxRounds: 0,
+            consumablesOwned: [],
+            shopConsumables: [],
+            consumablesUsed: [],
           ),
         ),
       );

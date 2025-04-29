@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
@@ -43,7 +44,7 @@ class ConsumableFaseWidget extends StatefulWidget {
 
 class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
   bool useConsumableWidgetVisible = false;
-
+  final WebSocketClient wsClient = WebSocketClient();
   Future<void> onDraggedConsumable() async {
     setState(() {
       useConsumableWidgetVisible = true;
@@ -97,7 +98,9 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
         // Space between
         SizedBox(height: 5),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            wsClient.sendMessage("continue_to_next_blind", {});
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFd41976),
             foregroundColor: Colors.white,

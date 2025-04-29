@@ -44,6 +44,9 @@ class GameScreen extends StatefulWidget {
     required this.gold,
     required this.myBlind,
     required this.maxRounds,
+    required this.consumablesOwned,
+    required this.shopConsumables,
+    required this.consumablesUsed,
   });
   final int round;
   final String hostName;
@@ -63,6 +66,9 @@ class GameScreen extends StatefulWidget {
   final int gold;
   final int myBlind;
   final int maxRounds;
+  final List<PurchasableItemInfo> consumablesOwned;
+  final List<PurchasableItemInfo> shopConsumables;
+  final List<PurchasableItemInfo> consumablesUsed;
 
   @override
   GameScreenState createState() => GameScreenState();
@@ -132,16 +138,19 @@ class GameScreenState extends State<GameScreen> {
   int _minBlind = 0;
   int _round = 0;
   int _maxRounds = 0;
+  List<SelectableCard> _playedCards = [];
   List<PurchasableItemInfo> _shopJokers = [];
-  //List<PurchasableItemInfo> _shopConsumables = [];
+  List<PurchasableItemInfo> _shopConsumables = [];
   //List<PurchasableItemInfo> _shopPackages = [];
   @override
   void initState() {
     super.initState();
+    consumablesOwned = widget.consumablesOwned;
+    consumablesUsed = widget.consumablesUsed;
     _maxRounds = widget.maxRounds;
     _jokersOwned = widget.jokersOwned;
     _handCards = widget.handCards;
-    _blind = widget.myBlind;
+    _blind = widget.baseBlind;
     _minBlind = widget.baseBlind;
     _myBlind = widget.myBlind;
     _currentDeckSize = widget.currentDeckSize;
@@ -187,9 +196,18 @@ class GameScreenState extends State<GameScreen> {
       });
     });
     // Listen for starting shop phase
-    wsClient.addEventListener("starting_shop", (data) {
+    wsClient.addEventListener("starting_shop", (data) async {
       debugPrint("🏪 Received starting shop phase: $data");
+      final time = _playedCards.where((card) => card.isScored).length + 1;
+      await Future.delayed(Duration(seconds: time));
 
+      final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
+      final now = DateTime.now();
+      final timeout = data['timeout'];
+      debugPrint("timeoutStart: $timeoutStart, now: $now");
+      debugPrint("Difference: ${timeoutStart.difference(now)}");
+      // Calculate how many seconds are left from now until that date
+      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
       setState(() {
         // Switch to the shop phase
         _animateShowShopFaseWidgets = true;
@@ -200,12 +218,12 @@ class GameScreenState extends State<GameScreen> {
         _showGameFaseWidget = false;
 
         _currentFase = "shopFase";
-        _timeout = data['timeout'];
+        _timeout = timeUntilTimeout;
         _gold = data['money'];
 
         // Parse the shop items from the response
         _shopJokers = [];
-        //_shopConsumables = [];
+        _shopConsumables = [];
         //_shopPackages = [];
 
         // Extracting jokers from the event data
@@ -224,39 +242,51 @@ class GameScreenState extends State<GameScreen> {
           }
         }
 
-        /*// Extracting packs from the event data
-    if (data['shop']['fixed_packs'] != null) {
-      for (var pack in data['shop']['fixed_packs']) {
-        _shopPackages.add(PurchasableItemInfo(
-          price: pack['price'],
-          id: pack['id'],
-          index: 0, // Assuming index is not available in the event data
-          type: pack['type'],
-          subtype: 0, // Assuming subtype is not available in the event data
-          cardName: "Pack ${pack['id']}", // Default naming, can be updated
-        ));
-      }
-    }
+        // Extracting packs from the event data
+        /*if (data['shop']['fixed_packs'] != null) {
+          for (var pack in data['shop']['fixed_packs']) {
+            _shopPackages.add(
+              PurchasableItemInfo(
+                price: pack['price'],
+                id: pack['id'],
+                index: 0, // Assuming index is not available in the event data
+                type: pack['type'],
+                subtype:
+                    0, // Assuming subtype is not available in the event data
+                cardName:
+                    "Pack ${pack['id']}", // Default naming, can be updated
+              ),
+            );
+          }
+        }*/
 
-    // Extracting consumables from the event data if necessary
-    // Assuming there are consumables in the event data (it wasn't in the sample response)
-    if (data['shop']['fixed_modifiers'] != null) {
-      for (var modifier in data['shop']['fixed_modifiers']) {
-        _shopConsumables.add(PurchasableItemInfo(
-          price: modifier['price'],
-          id: modifier['id'],
-          index: 0, // Assuming index is not available in the event data
-          type: modifier['type'],
-          subtype: modifier['modifier_id'],
-          cardName: "Modifier ${modifier['id']}", // Default naming, can be updated
-        ));
-      }
-    }*/
+        // Extracting consumables from the event data if necessary
+        // Assuming there are consumables in the event data (it wasn't in the sample response)
+        if (data['shop']['fixed_modifiers'] != null) {
+          for (var modifier in data['shop']['fixed_modifiers']) {
+            _shopConsumables.add(
+              PurchasableItemInfo(
+                price: modifier['price'],
+                id: modifier['id'],
+                index: 0, // Assuming index is not available in the event data
+                type: "consumable",
+                subtype: modifier['modifier_id'],
+                cardName: '',
+              ),
+            );
+          }
+        }
       });
     });
     wsClient.addEventListener("starting_vouchers", (data) {
       debugPrint("🎴 Received starting voucher phase: $data");
-      final newTimeout = data['timeout'] as int;
+      final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
+      final now = DateTime.now();
+      final timeout = data['timeout'];
+      debugPrint("timeoutStart: $timeoutStart, now: $now");
+      debugPrint("Difference: ${timeoutStart.difference(now)}");
+      // Calculate how many seconds are left from now until that date
+      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
       setState(() {
         // Switch to the voucher phase
         _animateShowConsumableFaseWidget = true;
@@ -267,13 +297,19 @@ class GameScreenState extends State<GameScreen> {
         _showShopFaseWidget = false;
 
         _currentFase = "consumableFase";
-        _timeout = newTimeout;
+        _timeout = timeUntilTimeout;
       });
     });
     // Listen for round start event
     wsClient.addEventListener("starting_round", (data) async {
       debugPrint("📡 Starting round: $data");
-      final newTimeout = data['timeout'] as int;
+      final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
+      final now = DateTime.now();
+      final timeout = data['timeout'];
+      debugPrint("timeoutStart: $timeoutStart, now: $now");
+      debugPrint("Difference: ${timeoutStart.difference(now)}");
+      // Calculate how many seconds are left from now until that date
+      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
       final deckSize = data['current_deck_size'] as int;
       final currentPot = data['current_pot'] as int;
       final round = data['round_number'] as int;
@@ -284,7 +320,7 @@ class GameScreenState extends State<GameScreen> {
         _animateShowGameFaseWidgets = !_animateShowGameFaseWidgets;
         _animateShowChooseBlindFaseWidget = !_animateShowChooseBlindFaseWidget;
         _currentFase = "gameFase";
-        _timeout = newTimeout;
+        _timeout = timeUntilTimeout;
         _currentDeckSize = deckSize;
         _currentPot = currentPot;
         _round = round;
@@ -311,18 +347,22 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("📡 Next round: $data");
       final timeout = data['timeout'] as int;
       final baseBlind = data['base_blind'] as int;
-      final newTimeout = data['timeout'];
+      final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
+      final now = DateTime.now();
+      debugPrint("timeoutStart: $timeoutStart, now: $now");
+      debugPrint("Difference: ${timeoutStart.difference(now)}");
+      // Calculate how many seconds are left from now until that date
+      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
       setState(() {
         // Switch to the game phase
         _animateShowChooseBlindFaseWidget = true;
         _showChooseBlindFaseWidget = true;
         _currentFase = "chooseBlindFase";
-        _timeout = newTimeout;
 
         // Hide the shop phase
         _animateShowConsumableFaseWidget = false;
         _showConsumableFaseWidget = false;
-        _timeout = timeout;
+        _timeout = timeUntilTimeout;
 
         _blind = baseBlind;
         _minBlind = baseBlind;
@@ -601,6 +641,7 @@ class GameScreenState extends State<GameScreen> {
                                   });
                                 },
                                 onPlayCards: (playedCards) {
+                                  _playedCards = playedCards;
                                   _selectedCardsKey.currentState?.showCards(
                                     playedCards,
                                   );
@@ -715,6 +756,7 @@ class GameScreenState extends State<GameScreen> {
                                 },
                                 shopJokers: _shopJokers,
                                 gold: _gold,
+                                shopConsumables: _shopConsumables,
                               ),
                             ),
                           )
@@ -774,7 +816,7 @@ class GameScreenState extends State<GameScreen> {
                 right: 20,
                 child: Row(
                   children: [
-                    TimerWidget(timeout: _timeout - 1),
+                    TimerWidget(timeout: _timeout),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(

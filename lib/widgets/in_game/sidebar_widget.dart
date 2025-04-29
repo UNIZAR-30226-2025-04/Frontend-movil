@@ -40,7 +40,7 @@ class Sidebar extends StatefulWidget {
     required this.gold,
     required this.currentPot,
     required this.blind,
-    required this.maxRounds
+    required this.maxRounds,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -367,10 +367,13 @@ class SidebarState extends State<Sidebar> {
 
   /// Builds the animated round score counter with a styled container
   Widget _buildAnimatedScore(String score, String blind) {
-    final int parsedScore = int.tryParse(score) ?? 0;
-    final int parsedBlind = int.tryParse(blind) ?? 0;
+    int parsedScore = int.tryParse(score) ?? 0;
+    int parsedBlind = int.tryParse(blind) ?? 0;
     int currrentScore = parsedBlind - parsedScore;
-    final bool isReached = parsedScore >= parsedBlind;
+    bool isReached = false;
+    if (parsedScore > 0) {
+      isReached = parsedScore >= parsedBlind;
+    }
 
     // If the score is higher or equal than the blind, display "Reached"
     if (isReached) {

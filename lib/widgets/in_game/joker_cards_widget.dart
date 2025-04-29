@@ -100,7 +100,7 @@ class JokerCardsState extends State<JokerCards> {
           mainAxisAlignment: MainAxisAlignment.center,
           children:
               jokersOwned.isEmpty
-                  ? [SizedBox(height: 75)]
+                  ? [SizedBox(height: 68)]
                   : List.generate(jokersOwned.length, (index) {
                     return DragTarget<PurchasableItemInfo>(
                       // Update the list as we move the joker in it
