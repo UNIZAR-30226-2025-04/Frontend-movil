@@ -71,8 +71,15 @@ class _HomeScreenState extends State<HomeScreen> {
       // Listen for game start event
       wsClient.addEventListener("starting_next_blind", (data) async {
         debugPrint("📡 Starting round: $data");
-        final timeout = data['timeout'] as int;
         final baseBlind = data['base_blind'] as int;
+        final timeoutStart =
+            DateTime.parse(data['timeout_start_date']).toLocal();
+        final now = DateTime.now();
+        final timeout = data['timeout'] as int;
+        debugPrint("timeoutStart: $timeoutStart, now: $now");
+        debugPrint("Difference: ${timeoutStart.difference(now)}");
+        // Calculate how many seconds are left from now until that date
+        final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
         Navigator.of(context).pushReplacement(
           PageTransition(
             type: PageTransitionType.fade,
@@ -81,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
               hostName: _username,
               hostAvatar: _avatar,
               lobbyCode: code,
-              timeout: timeout,
+              timeout: timeUntilTimeout,
               phase: "blind",
               baseBlind: baseBlind,
               discardingCards: 3,
@@ -95,6 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
               gold: 0,
               myBlind: 0,
               maxRounds: 0,
+              consumablesOwned: [],
+              shopConsumables: [],
+              consumablesUsed: [],
             ),
           ),
         );
@@ -151,12 +161,14 @@ class _HomeScreenState extends State<HomeScreen> {
           if (context.mounted) {
             List<PurchasableItemInfo> jokersOwned = [];
             List<PurchasableItemInfo> shopJokers = [];
+            List<PurchasableItemInfo> consumablesOwned = [];
+            List<PurchasableItemInfo> shopConsumables = [];
+            List<PurchasableItemInfo> consumablesUsed = [];
             if (data['phase'] == 'shop') {
               // Parse owned jokers with correct id from shop items
               final rerollableItems =
                   data['shop_items']['rerollable_items'] as List<dynamic>? ??
                   [];
-
               jokersOwned =
                   (data['player_data']['current_jokers'] as List<dynamic>?)?.map((
                     jokerData,
@@ -175,8 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               : -1,
                       index: -1,
                       type: "owned joker",
-                      subtype:
-                          jokerData['id'], // subtype sigue siendo el id original
+                      subtype: jokerData['id'],
                       cardName: '',
                     );
                   }).toList() ??
@@ -199,8 +210,60 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Filter: remove from shopJokers the jokers already owned
               shopJokers.removeWhere(
-                (shopJoker) => jokersOwned.any(
-                  (ownedJoker) => ownedJoker.id == shopJoker.id,
+                (shopConsumable) => jokersOwned.any(
+                  (ownedJoker) => ownedJoker.id == shopConsumable.id,
+                ),
+              );
+
+              // Parse owned consumables with correct id from shop items
+              final fixedModifiers =
+                  data['shop_items']['fixed_modifiers'] as List<dynamic>? ?? [];
+              consumablesOwned =
+                  (data['player_data']['vouchers']?['Modificadores']
+                          as List<dynamic>?)
+                      ?.map((consumableData) {
+                        // Find the matching joker in fixed_modifiers where 'modifier_id' matches the modifiers's 'value'
+                        final matchingShopJoker = fixedModifiers.firstWhere(
+                          (shopConsumable) =>
+                              shopConsumable['modifier_id'] ==
+                              consumableData['value'],
+                          orElse: () => null,
+                        );
+
+                        return PurchasableItemInfo(
+                          price: 0,
+                          id:
+                              matchingShopJoker != null
+                                  ? matchingShopJoker['id']
+                                  : -1,
+                          index: -1,
+                          type: "owned consumable",
+                          subtype: consumableData['value'],
+                          cardName: '',
+                        );
+                      })
+                      .toList() ??
+                  [];
+
+              // Parse the shop jokers from rerollable_items
+
+              for (var consumable in data['shop_items']['fixed_modifiers']) {
+                shopConsumables.add(
+                  PurchasableItemInfo(
+                    price: consumable['price'],
+                    id: consumable['id'],
+                    index: 0,
+                    type: consumable['type'],
+                    subtype: consumable['modifier_id'],
+                    cardName: '',
+                  ),
+                );
+              }
+
+              // Filter: remove from shopJokers the jokers already owned
+              shopConsumables.removeWhere(
+                (shopConsumable) => consumablesOwned.any(
+                  (ownedConsumable) => ownedConsumable.id == shopConsumable.id,
                 ),
               );
             } else {
@@ -219,7 +282,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }).toList() ??
                   [];
+              consumablesOwned =
+                  (data['player_data']['vouchers']?['Modificadores']
+                          as List<dynamic>?)
+                      ?.map((consumableData) {
+                        return PurchasableItemInfo(
+                          price: 0,
+                          id: 0,
+                          index: -1,
+                          type: "owned consumable",
+                          subtype: consumableData['value'],
+                          cardName: '',
+                        );
+                      })
+                      .toList() ??
+                  [];
             }
+            consumablesUsed =
+                (data['player_data']['active_vouchers']?['Modificadores']
+                        as List<dynamic>?)
+                    ?.map((consumableData) {
+                      return PurchasableItemInfo(
+                        price: 0,
+                        id: 0,
+                        index: -1,
+                        type: "owned consumable",
+                        subtype: consumableData['value'],
+                        cardName: '',
+                      );
+                    })
+                    .toList() ??
+                [];
             final handCards =
                 parsedList.map((cardData) {
                   final card = MainCardsState().createCardFromServerData(
@@ -227,6 +320,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                   return card;
                 }).toList();
+            final timeoutStart = DateTime.parse(data['timeout']).toLocal();
+            final now = DateTime.now();
+            debugPrint("timeoutStart: $timeoutStart, now: $now");
+            debugPrint("Difference: ${timeoutStart.difference(now)}");
+            // Calculate how many seconds are left from now until that date
+            final timeUntilTimeout = now.difference(timeoutStart).inSeconds;
             Navigator.of(context).pushReplacement(
               PageTransition(
                 type: PageTransitionType.fade,
@@ -235,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   hostName: _username,
                   hostAvatar: _avatar,
                   lobbyCode: result["lobby_id"],
-                  timeout: 20,
+                  timeout: timeUntilTimeout,
                   phase: data['phase'],
                   baseBlind: data['current_base_blind'] ?? 0,
                   discardingCards: discardsLeft,
@@ -249,6 +348,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   gold: data['player_data']['players_money'],
                   myBlind: data['player_data']['actual_current_bet'],
                   maxRounds: data['max_rounds'],
+                  shopConsumables: shopConsumables,
+                  consumablesOwned: consumablesOwned,
+                  consumablesUsed: consumablesUsed,
                 ),
               ),
             );

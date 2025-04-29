@@ -15,6 +15,7 @@ class ShopWidget extends StatefulWidget {
     required this.onDroppedItem,
     required this.onReroll,
     required this.shopJokers,
+    required this.shopConsumables,
   });
 
   final GlobalKey<BuyWidgetState> buyWidgetKey;
@@ -23,7 +24,7 @@ class ShopWidget extends StatefulWidget {
   final Future<void>? Function() onDroppedItem;
   final Function(int)? onReroll;
   final List<PurchasableItemInfo> shopJokers;
-
+  final List<PurchasableItemInfo> shopConsumables;
   @override
   State<ShopWidget> createState() => ShopWidgetState();
 }
@@ -32,22 +33,6 @@ class ShopWidgetState extends State<ShopWidget> {
   List<PurchasableItemInfo> shopJokers = [];
   List<PurchasableItemInfo> shopConsumables = [];
   List<PurchasableItemInfo> shopPackages = [];
-
-  // Function used to generate random consumables when we enter shop fase
-  void _generateRandomConsumable() {
-    final random = Random();
-    shopConsumables = List.generate(2, (int index) {
-      final randomSubtype = random.nextInt(3) + 1;
-      return PurchasableItemInfo(
-        price: random.nextInt(10),
-        id: index,
-        index: -1,
-        type: "consumable",
-        subtype: randomSubtype,
-        cardName: "",
-      );
-    });
-  }
 
   // Function used to generate random packages when we enter shop fase
   void _generateRandomPackage() {
@@ -83,8 +68,7 @@ class ShopWidgetState extends State<ShopWidget> {
         shopJokers.removeAt(index);
         debugPrint("Eliminado joker tienda en indice $index");
       });
-    }
-    else{
+    } else {
       debugPrint("No eliminado joker tienda en indice $index");
     }
   }
@@ -109,39 +93,8 @@ class ShopWidgetState extends State<ShopWidget> {
   void initState() {
     super.initState();
     shopJokers = widget.shopJokers;
-    _generateRandomConsumable();
+    shopConsumables = widget.shopConsumables;
     _generateRandomPackage();
-    /*wsClient.addEventListener("joker_purchased", (data) {
-      debugPrint("🃏 Received raw data: $data");
-      /*final itemId = data['item_id'];
-      final jokerId = data['joker_id'];
-      final sellPrice = data['sell_price'];
-      final remainingMoney = data['remaining_money'];
-
-      debugPrint("[Event] Received 'joker_purchased':");
-      debugPrint("  itemId (${itemId.runtimeType}): $itemId");
-      debugPrint("  jokerId (${jokerId.runtimeType}): $jokerId");
-      debugPrint("  sellPrice (${sellPrice.runtimeType}): $sellPrice");
-      debugPrint(
-        "  remainingMoney (${remainingMoney.runtimeType}): $remainingMoney",
-      );
-
-      // Create the new PurchasableItemInfo
-      /*PurchasableItemInfo purchasedJoker = PurchasableItemInfo(
-        price: sellPrice,
-        id: itemId,
-        index: -1,
-        type: "owned joker",
-        subtype: jokerId,
-        cardName: "",
-      );*/
-
-      debugPrint("[Action] Adding purchased Joker to the collection");
-      //widget.jokerCardsKey.currentState?.addJokerOwned(purchasedJoker, false);
-
-      debugPrint("[Action] Calling onBuy callback with remaining money");
-      //widget.onBuy?.call(remainingMoney);*/
-    });*/
   }
 
   @override
@@ -168,7 +121,9 @@ class ShopWidgetState extends State<ShopWidget> {
                   children: [
                     // Next Round button
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        wsClient.sendMessage("continue_to_vouchers", {});
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFd41976),
                         foregroundColor: Colors.white,

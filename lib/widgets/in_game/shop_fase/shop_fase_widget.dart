@@ -20,6 +20,7 @@ class ShopFaseWidget extends StatefulWidget {
     required this.onReroll,
     required this.shopJokers,
     required this.gold,
+    required this.shopConsumables,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -32,6 +33,7 @@ class ShopFaseWidget extends StatefulWidget {
   final Function(int)? onReroll;
   final List<PurchasableItemInfo> shopJokers;
   final int gold;
+  final List<PurchasableItemInfo> shopConsumables;
 
   @override
   State<ShopFaseWidget> createState() => ShopFaseWidgetState();
@@ -73,6 +75,29 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
 
       widget.onBuy?.call(remainingMoney);
     });
+
+    // Listerner for a bought voucher
+    wsClient.addEventListener("voucher_purchased", (data) {
+      int itemId = data["item_id"];
+      int voucherId = data["voucher_id"];
+      int remainingMoney = data["remaining_money"];
+      PurchasableItemInfo purchasedJoker = PurchasableItemInfo(
+        price: 0,
+        id: itemId,
+        index: -1,
+        type: "owned consumable",
+        subtype: voucherId,
+        cardName: "",
+      );
+
+      widget.consumableCardsKey.currentState?.addConsumableOwned(
+        purchasedJoker,
+        false,
+      );
+
+      widget.onBuy?.call(remainingMoney);
+    });
+
     // Listerner for a sold joker
     wsClient.addEventListener("joker_sold", (data) {
       int remainingMoney = data["remaining_money"];
@@ -110,6 +135,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
           onDroppedItem: onDroppedItem,
           onReroll: widget.onReroll,
           shopJokers: widget.shopJokers,
+          shopConsumables: widget.shopConsumables
         ),
         Visibility(
           visible: buyWidgetVisible,

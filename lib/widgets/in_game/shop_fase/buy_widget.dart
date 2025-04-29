@@ -214,7 +214,8 @@ class BuyWidgetState extends State<BuyWidget> {
         ) async {
           switch (dragged.data.type) {
             case "joker":
-              if (widget.gold >= dragged.data.price && widget.jokerCardsKey.currentState!.jokersOwned.length < 5) {
+              if (widget.gold >= dragged.data.price &&
+                  widget.jokerCardsKey.currentState!.jokersOwned.length < 5) {
                 wsClient.sendMessage("buy_joker", {
                   dragged.data.id,
                   dragged.data.price,
@@ -226,8 +227,12 @@ class BuyWidgetState extends State<BuyWidget> {
               }
               break;
             case "consumable":
-              widget.consumableCardsKey.currentState?.addConsumableOwned(
-                dragged.data,
+              wsClient.sendMessage("buy_voucher", {
+                dragged.data.id,
+                dragged.data.price,
+              });
+              widget.shopWidgetKey.currentState?.removeConsumable(
+                dragged.data.index,
                 false,
               );
               widget.onBuy?.call(dragged.data.price);
