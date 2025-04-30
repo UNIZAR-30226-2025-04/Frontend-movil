@@ -86,6 +86,16 @@ class JokerCardsState extends State<JokerCards> {
   void initState() {
     super.initState();
     jokersOwned = widget.jokersOwned;
+    jokersOwned.add(
+      PurchasableItemInfo(
+        price: 10,
+        id: 14,
+        index: -1,
+        type: "owned joker",
+        subtype: 14,
+        cardName: "",
+      ),
+    );
     _updateIndex();
   }
 

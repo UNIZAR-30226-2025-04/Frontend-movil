@@ -32,6 +32,22 @@ class SelectableCard {
 Widget buildCard(SelectableCard selectable) {
   return Stack(
     children: [
+      // Shadow effect
+      Container(
+        height: 82,
+        width: 53,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black,
+              offset: Offset(9, 9), // Position of the shadow
+              blurRadius: 7, // Blur of the image
+              spreadRadius: 1, // Size of the shadow
+            ),
+          ],
+        ),
+      ),
       PlayingCardView(card: selectable.card, showBack: false),
       // Overlay of the card
       if (cardOverlay[selectable.overlay]['overlay']! != "no overlay")

@@ -84,12 +84,6 @@ class UseConsumableWidgetState extends State<UseConsumableWidget> {
                   },
                 );
               }
-              /*
-              // Delete consumable from the owned consumables list
-              widget.consumableCardsKey.currentState?.removeConsumableOwned(
-                dragged.data,
-              );
-              */
               break;
           }
         },
