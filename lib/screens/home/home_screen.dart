@@ -79,7 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
         debugPrint("timeoutStart: $timeoutStart, now: $now");
         debugPrint("Difference: ${timeoutStart.difference(now)}");
         // Calculate how many seconds are left from now until that date
-        final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
+        final timeUntilTimeout =
+            timeout - now.difference(timeoutStart).inSeconds;
         Navigator.of(context).pushReplacement(
           PageTransition(
             type: PageTransitionType.fade,
@@ -111,6 +112,14 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }, '2'); // Create the lobby with the selected privacy
   }
+
+  // Map defining timeouts for each game phase
+  Map<String, int> gameTimeouts = {
+    "blind": 20,
+    "play_round": 120,
+    "shop": 60,
+    "vouchers": 30,
+  };
 
   // Method to check if the user is in a lobby and initialize WebSocket if true
   Future<void> _initLobbyStatus() async {
@@ -324,8 +333,11 @@ class _HomeScreenState extends State<HomeScreen> {
             final now = DateTime.now();
             debugPrint("timeoutStart: $timeoutStart, now: $now");
             debugPrint("Difference: ${timeoutStart.difference(now)}");
+            
             // Calculate how many seconds are left from now until that date
-            final timeUntilTimeout = now.difference(timeoutStart).inSeconds;
+            final timeUntilTimeout =
+                (gameTimeouts[data['phase']] ?? 0) -
+                now.difference(timeoutStart).inSeconds;
             Navigator.of(context).pushReplacement(
               PageTransition(
                 type: PageTransitionType.fade,
