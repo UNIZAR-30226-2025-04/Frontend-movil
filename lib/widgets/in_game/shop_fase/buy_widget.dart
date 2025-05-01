@@ -227,15 +227,17 @@ class BuyWidgetState extends State<BuyWidget> {
               }
               break;
             case "consumable":
-              wsClient.sendMessage("buy_voucher", {
-                dragged.data.id,
-                dragged.data.price,
-              });
-              widget.shopWidgetKey.currentState?.removeConsumable(
-                dragged.data.index,
-                false,
-              );
-              widget.onBuy?.call(dragged.data.price);
+              if (widget.gold >= dragged.data.price) {
+                wsClient.sendMessage("buy_voucher", {
+                  dragged.data.id,
+                  dragged.data.price,
+                });
+                widget.shopWidgetKey.currentState?.removeConsumable(
+                  dragged.data.index,
+                  false,
+                );
+                widget.onBuy?.call(dragged.data.price);
+              }
               break;
             case "package":
               // Create a list of items for the package

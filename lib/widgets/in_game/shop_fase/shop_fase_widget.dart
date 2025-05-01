@@ -21,6 +21,7 @@ class ShopFaseWidget extends StatefulWidget {
     required this.shopJokers,
     required this.gold,
     required this.shopConsumables,
+    required this.shopPackages,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -34,6 +35,7 @@ class ShopFaseWidget extends StatefulWidget {
   final List<PurchasableItemInfo> shopJokers;
   final int gold;
   final List<PurchasableItemInfo> shopConsumables;
+  final List<PurchasableItemInfo> shopPackages;
 
   @override
   State<ShopFaseWidget> createState() => ShopFaseWidgetState();
@@ -135,7 +137,8 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
           onDroppedItem: onDroppedItem,
           onReroll: widget.onReroll,
           shopJokers: widget.shopJokers,
-          shopConsumables: widget.shopConsumables
+          shopConsumables: widget.shopConsumables,
+          shopPackages: widget.shopPackages,
         ),
         Visibility(
           visible: buyWidgetVisible,

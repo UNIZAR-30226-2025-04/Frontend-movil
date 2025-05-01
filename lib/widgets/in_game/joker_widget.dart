@@ -358,7 +358,7 @@ class JokerState extends State<Joker> {
       // 1. Solid Seven joker
       'joker': 'images/jokers/solid_seven.png',
       'jokerName': 'Solid Seven',
-      'jokerDescription': 'Solid Seven +7 tokens +7 multi',
+      'jokerDescription': 'Solid Seven +7 chips +7 mult',
     },
     {
       // 2. Poor joker
@@ -367,17 +367,17 @@ class JokerState extends State<Joker> {
       'jokerDescription': 'Poor joker generates 4 gold each round',
     },
     {
-      // 3. Botardo joker
-      'joker': 'images/jokers/poor_joker.png',
-      'jokerName': 'Botardo joker',
-      'jokerDescription': 'Botardo joker',
+      // 3. Petpet joker
+      'joker': 'images/jokers/petpet.png',
+      'jokerName': 'Petpet',
+      'jokerDescription': 'Petpet sums the number of gold the user has to mult',
     },
     {
       // 4. Average size Michael joker
       'joker': 'images/jokers/AVERAGE_SIZE_MICHAEL.png',
       'jokerName': 'Average Size Michael',
       'jokerDescription':
-          'Average size Michael +13 mult.1/13 chance of being sold each round. Glass:This is a tooltip For the glass overlay',
+          'Average size Michael +15 mult, 1/15 chance of being sold each round',
     },
     {
       // 5. Hell Cowboy joker
@@ -391,112 +391,107 @@ class JokerState extends State<Joker> {
       'joker': 'images/jokers/bob_spider.png',
       'jokerName': 'Crab Sponge',
       'jokerDescription':
-          'Crab Sponge adds +mult equivalent to the highest scoring card',
+          'Crab Sponge +50 chips if you have 3 identical cards in your played hand',
     },
     {
-      // 7. Photograph joker
+      // 7. Two Friends joker
+      'joker': 'images/jokers/2_friends.png',
+      'jokerName': 'Two Friends',
+      'jokerDescription':
+          'Two Friends takes 10 of your +chips and changes them to +mult. But if your chips < 10, doesnt subtract from chips, just add 10-chips to mult',
+    },
+    {
+      // 8. BIRDIFICACION joker
+      'joker': 'images/jokers/birdification.png',
+      'jokerName': 'BIRDIFICACION',
+      'jokerDescription': 'BIRDIFICACION +50 chips for each 1,4,6,7',
+    },
+    {
+      // 9. Photograph joker
       'joker': 'images/jokers/PHOTOGRAPH.png',
       'jokerName': 'Photograph',
       'jokerDescription': 'Photograph x2 multiplies the first figure you play',
     },
     {
-      // 8. Petpet joker
-      'joker': 'images/jokers/petpet.png',
-      'jokerName': 'Petpet',
-      'jokerDescription': 'Petpet sums the number of gold the user has to mul',
-    },
-    {
-      // 9. Empty joker
+      // 10. Empty joker
       'joker': 'images/jokers/empty_joker.png',
       'jokerName': 'Empty',
       'jokerDescription':
-          'Empty 1/50 of adding 200 to the multiplier and 25 to the chips',
-    },
-    {
-      // 10. Two Friends joker
-      'joker': 'images/jokers/2_friends.png',
-      'jokerName': 'Two Friends',
-      'jokerDescription':
-          'Two Friends takes 10 of your +fichas and changes them to +mult. BUT if your fichas < 10, doesnt subtract from fichas, just add 10-fichas to mult',
+          'Empty 1/50 of adding 200 to the mult and 25 to the chips',
     },
     {
       // 11. Lirili Larila
       'joker': 'images/jokers/lirili_larila.png',
       'jokerName': 'Lirili Larila',
       'jokerDescription':
-          'Lirili Larila +2 to to mult for each played / scoring 2 then x2 mult',
+          'Lirili Larila +2 to mult for each played / scoring 2 then x2 mult',
     },
     {
-      // 12. BIRDIFICACION joker
-      'joker': 'images/jokers/birdification.png',
-      'jokerName': 'BIRDIFICACION',
-      'jokerDescription': 'BIRDIFICACION +50 chips for each 1,4,6,7',
-    },
-    {
-      // 13. Rusty ahh joker
+      // 12. Rusty ahh joker
       'joker': 'images/jokers/rusty_ahh_joker.png',
       'jokerName': 'Rusty ahh joker',
-      'jokerDescription': 'Rusty ahh joker',
+      'jokerDescription':
+          'Rusty ahh joker gold won before this joker applies = 0 but 2x mult',
     },
     {
-      // 14. Damn April joker
+      // 13. Damn April joker
       'joker': 'images/jokers/damn_april.jpg',
       'jokerName': 'Damn April',
-      'jokerDescription': 'Damn April each played 4 does sm',
+      'jokerDescription':
+          'Damn April randomizes chips and multipliers but guarantees at least +14 total',
     },
     {
-      // 15. Its so over joker
-      'joker': 'images/jokers/its_so_over.png',
-      'jokerName': 'Its so over',
-      'jokerDescription': 'Its so over',
+      // 14. Crowave joker
+      'joker': 'images/jokers/crowave.png',
+      'jokerName': 'Crowave',
+      'jokerDescription':
+          'Crowave grants +3 to the multiplier for each red card with a 90% probability. 10% of the time, grants +5 chips per red card',
     },
     {
-      // 16. Paris joker
-      'joker': 'images/jokers/paris.png',
-      'jokerName': 'Paris',
-      'jokerDescription': 'Paris',
+      // 15. Bicycle joker
+      'joker': 'images/jokers/bicicleta.png',
+      'jokerName': 'Bicycle',
+      'jokerDescription': 'Bicycle every 2 gives +2 mult and +20 chips',
+    },
+    {
+      // 16. Balatrito comes out joker
+      'joker': 'images/jokers/salebalatrito.png',
+      'jokerName': 'Balatrito comes out',
+      'jokerDescription': 'Balatrito comes out +50 chips if trio',
     },
     {
       // 17. Diego joker
       'joker': 'images/jokers/diego_joker.png',
       'jokerName': 'Diego',
-      'jokerDescription': 'Diego',
+      'jokerDescription':
+          'Diego if you play exactly 3 cards, multiply your multiplier x4',
     },
     {
-      // 18. Bicycle joker
-      'joker': 'images/jokers/bicicleta.png',
-      'jokerName': 'Bicycle',
-      'jokerDescription': 'Bicycle',
+      // 18. Its so over joker
+      'joker': 'images/jokers/its_so_over.png',
+      'jokerName': 'Its so over',
+      'jokerDescription':
+          'Its so over +10 gold if only 1 card is played (hand size 1)',
     },
     {
-      // 19. Nasus joker
+      // 19. Paris joker
+      'joker': 'images/jokers/paris.png',
+      'jokerName': 'Paris',
+      'jokerDescription':
+          'Paris +3 mult for each pair of cards of the same suit',
+    },
+    {
+      // 20. Nasus joker
       'joker': 'images/jokers/nasus.png',
       'jokerName': 'Nasus',
-      'jokerDescription': 'Nasus',
+      'jokerDescription': 'Nasus multiplies your gold by the mult',
     },
     {
-      // 20. Umbrella joker
+      // 21. Umbrella joker
       'joker': 'images/jokers/sombrilla.png',
       'jokerName': 'Umbrella',
-      'jokerDescription': 'Umbrella',
-    },
-    {
-      // 21. Balatrito comes out joker
-      'joker': 'images/jokers/salebalatrito.png',
-      'jokerName': 'Balatrito comes out',
-      'jokerDescription': 'Balatrito comes out',
-    },
-    {
-      // 22. KFC joker
-      'joker': 'images/jokers/kaefece.png',
-      'jokerName': 'KFC',
-      'jokerDescription': 'KFC',
-    },
-    {
-      // 23. Crowave joker
-      'joker': 'images/jokers/crowave.png',
-      'jokerName': 'Crowave',
-      'jokerDescription': 'Crowave',
+      'jokerDescription':
+          'Umbrella every grants +20 multiplier when only number cards (J, Q, K, A) are played in the hand',
     },
   ];
 
@@ -509,6 +504,12 @@ class JokerState extends State<Joker> {
       'packageDescription': '',
     },
     {
+      // Standard Normal
+      'package': 'images/packages/Standard_Normal_1.png',
+      'packageName': 'Standard Normal',
+      'packageDescription': '',
+    },
+    {
       // Buffon Normal
       'package': 'images/packages/Buffoon_Normal_2.png',
       'packageName': 'Buffoon Normal',
@@ -518,12 +519,6 @@ class JokerState extends State<Joker> {
       // Spectral Jumbo
       'package': 'images/packages/Spectral_Jumbo_1.png',
       'packageName': 'Spectral Jumbo',
-      'packageDescription': '',
-    },
-    {
-      // Standard Normal
-      'package': 'images/packages/Standard_Normal_1.png',
-      'packageName': 'Standard Normal',
       'packageDescription': '',
     },
   ];

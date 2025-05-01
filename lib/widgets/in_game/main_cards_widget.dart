@@ -476,7 +476,6 @@ class MainCardsState extends State<MainCards> {
     setState(() {
       // Sort the cards by rank using a custom order
       const rankOrder = {
-        'A': 1,
         '2': 2,
         '3': 3,
         '4': 4,
@@ -489,6 +488,7 @@ class MainCardsState extends State<MainCards> {
         'J': 11,
         'Q': 12,
         'K': 13,
+        'A': 14,
       };
 
       // Sort the hand cards based on the rank order

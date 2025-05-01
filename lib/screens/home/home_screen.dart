@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final playerData = data['player_data'] ?? {};
         final discardsLeft = playerData['discards_left'] ?? 0;
         final playsLeft = playerData['hand_plays_left'] ?? 0;
-        final currentPoints = playerData['total_points'] ?? 0;
+        final currentPoints = playerData['current_points'] ?? 0;
         final playedCards = playerData['played_cards'] ?? 0;
         final unplayedCards = playerData['unplayed_cards'] ?? 0;
 

@@ -140,7 +140,7 @@ class GameScreenState extends State<GameScreen> {
   List<SelectableCard> _playedCards = [];
   List<PurchasableItemInfo> _shopJokers = [];
   List<PurchasableItemInfo> _shopConsumables = [];
-  //List<PurchasableItemInfo> _shopPackages = [];
+  List<PurchasableItemInfo> _shopPackages = [];
   @override
   void initState() {
     super.initState();
@@ -223,41 +223,43 @@ class GameScreenState extends State<GameScreen> {
         // Parse the shop items from the response
         _shopJokers = [];
         _shopConsumables = [];
-        //_shopPackages = [];
+        _shopPackages = [];
 
         // Extracting jokers from the event data
-        if (data['shop']['rerollable_items'] != null) {
-          for (var joker in data['shop']['rerollable_items']) {
-            _shopJokers.add(
-              PurchasableItemInfo(
-                price: joker['price'],
-                id: joker['id'],
-                index: 0,
-                type: joker['type'],
-                subtype: joker['joker_id'],
-                cardName: '',
-              ),
-            );
+        if (data['shop']['rerolled_items'] != null) {
+          for (var item in data['shop']['rerolled_items']) {
+            if (item['jokers'] != null) {
+              for (var joker in item['jokers']) {
+                _shopJokers.add(
+                  PurchasableItemInfo(
+                    price: joker['price'],
+                    id: joker['id'],
+                    index: 0,
+                    type: joker['type'],
+                    subtype: joker['joker_id'],
+                    cardName: '',
+                  ),
+                );
+              }
+            }
           }
         }
 
         // Extracting packs from the event data
-        /*if (data['shop']['fixed_packs'] != null) {
+        if (data['shop']['fixed_packs'] != null) {
           for (var pack in data['shop']['fixed_packs']) {
             _shopPackages.add(
               PurchasableItemInfo(
                 price: pack['price'],
                 id: pack['id'],
-                index: 0, // Assuming index is not available in the event data
-                type: pack['type'],
-                subtype:
-                    0, // Assuming subtype is not available in the event data
-                cardName:
-                    "Pack ${pack['id']}", // Default naming, can be updated
+                index: 0,
+                type: 'package',
+                subtype: pack['pack_type'],
+                cardName: '',
               ),
             );
           }
-        }*/
+        }
 
         // Extracting consumables from the event data if necessary
         // Assuming there are consumables in the event data (it wasn't in the sample response)
@@ -325,6 +327,7 @@ class GameScreenState extends State<GameScreen> {
         _round = round;
         _maxRounds = data['max_rounds'];
         _gold = data['players_money'];
+        _blind = data['blind'];
       });
     });
 
@@ -742,6 +745,7 @@ class GameScreenState extends State<GameScreen> {
                                 shopJokers: _shopJokers,
                                 gold: _gold,
                                 shopConsumables: _shopConsumables,
+                                shopPackages: _shopPackages
                               ),
                             ),
                           )

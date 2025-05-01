@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
@@ -16,6 +14,7 @@ class ShopWidget extends StatefulWidget {
     required this.onReroll,
     required this.shopJokers,
     required this.shopConsumables,
+    required this.shopPackages,
   });
 
   final GlobalKey<BuyWidgetState> buyWidgetKey;
@@ -25,6 +24,7 @@ class ShopWidget extends StatefulWidget {
   final Function(int)? onReroll;
   final List<PurchasableItemInfo> shopJokers;
   final List<PurchasableItemInfo> shopConsumables;
+  final List<PurchasableItemInfo> shopPackages;
   @override
   State<ShopWidget> createState() => ShopWidgetState();
 }
@@ -33,27 +33,6 @@ class ShopWidgetState extends State<ShopWidget> {
   List<PurchasableItemInfo> shopJokers = [];
   List<PurchasableItemInfo> shopConsumables = [];
   List<PurchasableItemInfo> shopPackages = [];
-
-  // Function used to generate random packages when we enter shop fase
-  void _generateRandomPackage() {
-    final random = Random();
-
-    shopPackages = List.generate(2, (int index) {
-      final randomSubtype = random.nextInt(3) + 1;
-      return PurchasableItemInfo(
-        price: random.nextInt(10),
-        id: index,
-        index: -1,
-        type: "package",
-        subtype: randomSubtype,
-        cardName: "",
-      );
-    });
-    // Debug print de la lista
-    for (var item in shopPackages) {
-      debugPrint('Package ${item.id} -> subtype: ${item.subtype}');
-    }
-  }
 
   // Websocket client
   final WebSocketClient wsClient = WebSocketClient();
@@ -94,7 +73,26 @@ class ShopWidgetState extends State<ShopWidget> {
     super.initState();
     shopJokers = widget.shopJokers;
     shopConsumables = widget.shopConsumables;
-    _generateRandomPackage();
+    shopPackages = widget.shopPackages;
+    // Listen for jokers rerolled
+    wsClient.addEventListener("rerolled_jokers", (data) {
+      debugPrint("📡 Received rerolled jokers: $data");
+      final jokers = data['new_jokers']['jokers'] as List<dynamic>;
+      shopJokers = [];
+      setState(() {
+        shopJokers =
+            jokers.map<PurchasableItemInfo>((joker) {
+              return PurchasableItemInfo(
+                price: joker['price'],
+                id: joker['id'],
+                index: 0,
+                type: joker['type'],
+                subtype: joker['joker_id'],
+                cardName: '',
+              );
+            }).toList();
+      });
+    });
   }
 
   @override
@@ -143,7 +141,7 @@ class ShopWidgetState extends State<ShopWidget> {
                     ElevatedButton(
                       onPressed: () {
                         widget.onReroll?.call(5);
-                        setState(() {});
+                        wsClient.sendMessage("reroll_shop", {});
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0fba81),

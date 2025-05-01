@@ -100,7 +100,6 @@ Future<void> showCodeDialog(
                       String code = controllers
                           .map((controller) => controller.text)
                           .join('');
-                      Navigator.of(context).pop(); // Close the dialog
                       final public = await joinLobby(code);
                       // Store the code in secure storage
                       await const FlutterSecureStorage().write(
