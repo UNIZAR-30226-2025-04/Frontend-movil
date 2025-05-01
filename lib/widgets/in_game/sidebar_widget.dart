@@ -432,7 +432,7 @@ class SidebarState extends State<Sidebar> {
         return Container(
           width: 60,
           height: 28,
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(10),

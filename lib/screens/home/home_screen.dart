@@ -144,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (data['phase'] == 'none') {
           wsClient.sendMessage("get_lobby_info", result["lobby_id"]);
           if (context.mounted) {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               PageTransition(
                 type: PageTransitionType.fade,
@@ -439,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       }),
 
                       _buildMenuButton(context, 'JOIN', () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           PageTransition(
                             type: PageTransitionType.fade,

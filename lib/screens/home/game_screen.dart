@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/dialogs/game_dialogs.dart';
-import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/game_background_widget.dart';
@@ -21,7 +20,6 @@ import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 import 'package:nogler/widgets/in_game/sidebar_widget.dart';
 import 'package:nogler/widgets/in_game/timer_widget.dart';
-import 'package:page_transition/page_transition.dart';
 
 /// Represents the main game screen with UI components for gameplay.
 class GameScreen extends StatefulWidget {
@@ -398,18 +396,13 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("📡 Received players eliminated: $data");
 
       final eliminatedPlayers = List<String>.from(data['eliminated_players']);
-
-      if (eliminatedPlayers.contains(widget.hostName)) {
+      bool isWinner = false;
+      isWinner = !eliminatedPlayers.contains(widget.hostName);
+      if (!isWinner) {
         await Future.delayed(const Duration(milliseconds: 1000));
         wsClient.disconnect();
         if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            type: PageTransitionType.fade,
-            child: const HomeScreen(),
-          ),
-        );
+        useWinLoseDialog(context, isWinner);
       }
     });
   }

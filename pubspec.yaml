@@ -84,7 +84,7 @@ flutter:
   fonts:
     - family: PixelifySans
       fonts:
-        - asset: fonts/PixelifySans-Medium.otf
+        - asset: fonts/Pixelify_Sans_Med_Mod.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

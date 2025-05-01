@@ -170,7 +170,7 @@ class _JoinLobbyScreen extends State<JoinLobbyScreen> {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             PageTransition(
                               type: PageTransitionType.fade,

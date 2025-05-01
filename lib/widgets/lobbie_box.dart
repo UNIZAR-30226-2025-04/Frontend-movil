@@ -98,7 +98,7 @@ class LobbieBox extends StatelessWidget {
                       // Auto-connect when screen loads
                       await wsClient.initialize();
                       if (context.mounted) {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           PageTransition(
                             type: PageTransitionType.fade,

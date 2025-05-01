@@ -320,7 +320,7 @@ Future<void> showCreateLobbyButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF495a8f),
                           padding: EdgeInsets.symmetric(
-                            horizontal: 50,
+                            horizontal: 49,
                             vertical: 12,
                           ),
                         ),

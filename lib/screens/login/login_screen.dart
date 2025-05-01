@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Wrap the Stack with a SingleChildScrollView to make it scrollable when keyboard appears
                       child: Container(
                         // Container for the login box
-                        width: 380, // Increased width from 320 to 380
+                        width: 380,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 15,
@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: const TextStyle(
                                     color: AppStyles.errorColor,
                                     fontSize: 18,
-                                    fontWeight: FontWeight.bold,                         
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
@@ -163,14 +163,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               label: 'Email',
                               controller: _emailController,
                               isPassword: false,
-                              size: 80,
+                              size: 85,
                             ),
                             const SizedBox(height: 8),
                             InputFieldWidget(
                               label: 'Password',
                               controller: _passwordController,
                               isPassword: true,
-                              size: 80,
+                              size: 85,
                             ),
 
                             const SizedBox(height: 12),

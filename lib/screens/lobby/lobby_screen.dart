@@ -487,7 +487,7 @@ class _LobbyScreen extends State<LobbyScreen> {
                                   // Close the current WebSocket connection
                                   wsClient.disconnect();
                                   if (context.mounted) {
-                                    Navigator.push(
+                                    Navigator.pushReplacement(
                                       context,
                                       PageTransition(
                                         type: PageTransitionType.fade,

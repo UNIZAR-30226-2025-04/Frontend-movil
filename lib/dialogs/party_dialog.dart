@@ -194,7 +194,7 @@ Future<void> showPartyList(BuildContext context, String myusername) async {
                                           });
 
                                           // Navigate to lobby screen
-                                          Navigator.push(
+                                          Navigator.pushReplacement(
                                             context,
                                             PageTransition(
                                               type: PageTransitionType.fade,
