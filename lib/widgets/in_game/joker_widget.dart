@@ -107,12 +107,13 @@ class JokerState extends State<Joker> {
         borderRadius: isJoker ? BorderRadius.circular(5) : null,
         border: isJoker ? Border.all(color: Colors.white70, width: 1) : null,
         boxShadow: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(2, 2), // Position of the shadow
-            blurRadius: 3, // Blur of the image
-            spreadRadius: 1.25, // Size of the shadow
-          ),
+          if (isJoker)
+            BoxShadow(
+              color: Colors.black,
+              offset: Offset(2, 2), // Position of the shadow
+              blurRadius: 3, // Blur of the image
+              spreadRadius: 1.25, // Size of the shadow
+            ),
         ],
       ),
 

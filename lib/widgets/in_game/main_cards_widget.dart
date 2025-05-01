@@ -253,6 +253,7 @@ class MainCardsState extends State<MainCards> {
       });
       // Notify the parent widget about the played cards
       widget.onPlayCards?.call(selectedCards);
+      widget.onBlueScore?.call(scoreToAdd);
       widget.onRedScore?.call(redScore);
       widget.onHandType?.call(handType);
 
@@ -803,7 +804,7 @@ class MainCardsState extends State<MainCards> {
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                   children: [
                     TextSpan(
-                      text: "+${selectable.rank}",
+                      text: "+${getCardValueFromRank(selectable.rank)}",
                       style: TextStyle(color: Colors.blue),
                     ),
                     TextSpan(
