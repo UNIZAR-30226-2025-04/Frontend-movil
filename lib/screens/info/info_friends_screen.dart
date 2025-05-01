@@ -64,14 +64,63 @@ class InfoFriendsScreen extends StatelessWidget {
                           12,
                         ), // Border radius of the container
                       ),
-                      child: const Center(
-                        // Center widget to center the text
-                        child: Text(
-                          // Text widget to display text
-                          'Explanation of the friend system.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
-                        ),
+                      // Text, thats it
+                      child: Column(
+                        children: [
+                          Text(
+                            // Text widget to display text
+                            'In Nogler we implement a friends system where you can befriend other people all over the world.',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "You can simply go to the ",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: "friends button",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: const Color.fromARGB(
+                                      255,
+                                      77,
+                                      93,
+                                      156,
+                                    ),
+                                  ),
+                                ),
+                                TextSpan(
+                                  text:
+                                      " on the main menu and access the list of players registered in the game and send them a friend request. You can always delete that friends or friend requests on your lists in case you no longer get along with them.",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 5),
+                          Text(
+                            'In game lobbies having friends makes the difference, because you can send them a direct invitation and no longer need to enter by lobby code.',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

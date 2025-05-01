@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/dialogs/game_dialogs.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/chat_widget.dart';
@@ -386,19 +387,10 @@ class GameScreenState extends State<GameScreen> {
         return winnerData['winner_username'] == widget.hostName;
       });
 
-      if (isWinner) {
-        await Future.delayed(const Duration(milliseconds: 5000));
-        wsClient.disconnect();
-        if (!mounted) return;
-
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            type: PageTransitionType.fade,
-            child: const HomeScreen(),
-          ),
-        );
-      }
+      await Future.delayed(const Duration(milliseconds: 5000));
+      wsClient.disconnect();
+      if (!mounted) return;
+      useWinLoseDialog(context, isWinner);
     });
 
     /// Listen for players eliminated

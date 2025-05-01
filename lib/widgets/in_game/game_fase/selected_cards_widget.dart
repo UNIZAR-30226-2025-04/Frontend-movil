@@ -61,6 +61,8 @@ class SelectedCardsState extends State<SelectedCards> {
         bouncingIndices.remove(i);
         scoringIndices.remove(i);
       });
+
+      // Show joker animations if cards need it
     }
   }
 

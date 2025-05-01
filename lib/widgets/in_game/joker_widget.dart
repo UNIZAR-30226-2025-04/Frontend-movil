@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 
-//TODO, moverlo a otra pantalla
-/// Class where we save all info about jokers disposed in the s
+/// Info about the vouchers/consumables, jokers and packages
 class PurchasableItemInfo {
   PurchasableItemInfo({
     required this.price,
@@ -13,9 +12,19 @@ class PurchasableItemInfo {
     required this.subtype,
     required this.cardName,
   });
+
+  /// Price of the card
   final int price;
+
+  /// The id of the item defines the image and effect related to that item
+  /// Same id can be either a joker, voucher/consumable or package
   final int id;
+
+  /// Index in the list where the item is displayed
+  /// Needed to iterate move the items in between the list
   int index;
+
+  /// String type among these values: "joker" or "owned joker", "consumable" or "owned consumable", "package"
   final String type;
   // TODO, add a description of the joker
   final int subtype;
@@ -90,13 +99,22 @@ class JokerState extends State<Joker> {
         widget.purchasableItemInfo.type == "owned joker";
 
     return Container(
-      width: isJoker? 49 : 57,
+      width: isJoker ? 49 : 57,
       height: height,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: isJoker ? BorderRadius.circular(5) : null,
         border: isJoker ? Border.all(color: Colors.white70, width: 1) : null,
+        boxShadow: [
+          if (isJoker)
+            BoxShadow(
+              color: Colors.black,
+              offset: Offset(2, 2), // Position of the shadow
+              blurRadius: 3, // Blur of the image
+              spreadRadius: 1.25, // Size of the shadow
+            ),
+        ],
       ),
 
       child:
@@ -160,6 +178,7 @@ class JokerState extends State<Joker> {
     );
   }
 
+  /// Shows the description of the card onLongPress
   void _showItemDescription(PurchasableItemInfo purchasable, Offset position) {
     _overlayEntry?.remove();
 
@@ -330,151 +349,151 @@ class JokerState extends State<Joker> {
   // List of jokers with image path, name, and description
   List<Map<String, String>> jokersMap = [
     {
-      // No joker
+      // 0. No joker
       'joker': 'No jocker',
       'jokerName': 'No jocker',
       'jokerDescription': '',
     },
     {
-      // Solid Seven joker
+      // 1. Solid Seven joker
       'joker': 'images/jokers/solid_seven.png',
       'jokerName': 'Solid Seven',
       'jokerDescription': 'Solid Seven +7 tokens +7 multi',
     },
     {
-      // Poor joker
+      // 2. Poor joker
       'joker': 'images/jokers/poor_joker.png',
       'jokerName': 'Poor joker',
       'jokerDescription': 'Poor joker generates 4 gold each round',
     },
     {
-      // Botardo joker
+      // 3. Botardo joker
       'joker': 'images/jokers/poor_joker.png',
       'jokerName': 'Botardo joker',
       'jokerDescription': 'Botardo joker',
     },
     {
-      // Average size Michael joker
+      // 4. Average size Michael joker
       'joker': 'images/jokers/AVERAGE_SIZE_MICHAEL.png',
       'jokerName': 'Average Size Michael',
       'jokerDescription':
           'Average size Michael +13 mult.1/13 chance of being sold each round. Glass:This is a tooltip For the glass overlay',
     },
     {
-      // Hell Cowboy joker
+      // 5. Hell Cowboy joker
       'joker': 'images/jokers/hell_cowboy.png',
       'jokerName': 'Hell Cowboy',
       'jokerDescription':
           'Hell Cowboy adds +mult equivalent to the highest scoring card',
     },
     {
-      // Carb Sponge joker
+      // 6. Carb Sponge joker
       'joker': 'images/jokers/bob_spider.png',
       'jokerName': 'Crab Sponge',
       'jokerDescription':
           'Crab Sponge adds +mult equivalent to the highest scoring card',
     },
     {
-      // Photograph joker
+      // 7. Photograph joker
       'joker': 'images/jokers/PHOTOGRAPH.png',
       'jokerName': 'Photograph',
       'jokerDescription': 'Photograph x2 multiplies the first figure you play',
     },
     {
-      // Petpet joker
+      // 8. Petpet joker
       'joker': 'images/jokers/petpet.png',
       'jokerName': 'Petpet',
       'jokerDescription': 'Petpet sums the number of gold the user has to mul',
     },
     {
-      // Empty joker
+      // 9. Empty joker
       'joker': 'images/jokers/empty_joker.png',
       'jokerName': 'Empty',
       'jokerDescription':
           'Empty 1/50 of adding 200 to the multiplier and 25 to the chips',
     },
     {
-      // Two Friends joker
+      // 10. Two Friends joker
       'joker': 'images/jokers/2_friends.png',
       'jokerName': 'Two Friends',
       'jokerDescription':
           'Two Friends takes 10 of your +fichas and changes them to +mult. BUT if your fichas < 10, doesnt subtract from fichas, just add 10-fichas to mult',
     },
     {
-      // Lirili Larila
+      // 11. Lirili Larila
       'joker': 'images/jokers/lirili_larila.png',
       'jokerName': 'Lirili Larila',
       'jokerDescription':
           'Lirili Larila +2 to to mult for each played / scoring 2 then x2 mult',
     },
     {
-      // BIRDIFICACION joker
+      // 12. BIRDIFICACION joker
       'joker': 'images/jokers/birdification.png',
       'jokerName': 'BIRDIFICACION',
       'jokerDescription': 'BIRDIFICACION +50 chips for each 1,4,6,7',
     },
     {
-      // Rusty ahh joker
+      // 13. Rusty ahh joker
       'joker': 'images/jokers/rusty_ahh_joker.png',
       'jokerName': 'Rusty ahh joker',
       'jokerDescription': 'Rusty ahh joker',
     },
     {
-      // Damn April joker
+      // 14. Damn April joker
       'joker': 'images/jokers/damn_april.jpg',
       'jokerName': 'Damn April',
       'jokerDescription': 'Damn April each played 4 does sm',
     },
     {
-      // Its so over joker
+      // 15. Its so over joker
       'joker': 'images/jokers/its_so_over.png',
       'jokerName': 'Its so over',
       'jokerDescription': 'Its so over',
     },
     {
-      // Paris joker
+      // 16. Paris joker
       'joker': 'images/jokers/paris.png',
       'jokerName': 'Paris',
       'jokerDescription': 'Paris',
     },
     {
-      // Diego joker
+      // 17. Diego joker
       'joker': 'images/jokers/diego_joker.png',
       'jokerName': 'Diego',
       'jokerDescription': 'Diego',
     },
     {
-      // Bicycle joker
+      // 18. Bicycle joker
       'joker': 'images/jokers/bicicleta.png',
       'jokerName': 'Bicycle',
       'jokerDescription': 'Bicycle',
     },
     {
-      // Nasus joker
+      // 19. Nasus joker
       'joker': 'images/jokers/nasus.png',
       'jokerName': 'Nasus',
       'jokerDescription': 'Nasus',
     },
     {
-      // Umbrella joker
+      // 20. Umbrella joker
       'joker': 'images/jokers/sombrilla.png',
       'jokerName': 'Umbrella',
       'jokerDescription': 'Umbrella',
     },
     {
-      // Balatrito comes out joker
+      // 21. Balatrito comes out joker
       'joker': 'images/jokers/salebalatrito.png',
       'jokerName': 'Balatrito comes out',
       'jokerDescription': 'Balatrito comes out',
     },
     {
-      // KFC joker
+      // 22. KFC joker
       'joker': 'images/jokers/kaefece.png',
       'jokerName': 'KFC',
       'jokerDescription': 'KFC',
     },
     {
-      // Crowave joker
+      // 23. Crowave joker
       'joker': 'images/jokers/crowave.png',
       'jokerName': 'Crowave',
       'jokerDescription': 'Crowave',

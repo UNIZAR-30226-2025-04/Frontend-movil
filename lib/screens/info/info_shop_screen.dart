@@ -64,42 +64,142 @@ class InfoShopScreen extends StatelessWidget {
                           12,
                         ), // Border radius of the container
                       ),
-                      child: Column(
-                        children: [
-                          Text(
-                            "In the shop we can difference three places with different cards to buy:                          ",
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
+                      // Too much text, so make it scrollable
+                      child: SingleChildScrollView(
+                        // Text, thats it
+                        child: Column(
+                          children: [
+                            Text(
+                              "In the shop we can difference three places with different cards to buy:                          ",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            "First, we have the rerollable section, where the jokers and common consumables appear and can be refreshed",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
+                            SizedBox(height: 15),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "First, we have the ",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  // ✨🤩Colors✨🤩
+                                  TextSpan(
+                                    text: "rerollable section",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ", where the jokers and common consumables appear and can be refreshed.",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "Second, we have the voucher section, a premium consumable section where the effects become even crazier (only 2 per shop)",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
+                            SizedBox(height: 5),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Second, we have the ",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  // ✨🤩Colors✨🤩
+                                  TextSpan(
+                                    text: "voucher section",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.deepPurple,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ", a premium consumable section where the effects become even crazier (only 2 per shop)",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "And last we have the package section(only 2 per shop)                                                                           ",
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black87,
+                            SizedBox(height: 5),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "And last we have the ",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  // ✨🤩Colors✨🤩
+                                  TextSpan(
+                                    text: "package section",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.orange,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        " (only 2 per shop)                                                                           ",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 5),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        "Once you are done shopping, just press the ",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  // ✨🤩Colors✨🤩
+                                  TextSpan(
+                                    text: "next round button",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        " or let the timer expire to enter the next fase of the game.  ",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
