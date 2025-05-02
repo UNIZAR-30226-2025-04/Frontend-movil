@@ -46,6 +46,7 @@ class GameScreen extends StatefulWidget {
     required this.consumablesOwned,
     required this.shopConsumables,
     required this.consumablesUsed,
+    required this.shopPackages,
   });
   final int round;
   final String hostName;
@@ -68,7 +69,7 @@ class GameScreen extends StatefulWidget {
   final List<PurchasableItemInfo> consumablesOwned;
   final List<PurchasableItemInfo> shopConsumables;
   final List<PurchasableItemInfo> consumablesUsed;
-
+  final List<PurchasableItemInfo> shopPackages;
   @override
   GameScreenState createState() => GameScreenState();
 }
@@ -144,6 +145,7 @@ class GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    _shopPackages = widget.shopPackages;
     consumablesOwned = widget.consumablesOwned;
     consumablesUsed = widget.consumablesUsed;
     _maxRounds = widget.maxRounds;
@@ -745,7 +747,7 @@ class GameScreenState extends State<GameScreen> {
                                 shopJokers: _shopJokers,
                                 gold: _gold,
                                 shopConsumables: _shopConsumables,
-                                shopPackages: _shopPackages
+                                shopPackages: _shopPackages,
                               ),
                             ),
                           )

@@ -79,7 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
         debugPrint("timeoutStart: $timeoutStart, now: $now");
         debugPrint("Difference: ${timeoutStart.difference(now)}");
         // Calculate how many seconds are left from now until that date
-        final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
+        final timeUntilTimeout =
+            timeout - now.difference(timeoutStart).inSeconds;
         Navigator.of(context).pushReplacement(
           PageTransition(
             type: PageTransitionType.fade,
@@ -105,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
               consumablesOwned: [],
               shopConsumables: [],
               consumablesUsed: [],
+              shopPackages: [],
             ),
           ),
         );
@@ -164,16 +166,20 @@ class _HomeScreenState extends State<HomeScreen> {
             List<PurchasableItemInfo> consumablesOwned = [];
             List<PurchasableItemInfo> shopConsumables = [];
             List<PurchasableItemInfo> consumablesUsed = [];
+            List<PurchasableItemInfo> shopPackages = [];
+            //List<PurchasableItemInfo> packagesUsed = [];
             if (data['phase'] == 'shop') {
               // Parse owned jokers with correct id from shop items
               final rerollableItems =
-                  data['shop_items']['rerollable_items'] as List<dynamic>? ??
-                  [];
+                  (data['shop_items']['rerolled_items'] as List<dynamic>? ?? [])
+                      .expand((item) => item['jokers'] as List<dynamic>? ?? [])
+                      .toList();
+
               jokersOwned =
                   (data['player_data']['current_jokers'] as List<dynamic>?)?.map((
                     jokerData,
                   ) {
-                    // Find the matching joker in rerollable_items where 'joker_id' matches the current_joker's 'id'
+                    // Find the matching joker in rerolled_items where 'joker_id' matches the current_joker's 'id'
                     final matchingShopJoker = rerollableItems.firstWhere(
                       (shopJoker) => shopJoker['joker_id'] == jokerData['id'],
                       orElse: () => null,
@@ -193,19 +199,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   }).toList() ??
                   [];
 
-              // Parse the shop jokers from rerollable_items
+              // Parse the shop jokers from rerolled_items
+              final rerollCount =
+                  data['shop_items']['reroll_count'] as int? ?? 0;
+              final rerolledItems =
+                  data['shop_items']['rerolled_items'] as List<dynamic>? ?? [];
 
-              for (var joker in data['shop_items']['rerollable_items']) {
-                shopJokers.add(
-                  PurchasableItemInfo(
-                    price: joker['price'],
-                    id: joker['id'],
-                    index: 0,
-                    type: joker['type'],
-                    subtype: joker['joker_id'],
-                    cardName: '',
-                  ),
-                );
+              if (rerollCount < rerolledItems.length) {
+                final selectedReroll = rerolledItems[rerollCount];
+                final jokers = selectedReroll['jokers'] as List<dynamic>? ?? [];
+
+                for (var joker in jokers) {
+                  shopJokers.add(
+                    PurchasableItemInfo(
+                      price: joker['price'],
+                      id: joker['id'],
+                      index: 0,
+                      type: joker['type'],
+                      subtype: joker['joker_id'],
+                      cardName: '',
+                    ),
+                  );
+                }
               }
 
               // Filter: remove from shopJokers the jokers already owned
@@ -245,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       .toList() ??
                   [];
 
-              // Parse the shop jokers from rerollable_items
+              // Parse the shop jokers from fixed_modifiers
 
               for (var consumable in data['shop_items']['fixed_modifiers']) {
                 shopConsumables.add(
@@ -253,19 +268,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     price: consumable['price'],
                     id: consumable['id'],
                     index: 0,
-                    type: consumable['type'],
+                    type: "consumable",
                     subtype: consumable['modifier_id'],
                     cardName: '',
                   ),
                 );
               }
-
+              debugPrint(
+                "🃏🃏fixed_modifiers length: ${fixedModifiers.length}",
+              );
               // Filter: remove from shopJokers the jokers already owned
               shopConsumables.removeWhere(
                 (shopConsumable) => consumablesOwned.any(
                   (ownedConsumable) => ownedConsumable.id == shopConsumable.id,
                 ),
               );
+              debugPrint(
+                "🃏🃏fixed_modifiers length: ${fixedModifiers.length}",
+              );
+              // Parse the shop packages
+              for (var package in data['shop_items']['fixed_packs']) {
+                shopPackages.add(
+                  PurchasableItemInfo(
+                    price: package['price'],
+                    id: package['id'],
+                    index: 0,
+                    type: 'package',
+                    subtype: package['pack_type'],
+                    cardName: '',
+                  ),
+                );
+              }
             } else {
               jokersOwned =
                   (data['player_data']['current_jokers'] as List<dynamic>?)?.map((
@@ -351,6 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   shopConsumables: shopConsumables,
                   consumablesOwned: consumablesOwned,
                   consumablesUsed: consumablesUsed,
+                  shopPackages: shopPackages,
                 ),
               ),
             );
