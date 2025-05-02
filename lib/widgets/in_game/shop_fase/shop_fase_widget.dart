@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/dialogs/game_dialogs.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
@@ -44,12 +45,85 @@ class ShopFaseWidget extends StatefulWidget {
 class ShopFaseWidgetState extends State<ShopFaseWidget> {
   bool buyWidgetVisible = false;
   bool sellWidgetVisible = false;
+  List<Map<String, dynamic>> purchasedCards = [];
+  List<Map<String, dynamic>> purchasedJokers = [];
+  List<Map<String, dynamic>> purchasedVouchers = [];
   // Websocket client
   final WebSocketClient wsClient = WebSocketClient();
   Future<void> onDraggedItem() async {
     setState(() {
       buyWidgetVisible = true;
     });
+  }
+
+  List<PurchasableItemInfo> generateItemsForPackage(
+    int packType,
+    List<Map<String, dynamic>> purchasedCards,
+    List<Map<String, dynamic>> purchasedJokers,
+    List<Map<String, dynamic>> purchasedVouchers,
+  ) {
+    final List<PurchasableItemInfo> items = [];
+
+    switch (packType) {
+      case 1: // Standard Normal Pack
+        for (var card in purchasedCards) {
+          items.add(
+            PurchasableItemInfo(
+              price: 0,
+              id: card['id'] ?? 0,
+              index: -1,
+              type: 'card',
+              subtype: 0,
+              rank: '${card['Rank']}',
+              suit: '${card['Suit']}',
+              overlay: card['Enhancement'],
+            ),
+          );
+        }
+        break;
+      case 2: // Buffoon Normal Pack
+        for (var jokerEntry in purchasedJokers) {
+          // Cada entry es algo como {"Juglares": [{id: 1, sell_price: 1}]}
+          jokerEntry.forEach((type, jokerList) {
+            for (var joker in jokerList) {
+              items.add(
+                PurchasableItemInfo(
+                  price: joker['sell_price'] ?? 0,
+                  id: 0,
+                  index: -1,
+                  type: 'joker',
+                  subtype: joker['id'],
+                  rank: '',
+                  suit: '',
+                  overlay: 0,
+                ),
+              );
+            }
+          });
+        }
+        break;
+
+      case 3: // Spectral Jumbo Pack
+        for (var voucher in purchasedVouchers) {
+          items.add(
+            PurchasableItemInfo(
+              price: 0,
+              id: 0,
+              index: -1,
+              type: 'consumable',
+              subtype: voucher['value'] ?? 0,
+              rank: '',
+              suit: '',
+              overlay: 0,
+            ),
+          );
+        }
+        break;
+      default:
+        break;
+    }
+
+    return items;
   }
 
   @override
@@ -70,7 +144,9 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
         index: -1,
         type: "owned joker",
         subtype: jokerId,
-        cardName: "",
+        rank: '',
+        suit: '',
+        overlay: 0,
       );
 
       widget.jokerCardsKey.currentState?.addJokerOwned(purchasedJoker, false);
@@ -89,7 +165,9 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
         index: -1,
         type: "owned consumable",
         subtype: voucherId,
-        cardName: "",
+        rank: '',
+        suit: '',
+        overlay: 0,
       );
 
       widget.consumableCardsKey.currentState?.addConsumableOwned(
@@ -104,6 +182,112 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
     wsClient.addEventListener("joker_sold", (data) {
       int remainingMoney = data["remaining_money"];
       widget.onSell?.call(remainingMoney);
+    });
+
+    wsClient.addEventListener("pack_purchased", (data) async {
+      purchasedCards = [];
+      purchasedJokers = [];
+      purchasedVouchers = [];
+      purchasedCards = List<Map<String, dynamic>>.from(data["cards"] ?? []);
+      purchasedJokers = List<Map<String, dynamic>>.from(data["jokers"] ?? []);
+      purchasedVouchers = List<Map<String, dynamic>>.from(
+        data["vouchers"] ?? [],
+      );
+      final packType = data["pack_type"];
+      final maxSelected = data["max_selectable"];
+      int remainingMoney = data["remaining_money"];
+      debugPrint("💾 Cartas: $purchasedCards");
+      debugPrint("🃏 Jokers: $purchasedJokers");
+      debugPrint("🎟️ Vouchers: $purchasedVouchers");
+      final itemId = data["item_id"];
+
+      widget.onBuy?.call(remainingMoney);
+      // Create a list of items for the package
+      final availableItems = generateItemsForPackage(
+        packType,
+        purchasedCards,
+        purchasedJokers,
+        purchasedVouchers,
+      );
+      // Imprime la longitud de la lista
+      debugPrint('Length of availableItems: ${availableItems.length}');
+
+      // Imprime el contenido de la lista
+      debugPrint('Content of availableItems: $availableItems');
+      // Show the dialog to select the item
+      final selectedItem = await showVoucherPackDialog(
+        context,
+        packType,
+        availableItems,
+        maxSelected,
+      );
+
+      final Map<String, dynamic> selectionsMap = {
+        "selectedCards": [],
+        "selectedJokers": [],
+        "selectedVouchers": [],
+      };
+
+      if (selectedItem != null) {
+        // Check if the user selected an item
+        for (final item in selectedItem) {
+          switch (item.type) {
+            case "card":
+              selectionsMap["selectedCards"].add({
+                "Rank": item.rank,
+                "Suit": item.suit,
+                "Enhancement": item.overlay,
+              });
+              break;
+            case "joker":
+              selectionsMap["selectedJokers"].add(item.subtype);
+              break;
+            case "consumable":
+              selectionsMap["selectedVouchers"].add(item.subtype);
+              break;
+          }
+        }
+      }
+
+      // Remove the selected items from the purchased list
+      if (packType == 1) {
+        selectionsMap.remove("selectedJokers");
+        selectionsMap.remove("selectedVouchers");
+      } else if (packType == 2) {
+        selectionsMap.remove("selectedCards");
+        selectionsMap.remove("selectedVouchers");
+      } else if (packType == 3) {
+        selectionsMap.remove("selectedCards");
+        selectionsMap.remove("selectedJokers");
+      }
+
+      wsClient.sendMessage("choose_pack_items", {itemId, selectionsMap});
+
+      wsClient.addEventListener("pack_selection_complete", (data) {
+        switch (packType) {
+          case 2: // Buffoon Normal Pack
+            for (final item in selectedItem!) {
+              if (item.type == "joker") {
+                widget.jokerCardsKey.currentState?.addJokerOwned(item, true);
+              }
+            }
+            break;
+
+          case 3: // Spectral Jumbo Pack
+            for (final item in selectedItem!) {
+              if (item.type == "consumable") {
+                widget.consumableCardsKey.currentState?.addConsumableOwned(
+                  item,
+                  true,
+                );
+              }
+            }
+            break;
+
+          default:
+            break;
+        }
+      });
     });
   }
 

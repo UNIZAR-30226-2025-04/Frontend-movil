@@ -88,7 +88,9 @@ class ShopWidgetState extends State<ShopWidget> {
                 index: 0,
                 type: joker['type'],
                 subtype: joker['joker_id'],
-                cardName: '',
+                rank: '',
+                suit: '',
+                overlay: 0,
               );
             }).toList();
       });

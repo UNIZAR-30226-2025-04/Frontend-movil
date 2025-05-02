@@ -572,7 +572,7 @@ class MainCardsState extends State<MainCards> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(handCards.length, (index) {
                   return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 100),
                     curve: Curves.easeInOut,
                     width: 65,
                     margin: const EdgeInsets.symmetric(horizontal: 2),

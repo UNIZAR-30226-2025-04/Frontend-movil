@@ -40,7 +40,9 @@ class UseConsumableWidgetState extends State<UseConsumableWidget> {
     index: -1,
     type: "",
     subtype: 0,
-    cardName: "",
+    rank: '',
+    suit: '',
+    overlay: 0,
   );
 
   // Get the info of dragged item

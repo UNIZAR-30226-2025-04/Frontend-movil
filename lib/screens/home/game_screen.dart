@@ -47,6 +47,7 @@ class GameScreen extends StatefulWidget {
     required this.shopConsumables,
     required this.consumablesUsed,
     required this.shopPackages,
+    required this.currentPot,
   });
   final int round;
   final String hostName;
@@ -70,6 +71,7 @@ class GameScreen extends StatefulWidget {
   final List<PurchasableItemInfo> shopConsumables;
   final List<PurchasableItemInfo> consumablesUsed;
   final List<PurchasableItemInfo> shopPackages;
+  final int currentPot;
   @override
   GameScreenState createState() => GameScreenState();
 }
@@ -145,6 +147,8 @@ class GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    _currentPot = widget.currentPot;
+    _shopConsumables = widget.shopConsumables;
     _shopPackages = widget.shopPackages;
     consumablesOwned = widget.consumablesOwned;
     consumablesUsed = widget.consumablesUsed;
@@ -208,7 +212,8 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("timeoutStart: $timeoutStart, now: $now");
       debugPrint("Difference: ${timeoutStart.difference(now)}");
       // Calculate how many seconds are left from now until that date
-      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
+      final timeUntilTimeout =
+          timeout - (now.difference(timeoutStart).inSeconds).abs();
       setState(() {
         // Switch to the shop phase
         _animateShowShopFaseWidgets = true;
@@ -239,7 +244,9 @@ class GameScreenState extends State<GameScreen> {
                     index: 0,
                     type: joker['type'],
                     subtype: joker['joker_id'],
-                    cardName: '',
+                    rank: '',
+                    suit: '',
+                    overlay: 0,
                   ),
                 );
               }
@@ -257,7 +264,9 @@ class GameScreenState extends State<GameScreen> {
                 index: 0,
                 type: 'package',
                 subtype: pack['pack_type'],
-                cardName: '',
+                rank: '',
+                suit: '',
+                overlay: 0,
               ),
             );
           }
@@ -274,7 +283,9 @@ class GameScreenState extends State<GameScreen> {
                 index: 0, // Assuming index is not available in the event data
                 type: "consumable",
                 subtype: modifier['modifier_id'],
-                cardName: '',
+                rank: '',
+                suit: '',
+                overlay: 0,
               ),
             );
           }
@@ -289,7 +300,8 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("timeoutStart: $timeoutStart, now: $now");
       debugPrint("Difference: ${timeoutStart.difference(now)}");
       // Calculate how many seconds are left from now until that date
-      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
+      final timeUntilTimeout =
+          timeout - (now.difference(timeoutStart).inSeconds).abs();
       setState(() {
         // Switch to the voucher phase
         _animateShowConsumableFaseWidget = true;
@@ -312,7 +324,8 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("timeoutStart: $timeoutStart, now: $now");
       debugPrint("Difference: ${timeoutStart.difference(now)}");
       // Calculate how many seconds are left from now until that date
-      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
+      final timeUntilTimeout =
+          timeout - (now.difference(timeoutStart).inSeconds).abs();
       final deckSize = data['current_deck_size'] as int;
       final currentPot = data['current_pot'] as int;
       final round = data['round_number'] as int;
@@ -330,6 +343,7 @@ class GameScreenState extends State<GameScreen> {
         _maxRounds = data['max_rounds'];
         _gold = data['players_money'];
         _blind = data['blind'];
+        _handCards = [];
       });
     });
 
@@ -356,7 +370,8 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("timeoutStart: $timeoutStart, now: $now");
       debugPrint("Difference: ${timeoutStart.difference(now)}");
       // Calculate how many seconds are left from now until that date
-      final timeUntilTimeout = timeout - now.difference(timeoutStart).inSeconds;
+      final timeUntilTimeout =
+          timeout - (now.difference(timeoutStart).inSeconds).abs();
       setState(() {
         // Switch to the game phase
         _animateShowChooseBlindFaseWidget = true;
@@ -390,7 +405,8 @@ class GameScreenState extends State<GameScreen> {
         return winnerData['winner_username'] == widget.hostName;
       });
 
-      await Future.delayed(const Duration(milliseconds: 5000));
+      final time = _playedCards.where((card) => card.isScored).length + 1;
+      await Future.delayed(Duration(seconds: time));
       wsClient.disconnect();
       if (!mounted) return;
       useWinLoseDialog(context, isWinner);
@@ -404,7 +420,8 @@ class GameScreenState extends State<GameScreen> {
       bool isWinner = false;
       isWinner = !eliminatedPlayers.contains(widget.hostName);
       if (!isWinner) {
-        await Future.delayed(const Duration(milliseconds: 1000));
+        final time = _playedCards.where((card) => card.isScored).length + 1;
+        await Future.delayed(Duration(seconds: time));
         wsClient.disconnect();
         if (!mounted) return;
         useWinLoseDialog(context, isWinner);

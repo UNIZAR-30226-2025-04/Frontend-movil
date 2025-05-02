@@ -195,6 +195,7 @@ class _LobbyScreen extends State<LobbyScreen> {
             shopConsumables: [],
             consumablesUsed: [],
             shopPackages: [],
+            currentPot: 0,
           ),
         ),
       );

@@ -1,12 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:nogler/screens/home/home_screen.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
+import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 import 'package:nogler/widgets/player_box_consumables.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:playing_cards/playing_cards.dart';
 
 /// Displays a dialog showing the types of hands in the game.
 Future<void> showHandTypes(BuildContext context) async {
@@ -214,69 +212,38 @@ Widget _buildDataRow(
 }
 
 /// Displays a dialog to choose a joker, a consumible item or a card.
-Future<PurchasableItemInfo?> showVoucherPackDialog(
+Future<List<PurchasableItemInfo>?> showVoucherPackDialog(
   BuildContext context,
   int subtype,
   List<PurchasableItemInfo> availableItems,
+  int maxSelected,
 ) async {
-  // Lists to hold the displayed items and selected index
-  List<PurchasableItemInfo> displayedItems = [];
   List<int> selectedIndexes = [];
 
-  return await showDialog<PurchasableItemInfo>(
+  return await showDialog<List<PurchasableItemInfo>>(
     context: context,
     barrierDismissible: false, // Prevents closing the dialog by tapping outside
     builder: (BuildContext context) {
       String title = "";
       String subtitle = "";
       Widget content = const SizedBox();
-      int maxChoices = 1; // Default max choices
-      int maxSelected = 1; // Default max selected
-
-      // Check if the available items are empty
-      if (displayedItems.isEmpty) {
-        // If subtype is "StandardNormal", "SpectralJumbo" or "BuffoonNormal"
-        // set the max choices and displayed items accordingly
-        switch (subtype) {
-          // Standard Normal
-          case 3:
-            maxChoices = 3;
-            displayedItems = _getRandomItems(availableItems, maxChoices);
-            maxSelected = 3;
-            break;
-          // Spectral Jumbo
-          case 2:
-            maxChoices = 2;
-            displayedItems = _getRandomItems(availableItems, maxChoices);
-            maxSelected = 1;
-            break;
-          // Buffoon Normal
-          case 1:
-            maxChoices = 2;
-            displayedItems = _getRandomItems(availableItems, maxChoices);
-            maxSelected = 1;
-            break;
-          default:
-            displayedItems = _getRandomItems(availableItems, 1);
-        }
-      }
 
       // Set the title and subtitle based on the subtype
       switch (subtype) {
         // Standard Normal
-        case 3:
+        case 1:
           title = "Standard Pack";
-          subtitle = "Choose up to 3";
-          break;
-        // Spectral Jumbo
-        case 2:
-          title = "Voucher Pack";
-          subtitle = "SPECTRAL";
+          subtitle = "Choose up to $maxSelected";
           break;
         // Buffoon Normal
-        case 1:
+        case 2:
           title = "Mystery Pack";
           subtitle = "BUFFOON";
+          break;
+        // Spectral Jumbo
+        case 3:
+          title = "Voucher Pack";
+          subtitle = "SPECTRAL";
           break;
         default:
           title = "Unknown Pack";
@@ -285,7 +252,7 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
       // Set the content of the dialog based on the subtype
       content = StatefulBuilder(
         builder: (context, setState) {
-          return _buildSelectableRow(displayedItems, selectedIndexes, (index) {
+          return _buildSelectableRow(availableItems, selectedIndexes, (index) {
             setState(() {
               if (selectedIndexes.contains(index)) {
                 selectedIndexes.remove(index);
@@ -295,7 +262,7 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
                 debugPrint("Added index: $index");
               }
             });
-          }, maxChoices: maxChoices);
+          }, maxSelected: maxSelected);
         },
       );
       // Show the dialog with the custom content
@@ -304,7 +271,7 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: Colors.transparent,
         child: Container(
-          width: (150 * displayedItems.length).toDouble(),
+          width: (150 * availableItems.length).toDouble(),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: const Color(0xFF2C3454),
@@ -341,13 +308,14 @@ Future<PurchasableItemInfo?> showVoucherPackDialog(
               ElevatedButton(
                 onPressed: () {
                   if (selectedIndexes.isNotEmpty) {
-                    Navigator.of(
-                      context,
-                    ).pop(displayedItems[selectedIndexes.first]);
+                    final selectedItems =
+                        selectedIndexes.map((i) => availableItems[i]).toList();
+                    Navigator.of(context).pop(selectedItems);
                   }
                 },
+
                 child: Text(
-                  maxChoices > 2 ? "Choose" : "Choose 1",
+                  "Choose",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -615,7 +583,7 @@ Widget _buildSelectableRow(
   List<PurchasableItemInfo> items,
   List<int> selectedIndexes,
   Function(int) onSelect, {
-  int maxChoices = 1,
+  required int maxSelected,
 }) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -626,7 +594,7 @@ Widget _buildSelectableRow(
           final isSelected = selectedIndexes.contains(index);
           // Check if the item is disabled
           final isDisabled =
-              !isSelected && selectedIndexes.length >= maxChoices;
+              !isSelected && selectedIndexes.length >= maxSelected;
 
           return GestureDetector(
             onTap: () {
@@ -638,7 +606,9 @@ Widget _buildSelectableRow(
             child: _buildCard(
               item.type,
               item.subtype,
-              item.cardName,
+              item.rank,
+              item.suit,
+              item.overlay,
               isSelected: isSelected,
               isDisabled: isDisabled,
             ),
@@ -651,7 +621,9 @@ Widget _buildSelectableRow(
 Widget _buildCard(
   String type,
   int assetName,
-  String cardName, {
+  String rank,
+  String suit,
+  int overlay, {
   bool isSelected = false,
   bool isDisabled = false,
 }) {
@@ -698,13 +670,38 @@ Widget _buildCard(
               child:
                   type == 'card'
                       // If the item is a card, build a card widget
-                      ? buildCard(getSelectableCardFromAssetName(cardName))
+                      ? buildCard(
+                        MainCardsState().createCardFromServerData({
+                          "Rank": rank,
+                          "Suit": suit,
+                          "Enhancement": overlay,
+                        }),
+                      )
                       // Otherwise, load the image from assets
-                      : Image.asset(
-                        getImagePathBySubtype(assetName, type),
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.error, color: Colors.red);
-                        },
+                      : Container(
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.white70, width: 1),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black,
+                              offset: Offset(2, 2),
+                              blurRadius: 3,
+                              spreadRadius: 1.25,
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.asset(
+                            getImagePathBySubtype(assetName, type),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.error, color: Colors.red);
+                            },
+                          ),
+                        ),
                       ),
             ),
           ),
@@ -728,20 +725,6 @@ Widget _buildCard(
   );
 }
 
-/// Picks a random subset of available items (up to maxChoices)
-List<PurchasableItemInfo> _getRandomItems(
-  List<PurchasableItemInfo> availableItems,
-  int maxChoices,
-) {
-  final random = Random();
-  // If there are fewer available items than maxChoices, return all of them
-  int itemsToSelect = min(maxChoices, availableItems.length);
-  return List<PurchasableItemInfo>.generate(
-    itemsToSelect,
-    (index) => availableItems[random.nextInt(availableItems.length)],
-  );
-}
-
 /// Returns the image path based on the item's subtype
 String getImagePathBySubtype(int subtype, String type) {
   switch (type) {
@@ -754,79 +737,4 @@ String getImagePathBySubtype(int subtype, String type) {
     default:
       return "images/consumables/death.png";
   }
-}
-
-/// Converts an asset name into a SelectableCard widget
-SelectableCard getSelectableCardFromAssetName(String assetName) {
-  final card = parseCardCode(assetName);
-  return SelectableCard(
-    card: card,
-    overlay: 0,
-    isNew: false,
-    isDiscarding: false,
-    isSelected: false,
-    rank: '',
-    suit: '',
-  );
-}
-
-/// Parses a card code string into a PlayingCard object
-PlayingCard parseCardCode(String code) {
-  final rankChar = code.substring(0, code.length - 1);
-  final suitChar = code[code.length - 1];
-
-  // Determine suit from last character
-  Suit suit;
-  switch (suitChar.toUpperCase()) {
-    case 'H':
-      suit = Suit.hearts;
-      break;
-    case 'D':
-      suit = Suit.diamonds;
-      break;
-    case 'S':
-      suit = Suit.spades;
-      break;
-    case 'C':
-      suit = Suit.clubs;
-      break;
-    default:
-      throw Exception("Invalid suit");
-  }
-
-  // Determine card value from first part of string
-  CardValue value;
-  switch (rankChar) {
-    case 'A':
-      value = CardValue.ace;
-    case 'K':
-      value = CardValue.king;
-    case 'Q':
-      value = CardValue.queen;
-    case 'J':
-      value = CardValue.jack;
-    case '2':
-      value = CardValue.two;
-    case '3':
-      value = CardValue.three;
-    case '4':
-      value = CardValue.four;
-    case '5':
-      value = CardValue.five;
-    case '6':
-      value = CardValue.six;
-    case '7':
-      value = CardValue.seven;
-    case '8':
-      value = CardValue.eight;
-    case '9':
-      value = CardValue.nine;
-    case '10':
-      value = CardValue.ten;
-    default:
-      throw Exception(
-        "Invalid rank: $rankChar",
-      ); // Throw an exception if invalid rank
-  }
-  return PlayingCard(suit, value);
 }

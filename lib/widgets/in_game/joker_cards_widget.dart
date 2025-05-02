@@ -49,7 +49,9 @@ class JokerCardsState extends State<JokerCards> {
           index: -1, // Not used
           type: "owned joker",
           subtype: jokerInfo.subtype,
-          cardName: "",
+          rank: '',
+          suit: '',
+          overlay: 0,
         );
         jokersOwned.add(auxJokerInfo);
         _updateIndex();

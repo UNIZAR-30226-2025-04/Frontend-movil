@@ -10,7 +10,9 @@ class PurchasableItemInfo {
     required this.index,
     required this.type,
     required this.subtype,
-    required this.cardName,
+    required this.rank,
+    required this.suit,
+    required this.overlay,
   });
 
   /// Price of the card
@@ -26,9 +28,11 @@ class PurchasableItemInfo {
 
   /// String type among these values: "joker" or "owned joker", "consumable" or "owned consumable", "package"
   final String type;
-  // TODO, add a description of the joker
+
   final int subtype;
-  String cardName = "";
+  String rank = "";
+  String suit = "";
+  int overlay = 0;
 }
 
 class Joker extends StatefulWidget {
@@ -123,6 +127,7 @@ class JokerState extends State<Joker> {
                   widget.purchasableItemInfo.type == "owned consumable")
               ? Image.asset(
                 getConsumableImageBySubtype(widget.purchasableItemInfo.subtype),
+                fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Text(
                     "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",

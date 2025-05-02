@@ -89,4 +89,10 @@ List<Map<String, String>> cardOverlay = [
     'overlayName': 'Glass card',
     'overlayDescription': 'x2 each played glass card',
   },
+  {
+    // No overlay
+    'overlay': 'images/cards_overlay/glassDemo3.png',
+    'overlayName': '',
+    'overlayDescription': '',
+  },
 ];

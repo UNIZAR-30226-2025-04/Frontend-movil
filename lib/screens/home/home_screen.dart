@@ -107,6 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
               shopConsumables: [],
               consumablesUsed: [],
               shopPackages: [],
+              currentPot: 0,
             ),
           ),
         );
@@ -175,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
             List<PurchasableItemInfo> shopConsumables = [];
             List<PurchasableItemInfo> consumablesUsed = [];
             List<PurchasableItemInfo> shopPackages = [];
-            //List<PurchasableItemInfo> packagesUsed = [];
+            final currentPot = data['current_pot']; 
             if (data['phase'] == 'shop') {
               // Parse owned jokers with correct id from shop items
               final rerollableItems =
@@ -202,7 +203,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       index: -1,
                       type: "owned joker",
                       subtype: jokerData['id'],
-                      cardName: '',
+                      rank: '',
+                      suit: '',
+                      overlay: 0,
                     );
                   }).toList() ??
                   [];
@@ -225,7 +228,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       index: 0,
                       type: joker['type'],
                       subtype: joker['joker_id'],
-                      cardName: '',
+                      rank: '',
+                      suit: '',
+                      overlay: 0,
                     ),
                   );
                 }
@@ -262,38 +267,37 @@ class _HomeScreenState extends State<HomeScreen> {
                           index: -1,
                           type: "owned consumable",
                           subtype: consumableData['value'],
-                          cardName: '',
+                          rank: '',
+                          suit: '',
+                          overlay: 0,
                         );
                       })
                       .toList() ??
                   [];
 
               // Parse the shop jokers from fixed_modifiers
-
               for (var consumable in data['shop_items']['fixed_modifiers']) {
                 shopConsumables.add(
                   PurchasableItemInfo(
                     price: consumable['price'],
                     id: consumable['id'],
                     index: 0,
-                    type: "consumable",
+                    type: 'consumable',
                     subtype: consumable['modifier_id'],
-                    cardName: '',
+                    rank: '',
+                    suit: '',
+                    overlay: 0,
                   ),
                 );
               }
-              debugPrint(
-                "🃏🃏fixed_modifiers length: ${fixedModifiers.length}",
-              );
+
               // Filter: remove from shopJokers the jokers already owned
               shopConsumables.removeWhere(
                 (shopConsumable) => consumablesOwned.any(
                   (ownedConsumable) => ownedConsumable.id == shopConsumable.id,
                 ),
               );
-              debugPrint(
-                "🃏🃏fixed_modifiers length: ${fixedModifiers.length}",
-              );
+
               // Parse the shop packages
               for (var package in data['shop_items']['fixed_packs']) {
                 shopPackages.add(
@@ -303,7 +307,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     index: 0,
                     type: 'package',
                     subtype: package['pack_type'],
-                    cardName: '',
+                    rank: '',
+                    suit: '',
+                    overlay: 0,
                   ),
                 );
               }
@@ -319,7 +325,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       type: "owned joker",
                       subtype:
                           jokerData['id'], // subtype sigue siendo el id original
-                      cardName: '',
+                      rank: '',
+                      suit: '',
+                      overlay: 0,
                     );
                   }).toList() ??
                   [];
@@ -333,7 +341,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           index: -1,
                           type: "owned consumable",
                           subtype: consumableData['value'],
-                          cardName: '',
+                          rank: '',
+                          suit: '',
+                          overlay: 0,
                         );
                       })
                       .toList() ??
@@ -349,7 +359,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         index: -1,
                         type: "owned consumable",
                         subtype: consumableData['value'],
-                        cardName: '',
+                        rank: '',
+                        suit: '',
+                        overlay: 0,
                       );
                     })
                     .toList() ??
@@ -365,11 +377,11 @@ class _HomeScreenState extends State<HomeScreen> {
             final now = DateTime.now();
             debugPrint("timeoutStart: $timeoutStart, now: $now");
             debugPrint("Difference: ${timeoutStart.difference(now)}");
-            
+
             // Calculate how many seconds are left from now until that date
             final timeUntilTimeout =
                 (gameTimeouts[data['phase']] ?? 0) -
-                now.difference(timeoutStart).inSeconds;
+                (now.difference(timeoutStart).inSeconds).abs();
             Navigator.of(context).pushReplacement(
               PageTransition(
                 type: PageTransitionType.fade,
@@ -396,6 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   consumablesOwned: consumablesOwned,
                   consumablesUsed: consumablesUsed,
                   shopPackages: shopPackages,
+                  currentPot: currentPot,
                 ),
               ),
             );

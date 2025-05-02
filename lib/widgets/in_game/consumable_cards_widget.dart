@@ -56,7 +56,9 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
         index: -1, // Not used
         type: "owned consumable",
         subtype: consumableInfo.subtype,
-        cardName: "",
+        rank: '',
+        suit: '',
+        overlay: 0,
       );
       _consumableOwned.add(auxConsumableInfo);
       debugPrint("Consumible añadido en la lista");
@@ -174,7 +176,9 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
         index: -1, // Not used
         type: "owned consumable",
         subtype: jokerInfo.subtype,
-        cardName: "",
+        rank: '',
+        suit: '',
+        overlay: 0,
       );
       consumableUsed.add(auxJokerInfo);
     });
