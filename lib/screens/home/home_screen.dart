@@ -108,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
               consumablesUsed: [],
               shopPackages: [],
               currentPot: 0,
+              priceReroll: 0,
             ),
           ),
         );
@@ -176,7 +177,8 @@ class _HomeScreenState extends State<HomeScreen> {
             List<PurchasableItemInfo> shopConsumables = [];
             List<PurchasableItemInfo> consumablesUsed = [];
             List<PurchasableItemInfo> shopPackages = [];
-            final currentPot = data['current_pot']; 
+            final currentPot = data['current_pot'];
+            final priceReroll = data['player_data']['next_reroll_price'] ?? 0;
             if (data['phase'] == 'shop') {
               // Parse owned jokers with correct id from shop items
               final rerollableItems =
@@ -221,6 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 final jokers = selectedReroll['jokers'] as List<dynamic>? ?? [];
 
                 for (var joker in jokers) {
+                  if (joker['id'] < 0) continue;
                   shopJokers.add(
                     PurchasableItemInfo(
                       price: joker['price'],
@@ -235,13 +238,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
               }
-
-              // Filter: remove from shopJokers the jokers already owned
-              shopJokers.removeWhere(
-                (shopConsumable) => jokersOwned.any(
-                  (ownedJoker) => ownedJoker.id == shopConsumable.id,
-                ),
-              );
 
               // Parse owned consumables with correct id from shop items
               final fixedModifiers =
@@ -290,13 +286,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }
-
-              // Filter: remove from shopJokers the jokers already owned
-              shopConsumables.removeWhere(
-                (shopConsumable) => consumablesOwned.any(
-                  (ownedConsumable) => ownedConsumable.id == shopConsumable.id,
-                ),
-              );
 
               // Parse the shop packages
               for (var package in data['shop_items']['fixed_packs']) {
@@ -409,6 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   consumablesUsed: consumablesUsed,
                   shopPackages: shopPackages,
                   currentPot: currentPot,
+                  priceReroll: priceReroll,
                 ),
               ),
             );

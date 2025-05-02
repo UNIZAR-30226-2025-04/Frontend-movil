@@ -134,10 +134,18 @@ class WebSocketClient {
   }
 
   /// Send a message to the WebSocket server.
-  Future<void> sendMessage(String event, dynamic data) async {
+  Future<void> sendMessage(
+    String event, [
+    dynamic first,
+    dynamic second,
+  ]) async {
     if (socket.connected) {
-      socket.emit(event, data);
-      debugPrint("📤 Sent message to event '$event': $data");
+      if (second != null) {
+        socket.emit(event, [first, second]);
+      } else {
+        socket.emit(event, first);
+      }
+      debugPrint("📤 Sent message to event '$event': $first, $second");
     } else {
       debugPrint("⚠ Cannot send message, WebSocket is disconnected.");
     }

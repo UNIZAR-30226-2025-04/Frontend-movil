@@ -23,6 +23,7 @@ class ShopFaseWidget extends StatefulWidget {
     required this.gold,
     required this.shopConsumables,
     required this.shopPackages,
+    required this.priceReroll,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -32,11 +33,12 @@ class ShopFaseWidget extends StatefulWidget {
   final GlobalKey<SellWidgetState> sellWidgetKey;
   final Function(int)? onBuy;
   final Function(int)? onSell;
-  final Function(int)? onReroll;
+  final Function(int, int)? onReroll;
   final List<PurchasableItemInfo> shopJokers;
   final int gold;
   final List<PurchasableItemInfo> shopConsumables;
   final List<PurchasableItemInfo> shopPackages;
+  final int priceReroll;
 
   @override
   State<ShopFaseWidget> createState() => ShopFaseWidgetState();
@@ -83,7 +85,6 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
         break;
       case 2: // Buffoon Normal Pack
         for (var jokerEntry in purchasedJokers) {
-          // Cada entry es algo como {"Juglares": [{id: 1, sell_price: 1}]}
           jokerEntry.forEach((type, jokerList) {
             for (var joker in jokerList) {
               items.add(
@@ -184,6 +185,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
       widget.onSell?.call(remainingMoney);
     });
 
+    // Listerner for a sold voucher
     wsClient.addEventListener("pack_purchased", (data) async {
       purchasedCards = [];
       purchasedJokers = [];
@@ -196,7 +198,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
       final packType = data["pack_type"];
       final maxSelected = data["max_selectable"];
       int remainingMoney = data["remaining_money"];
-      debugPrint("💾 Cartas: $purchasedCards");
+      debugPrint("💾 Cards: $purchasedCards");
       debugPrint("🃏 Jokers: $purchasedJokers");
       debugPrint("🎟️ Vouchers: $purchasedVouchers");
       final itemId = data["item_id"];
@@ -261,8 +263,10 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
         selectionsMap.remove("selectedJokers");
       }
 
+      // Send the selected items to the server
       wsClient.sendMessage("choose_pack_items", {itemId, selectionsMap});
 
+      // Listener for the completion of the pack selection
       wsClient.addEventListener("pack_selection_complete", (data) {
         switch (packType) {
           case 2: // Buffoon Normal Pack
@@ -323,6 +327,7 @@ class ShopFaseWidgetState extends State<ShopFaseWidget> {
           shopJokers: widget.shopJokers,
           shopConsumables: widget.shopConsumables,
           shopPackages: widget.shopPackages,
+          priceReroll: widget.priceReroll,
         ),
         Visibility(
           visible: buyWidgetVisible,

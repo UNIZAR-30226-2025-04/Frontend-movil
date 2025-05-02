@@ -48,6 +48,7 @@ class GameScreen extends StatefulWidget {
     required this.consumablesUsed,
     required this.shopPackages,
     required this.currentPot,
+    required this.priceReroll,
   });
   final int round;
   final String hostName;
@@ -72,6 +73,7 @@ class GameScreen extends StatefulWidget {
   final List<PurchasableItemInfo> consumablesUsed;
   final List<PurchasableItemInfo> shopPackages;
   final int currentPot;
+  final int priceReroll;
   @override
   GameScreenState createState() => GameScreenState();
 }
@@ -144,9 +146,11 @@ class GameScreenState extends State<GameScreen> {
   List<PurchasableItemInfo> _shopJokers = [];
   List<PurchasableItemInfo> _shopConsumables = [];
   List<PurchasableItemInfo> _shopPackages = [];
+  int _priceReroll = 0;
   @override
   void initState() {
     super.initState();
+    _priceReroll = widget.priceReroll;
     _currentPot = widget.currentPot;
     _shopConsumables = widget.shopConsumables;
     _shopPackages = widget.shopPackages;
@@ -231,7 +235,7 @@ class GameScreenState extends State<GameScreen> {
         _shopJokers = [];
         _shopConsumables = [];
         _shopPackages = [];
-
+        _priceReroll = data['next_reroll_price'];
         // Extracting jokers from the event data
         if (data['shop']['rerolled_items'] != null) {
           for (var item in data['shop']['rerolled_items']) {
@@ -752,12 +756,13 @@ class GameScreenState extends State<GameScreen> {
                                     });
                                   });
                                 },
-                                onReroll: (value) {
+                                onReroll: (value, value2) {
                                   WidgetsBinding.instance.addPostFrameCallback((
                                     _,
                                   ) {
                                     setState(() {
-                                      _gold = value;
+                                      _priceReroll = value;
+                                      _gold = value2;
                                     });
                                   });
                                 },
@@ -765,6 +770,7 @@ class GameScreenState extends State<GameScreen> {
                                 gold: _gold,
                                 shopConsumables: _shopConsumables,
                                 shopPackages: _shopPackages,
+                                priceReroll: _priceReroll,
                               ),
                             ),
                           )

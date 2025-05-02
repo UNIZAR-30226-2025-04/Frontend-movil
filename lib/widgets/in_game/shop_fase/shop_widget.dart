@@ -15,16 +15,18 @@ class ShopWidget extends StatefulWidget {
     required this.shopJokers,
     required this.shopConsumables,
     required this.shopPackages,
+    required this.priceReroll,
   });
 
   final GlobalKey<BuyWidgetState> buyWidgetKey;
   final GlobalKey<JokerCardsState> ownedJokersWidgetKey;
   final Future<void>? Function() onDraggedItem;
   final Future<void>? Function() onDroppedItem;
-  final Function(int)? onReroll;
+  final Function(int, int)? onReroll;
   final List<PurchasableItemInfo> shopJokers;
   final List<PurchasableItemInfo> shopConsumables;
   final List<PurchasableItemInfo> shopPackages;
+  final int priceReroll;
   @override
   State<ShopWidget> createState() => ShopWidgetState();
 }
@@ -79,6 +81,7 @@ class ShopWidgetState extends State<ShopWidget> {
       debugPrint("📡 Received rerolled jokers: $data");
       final jokers = data['new_jokers']['jokers'] as List<dynamic>;
       shopJokers = [];
+      widget.onReroll?.call(data['next_reroll_cost'], data['remaining_money']);
       setState(() {
         shopJokers =
             jokers.map<PurchasableItemInfo>((joker) {
@@ -142,7 +145,6 @@ class ShopWidgetState extends State<ShopWidget> {
                     // Reroll button
                     ElevatedButton(
                       onPressed: () {
-                        widget.onReroll?.call(5);
                         wsClient.sendMessage("reroll_shop", {});
                       },
                       style: ElevatedButton.styleFrom(
@@ -155,8 +157,8 @@ class ShopWidgetState extends State<ShopWidget> {
                         ),
                         minimumSize: const Size.fromHeight(50),
                       ),
-                      child: const Text(
-                        "Reroll\n\$5",
+                      child: Text(
+                        "Reroll\n\$${widget.priceReroll}",
                         textAlign: TextAlign.center,
                       ),
                     ),

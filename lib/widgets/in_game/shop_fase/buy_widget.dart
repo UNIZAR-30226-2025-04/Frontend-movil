@@ -66,10 +66,11 @@ class BuyWidgetState extends State<BuyWidget> {
             case "joker":
               if (widget.gold >= dragged.data.price &&
                   widget.jokerCardsKey.currentState!.jokersOwned.length < 5) {
-                wsClient.sendMessage("buy_joker", {
+                wsClient.sendMessage(
+                  "buy_joker",
                   dragged.data.id,
                   dragged.data.price,
-                });
+                );
                 widget.shopWidgetKey.currentState?.removeJoker(
                   dragged.data.index,
                   false,
@@ -78,10 +79,11 @@ class BuyWidgetState extends State<BuyWidget> {
               break;
             case "consumable":
               if (widget.gold >= dragged.data.price) {
-                wsClient.sendMessage("buy_voucher", {
+                wsClient.sendMessage(
+                  "buy_voucher",
                   dragged.data.id,
                   dragged.data.price,
-                });
+                );
                 widget.shopWidgetKey.currentState?.removeConsumable(
                   dragged.data.index,
                   false,
@@ -98,10 +100,11 @@ class BuyWidgetState extends State<BuyWidget> {
                   (dragged.data.subtype != 2 ||
                       widget.jokerCardsKey.currentState!.jokersOwned.length <
                           5)) {
-                wsClient.sendMessage("buy_pack", {
+                wsClient.sendMessage(
+                  "buy_pack",
                   dragged.data.id,
                   dragged.data.price,
-                });
+                );
                 widget.shopWidgetKey.currentState?.removePackage(
                   dragged.data.index,
                 );
