@@ -578,6 +578,92 @@ Future<void> useWinLoseDialog(BuildContext context, bool winner) async {
   );
 }
 
+/// Dialog shown when we press the exit button in game to confirm wheter exiting lobby or not
+Future<void> exitGameDialog(
+  BuildContext context,
+  VoidCallback? callback,
+) async {
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return PopScope(
+        canPop: false,
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            width: 50,
+            height: 120,
+            decoration: BoxDecoration(
+              color: Color(0xFF2A2A3B),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                // Title of the dialog
+                Text(
+                  "Exit game?",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //spacing: 20,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // Exit ws connection
+                        callback!();
+
+                        // Go to main menu
+                        Navigator.pushReplacement(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: const HomeScreen(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF2A2A3B),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        side: const BorderSide(
+                          color: Colors.blueAccent,
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Text("Yes", style: TextStyle(color: Colors.white)),
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Close the dialog
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        "No",
+                        style: TextStyle(color: Colors.black87),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 /// Buils a selectable row of cards
 Widget _buildSelectableRow(
   List<PurchasableItemInfo> items,

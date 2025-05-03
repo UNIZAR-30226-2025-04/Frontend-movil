@@ -190,7 +190,7 @@ class ShopWidgetState extends State<ShopWidget> {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          margin: const EdgeInsets.symmetric(horizontal: 6),
                           child: _cardAndPrice(
                             updateIndex(shopJokers[index], index),
                           ),

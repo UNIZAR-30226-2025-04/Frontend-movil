@@ -133,8 +133,6 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                             );
                                             // Move friend to invitedFriends and delete it in nonInvitedFriends
                                             setState(() {
-                                              //TODO, entiendo que esto en cuanto a integracion le falta algo,
-                                              // ya que hace falta comunicar a los demas usuarios de la sala
                                               invitedFriends.add(
                                                 nonInvitedFriends[index],
                                               );
@@ -190,7 +188,8 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                       ),
                                     ),
                                     title: Text(
-                                      invitedFriends[index]['username'], style: TextStyle(
+                                      invitedFriends[index]['username'],
+                                      style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -211,8 +210,6 @@ Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
                                             );
                                             // Move friend to NonInvitedFriends and delete it in invitedFriends
                                             setState(() {
-                                              //TODO, entiendo que esto en cuanto a integracion le falta algo,
-                                              // ya que hace falta comunicar a los demas usuarios de la sala
                                               nonInvitedFriends.add(
                                                 invitedFriends[index],
                                               );

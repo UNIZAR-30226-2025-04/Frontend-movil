@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/dialogs/game_dialogs.dart';
 
 /// A settings button widget.
 /// Displays a settings icon that can be tapped to open a settings panel.
@@ -19,12 +20,11 @@ class SettingsButton extends StatelessWidget {
       ),
       child: IconButton(
         icon: Icon(
-          Icons.settings,
+          Icons.close,
           color: const Color.fromARGB(255, 57, 231, 136),
           size: 25,
         ),
-        //TODO, puesto para cambiar entre fase de juego y tienda, cambiar a posteriori
-        onPressed: onPressed,
+        onPressed: () => exitGameDialog(context, onPressed),
       ),
     );
   }

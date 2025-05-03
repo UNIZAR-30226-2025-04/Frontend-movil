@@ -88,18 +88,6 @@ class JokerCardsState extends State<JokerCards> {
   void initState() {
     super.initState();
     jokersOwned = widget.jokersOwned;
-    /*
-    jokersOwned.add(
-      PurchasableItemInfo(
-        price: 10,
-        id: 14,
-        index: -1,
-        type: "owned joker",
-        subtype: 14,
-        cardName: "",
-      ),
-    );
-    */
     _updateIndex();
   }
 
@@ -158,7 +146,7 @@ class JokerCardsState extends State<JokerCards> {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          margin: const EdgeInsets.symmetric(horizontal: 6),
                           child: Joker(
                             keyWidget: widget.sellWidgetKey,
                             purchasableItemInfo: jokersOwned[index],
