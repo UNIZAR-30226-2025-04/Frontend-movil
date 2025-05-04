@@ -286,7 +286,7 @@ class SidebarState extends State<Sidebar> {
           ),
         ),
 
-        SizedBox(height: 2),
+        SizedBox(height: 4),
 
         // Displays game multipliers and levels.
         GestureDetector(
@@ -327,7 +327,7 @@ class SidebarState extends State<Sidebar> {
           ),
         ),
 
-        SizedBox(height: 2),
+        SizedBox(height: 4),
 
         // Displays additional player statistics
         Column(
@@ -466,7 +466,7 @@ class SidebarState extends State<Sidebar> {
   Widget _buildLabelAndValue(String label, String value, Color color) {
     return Container(
       width: 85,
-      height: 46,
+      height: 50,
       padding: EdgeInsets.all(1),
       decoration: BoxDecoration(
         color: const Color(0xFF495a8f),
@@ -487,7 +487,7 @@ class SidebarState extends State<Sidebar> {
           ),
 
           Container(
-            width: 80,
+            width: 65,
             height: 23,
             padding: EdgeInsets.all(1),
             decoration: BoxDecoration(

@@ -510,13 +510,13 @@ class JokerState extends State<Joker> {
     },
     {
       // Standard Normal
-      'package': 'images/packages/Standard_Normal_1.png',
+      'package': 'images/packages/pack_cartasxcf.png',
       'packageName': 'Standard Normal',
       'packageDescription': '',
     },
     {
       // Buffon Normal
-      'package': 'images/packages/Buffoon_Normal_2.png',
+      'package': 'images/packages/pack_jokers.png',
       'packageName': 'Buffoon Normal',
       'packageDescription': '',
     },
