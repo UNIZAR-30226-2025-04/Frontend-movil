@@ -102,84 +102,99 @@ class JokerState extends State<Joker> {
         widget.purchasableItemInfo.type == "joker" ||
         widget.purchasableItemInfo.type == "owned joker";
 
-    return Container(
-      width: isJoker ? 49 : 57,
-      height: height,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: isJoker ? BorderRadius.circular(5) : null,
-        border: isJoker ? Border.all(color: Colors.white70, width: 1) : null,
-        boxShadow: [
-          if (isJoker)
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(2, 2), // Position of the shadow
-              blurRadius: 3, // Blur of the image
-              spreadRadius: 1.25, // Size of the shadow
-            ),
-        ],
-      ),
-
-      child:
-          // Consumables images
-          (widget.purchasableItemInfo.type == "consumable" ||
-                  widget.purchasableItemInfo.type == "owned consumable")
-              ? Image.asset(
-                getConsumableImageBySubtype(widget.purchasableItemInfo.subtype),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Text(
-                    "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  );
-                },
-              )
-              : (widget.purchasableItemInfo.type == "joker" ||
-                  widget.purchasableItemInfo.type == "owned joker")
-              ? Image.asset(
-                getJokerImageBySubtype(widget.purchasableItemInfo.subtype),
-                errorBuilder: (context, error, stackTrace) {
-                  return Text(
-                    "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  );
-                },
-              )
-              : (widget.purchasableItemInfo.type == "package")
-              ? Image.asset(
-                getPackageImageBySubtype(widget.purchasableItemInfo.subtype),
-                errorBuilder: (context, error, stackTrace) {
-                  return Text(
-                    "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  );
-                },
-              )
-              : Text(
-                "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
+    return Stack(
+      children: [
+        Container(
+          width: isJoker ? 49 : 57,
+          height: height,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: isJoker ? BorderRadius.circular(5) : null,
+            border:
+                isJoker ? Border.all(color: Colors.white70, width: 1) : null,
+            boxShadow: [
+              if (isJoker)
+                BoxShadow(
+                  color: Colors.black,
+                  offset: Offset(2, 2), // Position of the shadow
+                  blurRadius: 3, // Blur of the image
+                  spreadRadius: 1.25, // Size of the shadow
                 ),
-              ),
+            ],
+          ),
+
+          child:
+              // Consumables images
+              (widget.purchasableItemInfo.type == "consumable" ||
+                      widget.purchasableItemInfo.type == "owned consumable")
+                  ? Image.asset(
+                    getConsumableImageBySubtype(
+                      widget.purchasableItemInfo.subtype,
+                    ),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Text(
+                        "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      );
+                    },
+                  )
+                  : (widget.purchasableItemInfo.type == "joker" ||
+                      widget.purchasableItemInfo.type == "owned joker")
+                  ? Image.asset(
+                    getJokerImageBySubtype(widget.purchasableItemInfo.subtype),
+                    errorBuilder: (context, error, stackTrace) {
+                      return Text(
+                        "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      );
+                    },
+                  )
+                  : (widget.purchasableItemInfo.type == "package")
+                  ? Image.asset(
+                    getPackageImageBySubtype(
+                      widget.purchasableItemInfo.subtype,
+                    ),
+                    errorBuilder: (context, error, stackTrace) {
+                      return Text(
+                        "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      );
+                    },
+                  )
+                  : Text(
+                    "${widget.purchasableItemInfo.type} ${widget.purchasableItemInfo.id}",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+        ),
+        if (isJoker)
+          Container(
+            width: 49,
+            height: height,
+            child: Image.asset("images/cards_overlay/joker overlay.png"),
+          ),
+      ],
     );
   }
 
