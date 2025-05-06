@@ -189,7 +189,7 @@ class JokerState extends State<Joker> {
                   ),
         ),
         if (isJoker)
-          Container(
+          SizedBox(
             width: 49,
             height: height,
             child: Image.asset("images/cards_overlay/joker overlay.png"),
