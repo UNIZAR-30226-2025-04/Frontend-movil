@@ -339,30 +339,64 @@ class JokerState extends State<Joker> {
       'consumableDescription': '',
     },
     {
-      // Clearance sale consumable
-      'consumable': 'images/consumables/Clearance_Sale.png',
-      'consumableName': 'Evil Eye',
-      'consumableDescription':
-          'Evil Eye -1 to the multiplier of the target’s most-used hand type',
+      // 1. abbeyRoad consumable
+      'consumable': 'images/consumables/voucher abbey road.png',
+      'consumableName': 'abbeyRoad',
+      'consumableDescription': 'Vacio por el momento',
     },
     {
-      // Death consumable
-      'consumable': 'images/consumables/death.png',
-      'consumableName': 'Lucky Glove',
-      'consumableDescription': 'Lucky Glove +15 Chips to all Flush hands',
+      // 2. Blond consumable
+      'consumable': 'images/consumables/voucher blond.png',
+      'consumableName': 'Blond',
+      'consumableDescription': 'Vacio por el momento',
     },
     {
-      // Crystal ball consumable
-      'consumable': 'images/consumables/Crystal_Ball.png',
-      'consumableName': 'Hot Streak',
-      'consumableDescription': 'Hot Streak 2x Multiplier',
+      // 3. Damn consumable
+      'consumable': 'images/consumables/voucher damn.png',
+      'consumableName': 'Damn',
+      'consumableDescription': 'Vacio por el momento',
     },
     {
-      // Crystal ball consumable
-      'consumable': 'images/consumables/Crystal_Ball.png',
-      'consumableName': 'Coin Purse',
-      'consumableDescription':
-          'Coin Purse gains+2 Gold at the start of each round',
+      // 4. Extremoduro consumable
+      'consumable': 'images/consumables/voucher extremoduro.png',
+      'consumableName': 'Extremoduro',
+      'consumableDescription': 'Vacio por el momento',
+    },
+    {
+      // 5. PabloHoney consumable
+      'consumable': 'images/consumables/voucher pablo honey.png',
+      'consumableName': 'PabloHoney',
+      'consumableDescription': 'Vacio por el momento',
+    },
+    {
+      // 6. RAM consumable
+      'consumable': 'images/consumables/voucher RAM.png',
+      'consumableName': 'RAM',
+      'consumableDescription': 'Vacio por el momento',
+    },
+    {
+      // 7. Victor consumable
+      'consumable': 'images/consumables/voucher victor.png',
+      'consumableName': 'Victor',
+      'consumableDescription': 'Vacio por el momento',
+    },
+    {
+      // 8. Weathus consumable
+      'consumable': 'images/consumables/voucher weathus.png',
+      'consumableName': 'Weathus',
+      'consumableDescription': 'Vacio por el momento',
+    },
+    {
+      // 9. Weezer consumable
+      'consumable': 'images/consumables/voucher weezer .png',
+      'consumableName': 'Weezer',
+      'consumableDescription': 'Vacio por el momento',
+    },
+    {
+      // 10. Deftones consumable
+      'consumable': 'images/consumables/voucher deftones.png',
+      'consumableName': 'Deftones',
+      'consumableDescription': 'Vacio por el momento',
     },
   ];
 
@@ -525,13 +559,13 @@ class JokerState extends State<Joker> {
     },
     {
       // Standard Normal
-      'package': 'images/packages/pack_cartasxcf.png',
+      'package': 'images/packages/Standard_Normal_1.png',
       'packageName': 'Standard Normal',
       'packageDescription': '',
     },
     {
       // Buffon Normal
-      'package': 'images/packages/pack_jokers.png',
+      'package': 'images/packages/Buffoon_Normal_2.png',
       'packageName': 'Buffoon Normal',
       'packageDescription': '',
     },

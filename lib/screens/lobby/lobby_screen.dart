@@ -39,6 +39,7 @@ class _LobbyScreen extends State<LobbyScreen> {
 
   String _publicPrivateButton = "Public";
   bool hasFetched = false; // To ensure the data is fetched only once
+  bool _newChatMessage = false;
 
   // Needed to define which Scaffold we are refering
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -95,6 +96,9 @@ class _LobbyScreen extends State<LobbyScreen> {
           'message': data["message"] ?? "",
           'time': TimeOfDay.now().format(context),
         });
+        if (chatMessages.last["username"] != widget.hostName) {
+          _newChatMessage = true;
+        }
       });
 
       debugPrint("🟩 Total messages: ${chatMessages.length}");
@@ -379,22 +383,40 @@ class _LobbyScreen extends State<LobbyScreen> {
                             //Chat button
                             Row(
                               children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 12,
+                                Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        padding: const EdgeInsets.all(12),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _newChatMessage = false;
+                                          debugPrint(
+                                            "Eliminada notificacion nuevo mensaje: $_newChatMessage",
+                                          );
+                                        });
+                                        _scaffoldKey.currentState
+                                            ?.openEndDrawer();
+                                      },
+                                      child: const Icon(
+                                        Icons.chat_bubble,
+                                        color: Colors.black,
+                                      ),
                                     ),
-                                  ),
-                                  onPressed: () {
-                                    // Open Drawer using the key previously mentioned
-                                    _scaffoldKey.currentState?.openEndDrawer();
-                                  },
-                                  child: Icon(
-                                    Icons.chat_bubble,
-                                    color: Colors.black,
-                                  ),
+                                    Visibility(
+                                      visible: _newChatMessage,
+                                      child: Positioned(
+                                        left: 46,
+                                        child: Icon(
+                                          Icons.circle,
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 //Add some space between
                                 SizedBox(width: 15),

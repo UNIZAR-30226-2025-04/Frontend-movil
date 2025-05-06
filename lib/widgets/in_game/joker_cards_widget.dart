@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
@@ -15,6 +16,7 @@ class JokerCards extends StatefulWidget {
     required this.shopFaseWidgetKey,
     required this.sellWidgetKey,
     required this.jokersOwned,
+    required this.onScore,
   });
 
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -22,6 +24,7 @@ class JokerCards extends StatefulWidget {
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
   final GlobalKey<SellWidgetState> sellWidgetKey;
   final List<PurchasableItemInfo> jokersOwned;
+  final void Function(int) onScore;
 
   @override
   JokerCardsState createState() => JokerCardsState();
@@ -35,7 +38,6 @@ class JokerCardsState extends State<JokerCards> {
   /// if it isn't, we add the joker to the list and remove it from the shop
   /// if it is we do nothing
   ///   this function is called from "buy_widget"
-  //TODO, comprobar dinero tambien del usuario
   Future<void> addJokerOwned(
     PurchasableItemInfo jokerInfo,
     bool isPackage,
@@ -76,6 +78,85 @@ class JokerCardsState extends State<JokerCards> {
         debugPrint("La lista esta vacia");
       }
     });
+  }
+
+  Future<void> triggerJokers(
+    bool lastCard,
+    SelectableCard currentCardPlayed,
+    List<bool> jokersTriggered,
+  ) async {
+    int showJoker = 400;
+    // Trigger the joker effects after cards are played
+    if (lastCard) {
+      for (int i = 0; i < jokersOwned.length; i++) {
+        if (jokersTriggered[i]) {
+          await Future.delayed(Duration(milliseconds: showJoker), () {
+            widget.onScore(i);
+          });
+          // After 400 ms we hide the onScore message
+
+          await Future.delayed(Duration(milliseconds: showJoker), () {
+            widget.onScore(i);
+          });
+        }
+      }
+    }
+    // Trigger the joker effects when a card is played
+    else {
+      for (int i = 0; i < jokersOwned.length; i++) {
+        final joker = jokersOwned[i];
+        if (jokersTriggered[i]) {
+          switch (joker.subtype) {
+            // BIRDIFICACION joker
+            case 8:
+              List<String> myList = ['1', '4', '6', '7'];
+              if (myList.contains(currentCardPlayed.score)) {
+                await Future.delayed(Duration(milliseconds: showJoker), () {
+                  widget.onScore(i);
+                });
+                await Future.delayed(Duration(milliseconds: showJoker), () {
+                  widget.onScore(i);
+                });
+              }
+              break;
+            // Lirili Larila
+            case 11:
+              if (currentCardPlayed.score == "2") {
+                await Future.delayed(Duration(milliseconds: showJoker), () {
+                  widget.onScore(i);
+                });
+                await Future.delayed(Duration(milliseconds: showJoker), () {
+                  widget.onScore(i);
+                });
+              }
+              break;
+            // Crowave joker
+            case 14:
+              if (currentCardPlayed.suit == "d" ||
+                  currentCardPlayed.suit == "h") {
+                await Future.delayed(Duration(milliseconds: showJoker), () {
+                  widget.onScore(i);
+                });
+                await Future.delayed(Duration(milliseconds: showJoker), () {
+                  widget.onScore(i);
+                });
+              }
+              break;
+            // Bicycle
+            case 15:
+              if (currentCardPlayed.score == "2") {
+                await Future.delayed(Duration(milliseconds: showJoker), () {
+                  widget.onScore(i);
+                });
+                await Future.delayed(Duration(milliseconds: showJoker), () {
+                  widget.onScore(i);
+                });
+              }
+              break;
+          }
+        }
+      }
+    }
   }
 
   void _updateIndex() {

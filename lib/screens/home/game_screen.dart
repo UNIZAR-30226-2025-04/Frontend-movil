@@ -117,6 +117,11 @@ class GameScreenState extends State<GameScreen> {
   bool _showShopFaseWidget = false;
   bool _showConsumableFaseWidget = false;
 
+  bool _showJokerPoints = false;
+  double relativePositionJokerPoints = 50;
+
+  bool _newChatMessage = false;
+
   List<SelectableCard> _handCards = [];
   List<PurchasableItemInfo> _jokersOwned = [];
 
@@ -185,6 +190,9 @@ class GameScreenState extends State<GameScreen> {
           'message': data["message"] ?? "",
           'time': TimeOfDay.now().format(context),
         });
+        if (chatMessages.last["username"] != widget.hostName) {
+          _newChatMessage = true;
+        }
       });
 
       debugPrint("🟩 Total messages: ${chatMessages.length}");
@@ -496,6 +504,15 @@ class GameScreenState extends State<GameScreen> {
     }
   }
 
+  void onScore(int index) {
+    debugPrint("Inicio Animacion game_screen $index ");
+    setState(() {
+      _showJokerPoints = !_showJokerPoints;
+      relativePositionJokerPoints = 215.0 + (60.0 * index);
+    });
+    debugPrint("Animacion game_screen $index ");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -513,6 +530,18 @@ class GameScreenState extends State<GameScreen> {
         child: SafeArea(
           child: Stack(
             children: [
+              // Show the message "Activated!" when a joker is triggered
+              Visibility(
+                visible: _showJokerPoints,
+                child: Positioned(
+                  top: 90,
+                  left: relativePositionJokerPoints,
+                  child: Text(
+                    "Activated!",
+                    style: TextStyle(color: Colors.yellow, fontSize: 14),
+                  ),
+                ),
+              ),
               // Main row containing the Sidebar and game UI elements
               Row(
                 children: [
@@ -579,18 +608,45 @@ class GameScreenState extends State<GameScreen> {
                         // Section for the Joker cards at the top left
                         Padding(
                           padding: const EdgeInsets.only(left: 20),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .start, // Aligns JokerCards to the left
+                          child: Stack(
                             children: [
-                              JokerCards(
-                                key: _jokerCardsKey,
-                                shopWidgetKey: _shopWidgetKey,
-                                buyWidgetKey: _buyWidgetKey,
-                                shopFaseWidgetKey: _shopFaseWidgetKey,
-                                sellWidgetKey: _sellWidgetKey,
-                                jokersOwned: _jokersOwned,
+                              Visibility(
+                                visible: false,
+                                child: Positioned(
+                                  top: 50,
+                                  left: 10,
+                                  child: Container(
+                                    height: 200,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    child: Text(
+                                      "+2",
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 40,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Jokers
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .start, // Aligns JokerCards to the left
+                                children: [
+                                  JokerCards(
+                                    key: _jokerCardsKey,
+                                    shopWidgetKey: _shopWidgetKey,
+                                    buyWidgetKey: _buyWidgetKey,
+                                    shopFaseWidgetKey: _shopFaseWidgetKey,
+                                    sellWidgetKey: _sellWidgetKey,
+                                    jokersOwned: _jokersOwned,
+                                    onScore: onScore,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -651,10 +707,11 @@ class GameScreenState extends State<GameScreen> {
                                     });
                                   });
                                 },
-                                onPlayCards: (playedCards) {
+                                onPlayCards: (playedCards, jokersTriggered) {
                                   _playedCards = playedCards;
                                   _selectedCardsKey.currentState?.showCards(
                                     playedCards,
+                                    jokersTriggered,
                                   );
                                 },
                                 onDiscardUpdated: (value) {
@@ -832,15 +889,36 @@ class GameScreenState extends State<GameScreen> {
                   children: [
                     TimerWidget(timeout: _timeout),
                     const SizedBox(width: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.all(12),
-                      ),
-                      onPressed: () {
-                        _scaffoldKey.currentState?.openEndDrawer();
-                      },
-                      child: const Icon(Icons.chat_bubble, color: Colors.black),
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.all(12),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _newChatMessage = false;
+                              debugPrint(
+                                "Eliminada notificacion nuevo mensaje: $_newChatMessage",
+                              );
+                            });
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
+                          child: const Icon(
+                            Icons.chat_bubble,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Visibility(
+                          visible: _newChatMessage,
+                          child: Positioned(
+                            left: 46,
+                            child: Icon(Icons.circle, color: Colors.orange),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(width: 8),
 

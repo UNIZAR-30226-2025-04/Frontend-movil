@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
+import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 
 /// A widget that displays a row of played cards temporarily.
 class SelectedCards extends StatefulWidget {
+  final GlobalKey<JokerCardsState> jokerCardsKey;
   final Function(int)? onBlueScore;
-  const SelectedCards({super.key, this.onBlueScore});
+  const SelectedCards({
+    super.key,
+    required this.jokerCardsKey,
+    this.onBlueScore,
+  });
 
   @override
   SelectedCardsState createState() => SelectedCardsState();
@@ -19,7 +25,10 @@ class SelectedCardsState extends State<SelectedCards> {
 
   /// Displays a list of cards with animated effects.
   /// Only cards marked with `isScored == true` will show the scoring animation
-  Future<void> showCards(List<SelectableCard> newCards) async {
+  Future<void> showCards(
+    List<SelectableCard> newCards,
+    List<bool> jokersTriggered,
+  ) async {
     setState(() {
       cards = newCards;
       bouncingIndices.clear();
@@ -33,6 +42,8 @@ class SelectedCardsState extends State<SelectedCards> {
         appearingIndices.add(i);
       });
     }
+
+    debugPrint("lista de jokers activados $jokersTriggered ");
 
     int score = 0;
     // After all cards are shown, animate them with a bounce effect
@@ -62,7 +73,15 @@ class SelectedCardsState extends State<SelectedCards> {
         scoringIndices.remove(i);
       });
 
-      // Show joker animations if cards need it
+      // check if last card was played
+      if (i == newCards.length - 1) {
+        // Trigger joker animation after last card played
+        widget.jokerCardsKey.currentState?.triggerJokers(
+          true,
+          card,
+          jokersTriggered,
+        );
+      }
     }
   }
 
@@ -129,7 +148,7 @@ class SelectedCardsState extends State<SelectedCards> {
                   child: Text(
                     '+${card.score}',
                     style: TextStyle(
-                      color: Colors.yellow,
+                      color: Colors.blue,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                       shadows: [Shadow(blurRadius: 2, color: Colors.black)],

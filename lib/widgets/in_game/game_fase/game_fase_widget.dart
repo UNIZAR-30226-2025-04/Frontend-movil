@@ -31,7 +31,7 @@ class GameFaseWidget extends StatelessWidget {
   final GlobalKey<SelectedCardsState> selectedCardsKey;
   final int remainingCards;
   final Function(int) onDeckUpdated;
-  final Function(List<SelectableCard>) onPlayCards;
+  final Function(List<SelectableCard>, List<bool>) onPlayCards;
   final Function(int) onDiscardUpdated;
   final Function(int) onPlayingUpdated;
   final Function(int)? onScore;
@@ -53,6 +53,7 @@ class GameFaseWidget extends StatelessWidget {
 
         SelectedCards(
           key: selectedCardsKey,
+          jokerCardsKey: jokerCardsKey,
           onBlueScore: onBlueScore,
         ), // Widget displaying selected cards
 

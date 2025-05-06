@@ -7,7 +7,7 @@ import 'package:playing_cards/playing_cards.dart';
 /// A widget that displays a set of main cards with draggable behavior.
 class MainCards extends StatefulWidget {
   final Function(int)? onDeckUpdated;
-  final void Function(List<SelectableCard>)? onPlayCards;
+  final void Function(List<SelectableCard>, List<bool>)? onPlayCards;
   final Function(int)? onDiscardUpdated;
   final Function(int)? onPlayingdUpdated;
   final Function(int)? onScore;
@@ -243,6 +243,9 @@ class MainCardsState extends State<MainCards> {
       final handType = data['hand_type'] as int;
       final score = data['total_score'] as int;
       final List<dynamic> scoreCards = data['scored_cards'] as List<dynamic>;
+      final List<bool> jokersTriggered = List<bool>.from(
+        data['jokersTriggered'],
+      );
       final time = scoreCards.length + 1;
       final scoreToAdd = handScoresList[handType];
 
@@ -252,7 +255,7 @@ class MainCardsState extends State<MainCards> {
         }
       });
       // Notify the parent widget about the played cards
-      widget.onPlayCards?.call(selectedCards);
+      widget.onPlayCards?.call(selectedCards, jokersTriggered);
       widget.onBlueScore?.call(scoreToAdd);
       widget.onRedScore?.call(redScore);
       widget.onHandType?.call(handType);
@@ -289,7 +292,7 @@ class MainCardsState extends State<MainCards> {
       await Future.delayed(Duration(seconds: time));
 
       // Clear the played cards from the parent widget
-      widget.onPlayCards?.call([]);
+      widget.onPlayCards?.call([], []);
 
       widget.onScore?.call(totalScore);
       if (totalScore >= widget.blind) {
