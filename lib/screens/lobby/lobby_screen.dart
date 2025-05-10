@@ -201,6 +201,7 @@ class _LobbyScreen extends State<LobbyScreen> {
             shopPackages: [],
             currentPot: 0,
             priceReroll: 0,
+            lobbyUsers: lobbyUsers,
           ),
         ),
       );

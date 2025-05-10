@@ -507,7 +507,11 @@ Future<void> showUseConsumableDialog(
 }
 
 /// Dialog to display wheter you won or lost the game
-Future<void> useWinLoseDialog(BuildContext context, bool winner) async {
+Future<void> useWinLoseDialog(
+  BuildContext context,
+  bool winner,
+  int points,
+) async {
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -557,7 +561,7 @@ Future<void> useWinLoseDialog(BuildContext context, bool winner) async {
                     children: [
                       Text("Points", style: TextStyle(color: Colors.white70)),
                       Text(
-                        "90000",
+                        "$points",
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,

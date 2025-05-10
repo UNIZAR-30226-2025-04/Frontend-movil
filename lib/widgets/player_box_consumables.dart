@@ -96,7 +96,9 @@ class PlayerBoxConsumablesState extends State<PlayerBoxConsumables>
 
                     // Player name
                     Text(
-                      widget.playerName,
+                      (widget.playerName.length > 8)
+                          ? "${widget.playerName.substring(0, 7)}..."
+                          : widget.playerName,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,

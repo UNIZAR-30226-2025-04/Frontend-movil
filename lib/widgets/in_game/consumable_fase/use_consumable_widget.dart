@@ -87,27 +87,6 @@ class UseConsumableWidgetState extends State<UseConsumableWidget> {
                   },
                 );
               }
-
-              /*
-              if (dragged.data.subtype == 1) {
-                widget.ownedConsumableCardsKey.currentState
-                    ?.removeConsumableOwned(dragged.data);
-                widget.usedConsumableCardsKey.currentState?.addConsumableUsed(
-                  dragged.data,
-                );
-              } else {
-                showUseConsumableDialog(
-                  context,
-                  dragged.data,
-                  widget.ownKey,
-                  widget.lobbyUsers,
-                  () {
-                    widget.ownedConsumableCardsKey.currentState
-                        ?.removeConsumableOwned(dragged.data);
-                  },
-                );
-              }
-              */
               break;
           }
         },

@@ -65,8 +65,23 @@ class _HomeScreenState extends State<HomeScreen> {
       await const FlutterSecureStorage().write(key: 'code', value: code);
       // Auto-connect when screen loads
       await wsClient.initialize();
+      List<Map<String, dynamic>> players = [];
+      wsClient.addEventListener("game_phase_player_info", (data) {
+        final users = data['players'] as List<dynamic>;
+        players =
+            users.map<Map<String, dynamic>>((player) {
+              return {
+                'username': player['username'] ?? 'Unknown',
+                'avatarImage': player['icon'] ?? 0,
+              };
+            }).toList();
+
+        debugPrint("🚂🚂🚂🚂 Got players $players");
+      });
       wsClient.addEventListener("lobby_info", (data) {
         wsClient.sendMessage("start_game", code);
+        // Get IA player
+        wsClient.sendMessage("request_game_phase_player_info", code);
       });
       // Listen for game start event
       wsClient.addEventListener("starting_next_blind", (data) async {
@@ -109,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
               shopPackages: [],
               currentPot: 0,
               priceReroll: 0,
+              lobbyUsers: players,
             ),
           ),
         );
@@ -144,6 +160,15 @@ class _HomeScreenState extends State<HomeScreen> {
         wsClient.removeEventListener("error");
         debugPrint("👤 New user joined: $data");
         final round = data['current_round'] as int? ?? 0;
+        final users = data['players'] as List<dynamic>;
+        List<Map<String, dynamic>> players = [];
+        players =
+            users.map<Map<String, dynamic>>((player) {
+              return {
+                'username': player['username'] ?? 'Unknown',
+                'avatarImage': player['icon'] ?? 0,
+              };
+            }).toList();
         final parsedList =
             (data['player_data']['current_hand'] as List<dynamic>?) ?? [];
         final playerData = data['player_data'] ?? {};
@@ -399,6 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   shopPackages: shopPackages,
                   currentPot: currentPot,
                   priceReroll: priceReroll,
+                  lobbyUsers: players,
                 ),
               ),
             );

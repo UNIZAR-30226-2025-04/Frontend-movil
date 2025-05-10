@@ -65,23 +65,7 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
   @override
   void initState() {
     super.initState();
-
-    // Listen for lobby info
-    wsClient.addEventListener("lobby_info", (data) {
-      debugPrint("📡 Received lobby info: $data");
-
-      final players = data['players'] as List<dynamic>;
-      setState(() {
-        lobbyUsers =
-            players.map<Map<String, dynamic>>((player) {
-              return {
-                'username': player['username'] ?? 'Unknown',
-                'avatarImage': player['user_icon'] ?? 0,
-              };
-            }).toList();
-      });
-      debugPrint("Players currently on the lobby $lobbyUsers");
-    });
+    lobbyUsers = widget.lobbyUsers;
   }
 
   Future<void> getLobbyInfo() async {
