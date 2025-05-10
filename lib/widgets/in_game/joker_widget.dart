@@ -558,7 +558,7 @@ List<Map<String, String>> consumablesMap = [
     'consumable': 'images/consumables/voucher RAM.png',
     'consumableName': 'RAM',
     'consumableDescription':
-        'Remove one joker from other player’s rack chosen randomly',
+        'Multiplies your chips to a random number between 1 and 3',
     'consumableTargets': '0',
   },
   {

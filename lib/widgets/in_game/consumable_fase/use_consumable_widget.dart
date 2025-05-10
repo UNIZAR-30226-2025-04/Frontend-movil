@@ -70,6 +70,9 @@ class UseConsumableWidgetState extends State<UseConsumableWidget> {
                 });
                 widget.ownedConsumableCardsKey.currentState
                     ?.removeConsumableOwned(dragged.data);
+                widget.usedConsumableCardsKey.currentState?.addConsumableUsed(
+                  dragged.data,
+                );
               }
               // Use consumable to molest others
               else {

@@ -110,9 +110,11 @@ class _LobbyScreen extends State<LobbyScreen> {
       final lobbyId = data['lobby_id'];
 
       if (username != null && lobbyId == widget.lobbyCode) {
-        setState(() {
-          lobbyUsers.removeWhere((user) => user['username'] == username);
-        });
+        if (mounted) {
+          setState(() {
+            lobbyUsers.removeWhere((user) => user['username'] == username);
+          });
+        }
       }
     });
 

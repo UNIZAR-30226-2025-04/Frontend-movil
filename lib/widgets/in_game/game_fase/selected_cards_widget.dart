@@ -37,7 +37,7 @@ class SelectedCardsState extends State<SelectedCards> {
     });
     // Show the cards one by one with a delay
     for (int i = 0; i < newCards.length; i++) {
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(Duration(milliseconds: 100));
       setState(() {
         appearingIndices.add(i);
       });
@@ -52,7 +52,7 @@ class SelectedCardsState extends State<SelectedCards> {
       if (score == 0) {
         score += int.tryParse(card.blueScore) ?? 0;
       }
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(Duration(milliseconds: 100));
       if (!mounted) return;
 
       if (!card.isScored) continue; // Skip non-scoring cards
@@ -64,7 +64,7 @@ class SelectedCardsState extends State<SelectedCards> {
       score += int.tryParse(card.score) ?? 0;
       // Wait before resetting the bounce and score effect
       widget.onBlueScore?.call(score);
-      await Future.delayed(const Duration(milliseconds: 600));
+      await Future.delayed(const Duration(milliseconds: 300));
 
       if (!mounted) return;
 
@@ -107,21 +107,21 @@ class SelectedCardsState extends State<SelectedCards> {
     final isScoring = scoringIndices.contains(index);
 
     return AnimatedOpacity(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 150),
       opacity: isAppearing ? 1.0 : 0.0,
       child: AnimatedSlide(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 150),
         offset: isAppearing ? Offset.zero : const Offset(0, 0.3),
         child: Stack(
           alignment: Alignment.center,
           children: [
             AnimatedSlide(
               offset: isBouncing ? const Offset(0, -0.2) : Offset.zero,
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 150),
               curve: Curves.easeOut,
               child: AnimatedScale(
                 scale: isBouncing ? 1.1 : 1.0,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 150),
                 curve: Curves.easeInOut,
                 child: AspectRatio(
                   aspectRatio: 65 / 90,
@@ -134,7 +134,7 @@ class SelectedCardsState extends State<SelectedCards> {
                 top: 0,
                 child: TweenAnimationBuilder<double>(
                   tween: Tween(begin: -10.0, end: -30.0),
-                  duration: const Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 200),
                   curve: Curves.easeOut,
                   builder: (context, value, child) {
                     return Opacity(

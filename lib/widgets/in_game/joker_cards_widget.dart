@@ -225,7 +225,7 @@ class JokerCardsState extends State<JokerCards> {
                       },
                       builder: (context, candidateData, rejectedData) {
                         return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 150),
                           curve: Curves.easeInOut,
                           margin: const EdgeInsets.symmetric(horizontal: 6),
                           child: Joker(

@@ -135,7 +135,7 @@ class GameScreenState extends State<GameScreen> {
   int _remainingCards = 0;
   int _discardingCards = 3;
   int _playingCards = 3;
-  int animationTime = 500;
+  int animationTime = 250;
   late int _timeout;
   int _blueScore = 0;
   int _redScore = 0;
@@ -198,23 +198,7 @@ class GameScreenState extends State<GameScreen> {
 
       debugPrint("🟩 Total messages: ${chatMessages.length}");
     });
-    // Listen for lobby info
-    /*
-    wsClient.addEventListener("lobby_info", (data) {
-      debugPrint("📡 Received lobby info: $data");
 
-      final players = data['players'] as List<dynamic>;
-      setState(() {
-        lobbyUsers =
-            players.map<Map<String, dynamic>>((player) {
-              return {
-                'username': player['username'] ?? 'Unknown',
-                'avatarImage': player['user_icon'] ?? 0,
-              };
-            }).toList();
-      });
-    });
-    */
     // Listen for starting shop phase
     wsClient.addEventListener("starting_shop", (data) async {
       debugPrint("🏪 Received starting shop phase: $data");
@@ -309,9 +293,23 @@ class GameScreenState extends State<GameScreen> {
     });
     wsClient.addEventListener("starting_vouchers", (data) {
       debugPrint("🎴 Received starting voucher phase: $data");
+      consumablesUsed = [];
       final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
       final now = DateTime.now();
       final timeout = data['timeout'];
+      final users = data['users_in_lobby'] as List<dynamic>;
+      List<Map<String, dynamic>> players = [];
+      players =
+          users.map<Map<String, dynamic>>((player) {
+            return {
+              'username': player['username'] ?? 'Unknown',
+              'avatarImage': player['icon'] ?? 0,
+            };
+          }).toList();
+      debugPrint("List of players in voucher phase is $players");
+
+      lobbyUsers = players;
+
       debugPrint("timeoutStart: $timeoutStart, now: $now");
       debugPrint("Difference: ${timeoutStart.difference(now)}");
       // Calculate how many seconds are left from now until that date
@@ -916,8 +914,9 @@ class GameScreenState extends State<GameScreen> {
                     const SizedBox(width: 8),
 
                     SettingsButton(
-                      onPressed: () {
+                      onPressed: () async {
                         wsClient.sendMessage('exit_lobby', widget.lobbyCode);
+                        await Future.delayed(const Duration(milliseconds: 500));
                         wsClient.disconnect();
                       },
                     ),
