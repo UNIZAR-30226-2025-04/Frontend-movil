@@ -924,6 +924,7 @@ class GameScreenState extends State<GameScreen> {
 
                     SettingsButton(
                       onPressed: () {
+                        wsClient.sendMessage('exit_lobby', widget.lobbyCode);
                         wsClient.disconnect();
                       },
                     ),

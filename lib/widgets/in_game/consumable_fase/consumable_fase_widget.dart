@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
@@ -43,8 +44,12 @@ class ConsumableFaseWidget extends StatefulWidget {
 }
 
 class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
+  List<Map<String, dynamic>> lobbyUsers = [];
+  bool hasFetched = true;
+
   bool useConsumableWidgetVisible = false;
   final WebSocketClient wsClient = WebSocketClient();
+
   Future<void> onDraggedConsumable() async {
     setState(() {
       useConsumableWidgetVisible = true;
@@ -58,7 +63,43 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    // Listen for lobby info
+    wsClient.addEventListener("lobby_info", (data) {
+      debugPrint("📡 Received lobby info: $data");
+
+      final players = data['players'] as List<dynamic>;
+      setState(() {
+        lobbyUsers =
+            players.map<Map<String, dynamic>>((player) {
+              return {
+                'username': player['username'] ?? 'Unknown',
+                'avatarImage': player['user_icon'] ?? 0,
+              };
+            }).toList();
+      });
+      debugPrint("Players currently on the lobby $lobbyUsers");
+    });
+  }
+
+  Future<void> getLobbyInfo() async {
+    // Get the code of the lobby in local storage
+    final lobbyCode = await const FlutterSecureStorage().read(key: 'code');
+
+    // Ask for lobby info
+    wsClient.sendMessage("get_lobby_info", lobbyCode);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Get the lobby info
+    if (hasFetched) {
+      getLobbyInfo();
+      hasFetched = false;
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -70,14 +111,13 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
               child: UseConsumableWidget(
                 ownedConsumableCardsKey: widget.ownedConsumableCardsKey,
                 usedConsumableCardsKey: widget.usedConsumableCardsKey,
-                lobbyUsers: widget.lobbyUsers,
+                lobbyUsers: lobbyUsers,
                 ownKey: widget.useConsumableWidgetKey,
               ),
             ),
 
         // Space between
         SizedBox(height: 5),
-        // TODO interaccion cartas con consumibles si es que lo hacemos
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

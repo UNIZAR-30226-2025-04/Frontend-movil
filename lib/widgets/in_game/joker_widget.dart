@@ -337,66 +337,82 @@ class JokerState extends State<Joker> {
       'consumable': 'No consumable',
       'consumableName': '',
       'consumableDescription': '',
+      'consumableTargets': '',
     },
     {
       // 1. abbeyRoad consumable
       'consumable': 'images/consumables/voucher abbey road.png',
       'consumableName': 'abbeyRoad',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableDescription':
+          'Every King or Queen played scores negative points',
+      'consumableTargets': '4',
     },
     {
       // 2. Blond consumable
       'consumable': 'images/consumables/voucher blond.png',
       'consumableName': 'Blond',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableDescription':
+          'Bans up to 2 players from playing straights for 1 round.',
+      'consumableTargets': '2',
     },
     {
       // 3. Damn consumable
       'consumable': 'images/consumables/voucher damn.png',
       'consumableName': 'Damn',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableDescription': 'Divide starting chips and mult by half',
+      'consumableTargets': '3',
     },
     {
-      // 4. Extremoduro consumable
+      // 4. Rock transgresivo consumable
       'consumable': 'images/consumables/voucher extremoduro.png',
-      'consumableName': 'Extremoduro',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableName': 'Rock transgresivo',
+      'consumableDescription': 'Aces and K’s score double',
+      'consumableTargets': '0',
     },
     {
       // 5. PabloHoney consumable
       'consumable': 'images/consumables/voucher pablo honey.png',
       'consumableName': 'PabloHoney',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableDescription': 'Earn 1 dollar for each card played.',
+      'consumableTargets': '0',
     },
     {
       // 6. RAM consumable
       'consumable': 'images/consumables/voucher RAM.png',
       'consumableName': 'RAM',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableDescription':
+          'Remove one joker from other player’s rack chosen randomly',
+      'consumableTargets': '1',
     },
     {
-      // 7. Victor consumable
+      // 7. The money store consumable
       'consumable': 'images/consumables/voucher victor.png',
-      'consumableName': 'Victor',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableName': 'The money store',
+      'consumableDescription':
+          'Each black card played (spades and clubs) grants 1 dollar, +10 chips, +2 mult',
+      'consumableTargets': '0',
     },
     {
       // 8. Weathus consumable
       'consumable': 'images/consumables/voucher weathus.png',
       'consumableName': 'Weathus',
       'consumableDescription': 'Vacio por el momento',
+      'consumableTargets': '',
     },
     {
       // 9. Weezer consumable
       'consumable': 'images/consumables/voucher weezer .png',
       'consumableName': 'Weezer',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableDescription':
+          'Bans up to 4 players to play four of a kind for 1 round',
+      'consumableTargets': '4',
     },
     {
-      // 10. Deftones consumable
+      // 10. Diamond Eyes consumable
       'consumable': 'images/consumables/voucher deftones.png',
-      'consumableName': 'Deftones',
-      'consumableDescription': 'Vacio por el momento',
+      'consumableName': 'Diamond Eyes',
+      'consumableDescription': 'Subtracts from their mult the money they have.',
+      'consumableTargets': '3',
     },
   ];
 
@@ -598,3 +614,88 @@ class JokerState extends State<Joker> {
     return jokersMap[subtype]['joker'] ?? 'No joker';
   }
 }
+
+List<Map<String, String>> consumablesMap = [
+  {
+    // No consumable
+    'consumable': 'No consumable',
+    'consumableName': '',
+    'consumableDescription': '',
+    'consumableTargets': '',
+  },
+  {
+    // 1. abbeyRoad consumable
+    'consumable': 'images/consumables/voucher abbey road.png',
+    'consumableName': 'abbeyRoad',
+    'consumableDescription':
+        'Every King or Queen played scores negative points',
+    'consumableTargets': '4',
+  },
+  {
+    // 2. Blond consumable
+    'consumable': 'images/consumables/voucher blond.png',
+    'consumableName': 'Blond',
+    'consumableDescription':
+        'Bans up to 2 players from playing straights for 1 round.',
+    'consumableTargets': '2',
+  },
+  {
+    // 3. Damn consumable
+    'consumable': 'images/consumables/voucher damn.png',
+    'consumableName': 'Damn',
+    'consumableDescription': 'Divide starting chips and mult by half',
+    'consumableTargets': '3',
+  },
+  {
+    // 4. Rock transgresivo consumable
+    'consumable': 'images/consumables/voucher extremoduro.png',
+    'consumableName': 'Rock transgresivo',
+    'consumableDescription': 'Aces and K’s score double',
+    'consumableTargets': '0',
+  },
+  {
+    // 5. PabloHoney consumable
+    'consumable': 'images/consumables/voucher pablo honey.png',
+    'consumableName': 'PabloHoney',
+    'consumableDescription': 'Earn 1 dollar for each card played.',
+    'consumableTargets': '0',
+  },
+  {
+    // 6. RAM consumable
+    'consumable': 'images/consumables/voucher RAM.png',
+    'consumableName': 'RAM',
+    'consumableDescription':
+        'Remove one joker from other player’s rack chosen randomly',
+    'consumableTargets': '1',
+  },
+  {
+    // 7. The money store consumable
+    'consumable': 'images/consumables/voucher victor.png',
+    'consumableName': 'The money store',
+    'consumableDescription':
+        'Each black card played (spades and clubs) grants 1 dollar, +10 chips, +2 mult',
+    'consumableTargets': '0',
+  },
+  {
+    // 8. Weathus consumable
+    'consumable': 'images/consumables/voucher weathus.png',
+    'consumableName': 'Weathus',
+    'consumableDescription': 'Vacio por el momento',
+    'consumableTargets': '',
+  },
+  {
+    // 9. Weezer consumable
+    'consumable': 'images/consumables/voucher weezer .png',
+    'consumableName': 'Weezer',
+    'consumableDescription':
+        'Bans up to 4 players to play four of a kind for 1 round',
+    'consumableTargets': '4',
+  },
+  {
+    // 10. Diamond Eyes consumable
+    'consumable': 'images/consumables/voucher deftones.png',
+    'consumableName': 'Diamond Eyes',
+    'consumableDescription': 'Subtracts from their mult the money they have.',
+    'consumableTargets': '3',
+  },
+];

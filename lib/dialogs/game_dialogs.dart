@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/screens/home/home_screen.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/card_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
@@ -340,15 +341,26 @@ Future<void> showUseConsumableDialog(
   List<Map<String, dynamic>> lobbyUsers,
   void Function() onUse,
 ) async {
+  final wsClient = WebSocketClient();
+
+  // List for all the players selected in while throwing the voucher
+  List<String> playersSelected = [];
+  // Num of players selected
   int numSelected = 0;
 
-  bool onTap() {
+  // Triggered when a player is selected
+  bool onTap(String playerTapped) {
     bool tapped = numSelected < numMaxSelected;
-    if (tapped) numSelected++;
+    if (tapped) {
+      numSelected++;
+      playersSelected.add(playerTapped);
+    }
     return tapped;
   }
 
-  void onTapAgain() {
+  // Trigger when a player is already selected and is tapped again
+  void onTapAgain(String playerTapped) {
+    playersSelected.remove(playerTapped);
     numSelected--;
   }
 
@@ -397,6 +409,12 @@ Future<void> showUseConsumableDialog(
                           onPressed: () {
                             if (numSelected > 0) {
                               onUse();
+                              wsClient.sendMessage("send_modifiers", {
+                                [
+                                  [consumable.subtype],
+                                  playersSelected,
+                                ],
+                              });
                               Navigator.of(context).pop();
                             }
                           },
