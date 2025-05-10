@@ -84,15 +84,15 @@ List<Map<String, String>> cardOverlay = [
     'overlayDescription': '',
   },
   {
-    // Glass overlay
-    'overlay': 'images/cards_overlay/glassDemo3.png',
-    'overlayName': 'Glass card',
-    'overlayDescription': 'x2 each played glass card',
+    // Fire overlay
+    'overlay': 'images/cards_overlay/fire3.gif',
+    'overlayName': 'Fire Card',
+    'overlayDescription': '+5 mult',
   },
   {
-    // No overlay
+    // Glass overlay
     'overlay': 'images/cards_overlay/glassDemo3.png',
-    'overlayName': '',
-    'overlayDescription': '',
+    'overlayName': 'Glass Card',
+    'overlayDescription': '+20 extra chips',
   },
 ];

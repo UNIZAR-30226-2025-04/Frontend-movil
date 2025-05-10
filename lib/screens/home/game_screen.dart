@@ -135,7 +135,7 @@ class GameScreenState extends State<GameScreen> {
   int _remainingCards = 0;
   int _discardingCards = 3;
   int _playingCards = 3;
-  int animationTime = 500;
+  int animationTime = 250;
   late int _timeout;
   int _blueScore = 0;
   int _redScore = 0;

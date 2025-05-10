@@ -248,7 +248,7 @@ class MainCardsState extends State<MainCards> {
       final List<bool> jokersTriggered = List<bool>.from(
         data['jokersTriggered'],
       );
-      final time = scoreCards.length + 1;
+      final time = scoreCards.length * 850;
       final scoreToAdd = handScoresList[handType];
       final goldReceived = data['gold'] as int;
       setState(() {
@@ -293,7 +293,7 @@ class MainCardsState extends State<MainCards> {
       });
 
       // Simulate a delay for the animation effect
-      await Future.delayed(Duration(seconds: time));
+      await Future.delayed(Duration(milliseconds: time));
 
       // Clear the played cards from the parent widget
       widget.onPlayCards?.call([], []);
@@ -760,8 +760,6 @@ class MainCardsState extends State<MainCards> {
   /// - Card overlay name
   Widget _buildDescription(SelectableCard selectable) {
     return Container(
-      //width: 100,
-      //height ?
       decoration: BoxDecoration(
         color: Colors.grey.shade700,
         border: Border.all(color: Colors.white, width: 2),
