@@ -236,11 +236,29 @@ class MainCardsState extends State<MainCards> {
       4, // 12: One pair
       1, // 13: High card
     ];
+    const handScoreListMult = [
+      0,
+      25, // 1: Flush five
+      22, // 2: Flush house
+      20, // 3: Five of a kind
+      50, // 4: Royal flush
+      40, // 5: Straight flush
+      15, // 6: Four of a kind
+      12, // 7: Full house
+      8, // 8: Flush
+      5, // 9: Straight
+      4, // 10: Three of a kind
+      3, // 11: Two pair
+      2, // 12: One pair
+      1, // 13: High card
+    ];
+
     // Listen for the 'played_hand' event to receive the played hand data
     wsClient.addEventListener('played_hand', (data) async {
       final selected = handCards.where((c) => c.isSelected).toList();
       final selectedCards = selected.map((c) => c).toList();
       final playedCards = data['left_plays'] as int;
+      final blueScore = data['blue_score'] as int;
       final redScore = data['red_score'] as int;
       final handType = data['hand_type'] as int;
       final score = data['total_score'] as int;
@@ -250,6 +268,7 @@ class MainCardsState extends State<MainCards> {
       );
       final time = scoreCards.length * 850;
       final scoreToAdd = handScoresList[handType];
+      final scoreToAddMult = handScoreListMult[handType];
       final goldReceived = data['gold'] as int;
       setState(() {
         gold = goldReceived;
@@ -260,8 +279,8 @@ class MainCardsState extends State<MainCards> {
       // Notify the parent widget about the played cards
       widget.onGoldUpdated?.call(goldReceived);
       widget.onPlayCards?.call(selectedCards, jokersTriggered);
+      widget.onRedScore?.call(scoreToAddMult);
       widget.onBlueScore?.call(scoreToAdd);
-      widget.onRedScore?.call(redScore);
       widget.onHandType?.call(handType);
 
       // Notify the parent widget about the number of hands left to play
@@ -295,6 +314,9 @@ class MainCardsState extends State<MainCards> {
       // Simulate a delay for the animation effect
       await Future.delayed(Duration(milliseconds: time));
 
+      widget.onRedScore?.call(redScore);
+      widget.onBlueScore?.call(blueScore);
+
       // Clear the played cards from the parent widget
       widget.onPlayCards?.call([], []);
 
@@ -305,8 +327,12 @@ class MainCardsState extends State<MainCards> {
           isReached = true;
         });
       }
-      widget.onRedScore?.call(0);
-      widget.onBlueScore?.call(0);
+
+      Future.delayed(Duration(milliseconds: 1000), () {
+        widget.onRedScore?.call(0);
+        widget.onBlueScore?.call(0);
+      });
+
       try {
         // Parse the data received from the server
         var deckSize = data['unplayed_cards'] as int;

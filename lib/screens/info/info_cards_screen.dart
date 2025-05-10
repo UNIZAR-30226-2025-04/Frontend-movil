@@ -64,12 +64,11 @@ class InfoCardsScreen extends StatelessWidget {
                           12,
                         ), // Border radius of the container
                       ),
-                      child: const Center(
-                        // Center widget to center the text
+                      child: SingleChildScrollView(
                         child: Text(
                           // Text widget to display text
-                          'Explanation of the different cards and shows the different cards with photos.',
-                          textAlign: TextAlign.center,
+                          'There are different card types, the poker cards, the joker cards and the consumable cards.\n\nThe poker cards are the ones you play in the game phase in different combinations such as straights, flushes or pairs. They allow you to score base chips in order to reach the blind.\n\nThe joker cards are random illustrations with some utility attached to them. Their effects go from adding some extra chips to adding more gold to your pocket. This effect is triggered only in the game phase.\n\n The consumable cards are the cards you can use to molest others in the lobby and apply them defunds, as well as you can buff yourself in the next round.',
+                          textAlign: TextAlign.start,
                           style: TextStyle(fontSize: 16, color: Colors.black87),
                         ),
                       ),

@@ -293,6 +293,7 @@ class GameScreenState extends State<GameScreen> {
     });
     wsClient.addEventListener("starting_vouchers", (data) {
       debugPrint("🎴 Received starting voucher phase: $data");
+      consumablesUsed = [];
       final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
       final now = DateTime.now();
       final timeout = data['timeout'];
@@ -913,8 +914,9 @@ class GameScreenState extends State<GameScreen> {
                     const SizedBox(width: 8),
 
                     SettingsButton(
-                      onPressed: () {
+                      onPressed: () async {
                         wsClient.sendMessage('exit_lobby', widget.lobbyCode);
+                        await Future.delayed(const Duration(milliseconds: 500));
                         wsClient.disconnect();
                       },
                     ),

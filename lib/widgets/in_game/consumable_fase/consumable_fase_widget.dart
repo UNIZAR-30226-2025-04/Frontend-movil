@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
@@ -68,22 +67,8 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
     lobbyUsers = widget.lobbyUsers;
   }
 
-  Future<void> getLobbyInfo() async {
-    // Get the code of the lobby in local storage
-    final lobbyCode = await const FlutterSecureStorage().read(key: 'code');
-
-    // Ask for lobby info
-    wsClient.sendMessage("get_lobby_info", lobbyCode);
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Get the lobby info
-    if (hasFetched) {
-      getLobbyInfo();
-      hasFetched = false;
-    }
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [

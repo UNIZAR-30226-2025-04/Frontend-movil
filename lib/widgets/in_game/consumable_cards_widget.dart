@@ -89,6 +89,7 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
       debugPrint("📡 Received modifiers_sended info: $data");
 
       setState(() {
+        _consumableOwned = [];
         for (var mod in data['modifiers']['Modificadores']) {
           int aux = mod['value'];
           _consumableOwned.add(
@@ -227,31 +228,6 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
   void initState() {
     super.initState();
     consumableUsed = widget.consumableUsed;
-    // Listener to receive the modifiers activated by yourself
-    wsClient.addEventListener("modifiers_activated", (data) {
-      debugPrint("📡 Received modifiers_activated info: $data");
-      List<PurchasableItemInfo> newConsumableUsed = [];
-      for (var item in data['activated']['Modificadores']) {
-        newConsumableUsed.add(
-          PurchasableItemInfo(
-            price: 0,
-            id: 0,
-            index: -1,
-            type: "owned consumable",
-            subtype: item['value'],
-            rank: "",
-            suit: "",
-            overlay: 0,
-          ),
-        );
-      }
-      debugPrint(
-        "💽 Changing old consumables $consumableUsed with the recived ones $newConsumableUsed",
-      );
-      setState(() {
-        consumableUsed = newConsumableUsed;
-      });
-    });
 
     // Listener to receive the modifiers activated by other users in the lobby
     wsClient.addEventListener("modifiers_received", (data) {
