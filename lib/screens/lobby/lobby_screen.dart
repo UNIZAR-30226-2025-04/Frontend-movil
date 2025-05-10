@@ -311,8 +311,8 @@ class _LobbyScreen extends State<LobbyScreen> {
                                       await updateVisibilityLobby(
                                         widget.lobbyCode,
                                         _publicPrivateButton == 'Public'
-                                            ? '0'
-                                            : '1',
+                                            ? '1'
+                                            : '0',
                                       );
                                     }
                                   },
