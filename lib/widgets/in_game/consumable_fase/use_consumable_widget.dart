@@ -65,10 +65,11 @@ class UseConsumableWidgetState extends State<UseConsumableWidget> {
                   "0") {
                 List<int> voucher = [];
                 voucher.add(dragged.data.subtype);
-                debugPrint("voucher activated is ${dragged.data.subtype}");
                 wsClient.sendMessage("activate_modifiers", {
                   [voucher],
                 });
+                widget.ownedConsumableCardsKey.currentState
+                    ?.removeConsumableOwned(dragged.data);
               }
               // Use consumable to molest others
               else {
