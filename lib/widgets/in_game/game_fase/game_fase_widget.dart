@@ -25,6 +25,7 @@ class GameFaseWidget extends StatelessWidget {
     required this.handCards,
     required this.jokerCardsKey,
     required this.gold,
+    required this.onGoldUpdated,
   });
 
   final GlobalKey<MainCardsState> mainCardsKey;
@@ -43,6 +44,7 @@ class GameFaseWidget extends StatelessWidget {
   final List<SelectableCard> handCards;
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final int gold;
+  final Function(int) onGoldUpdated;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +76,7 @@ class GameFaseWidget extends StatelessWidget {
           handCards: handCards,
           jokerCardsKey: jokerCardsKey,
           gold: gold,
+          onGoldUpdated: onGoldUpdated,
         ),
 
         // Action buttons and deck info at the bottom

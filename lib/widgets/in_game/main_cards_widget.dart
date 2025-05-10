@@ -18,6 +18,7 @@ class MainCards extends StatefulWidget {
   final GlobalKey<JokerCardsState> jokerCardsKey;
   final int blind;
   final int gold;
+  final Function(int)? onGoldUpdated;
   const MainCards({
     super.key,
     this.onDeckUpdated,
@@ -32,6 +33,7 @@ class MainCards extends StatefulWidget {
     required this.handCards,
     required this.jokerCardsKey,
     required this.gold,
+    this.onGoldUpdated,
   });
 
   @override
@@ -248,13 +250,15 @@ class MainCardsState extends State<MainCards> {
       );
       final time = scoreCards.length + 1;
       final scoreToAdd = handScoresList[handType];
-
+      final goldReceived = data['gold'] as int;
       setState(() {
+        gold = goldReceived;
         for (var c in selected) {
           c.blueScore = (scoreToAdd).toString();
         }
       });
       // Notify the parent widget about the played cards
+      widget.onGoldUpdated?.call(goldReceived);
       widget.onPlayCards?.call(selectedCards, jokersTriggered);
       widget.onBlueScore?.call(scoreToAdd);
       widget.onRedScore?.call(redScore);

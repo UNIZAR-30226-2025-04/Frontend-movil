@@ -758,6 +758,15 @@ class GameScreenState extends State<GameScreen> {
                                 handCards: _handCards,
                                 jokerCardsKey: _jokerCardsKey,
                                 gold: _gold,
+                                onGoldUpdated: (value) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    setState(() {
+                                      _gold = value;
+                                    });
+                                  });
+                                },
                               ),
                             ),
                           )
