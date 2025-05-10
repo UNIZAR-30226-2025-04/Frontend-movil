@@ -443,7 +443,15 @@ class MainCardsState extends State<MainCards> {
     if (discardingCards == 0 || isReached) return;
     final selected = handCards.where((c) => c.isSelected).toList();
     final discards =
-        selected.map((card) => {'rank': card.rank, 'suit': card.suit}).toList();
+        selected
+            .map(
+              (card) => {
+                'rank': card.rank,
+                'suit': card.suit,
+                'Enhancement': card.overlay,
+              },
+            )
+            .toList();
     wsClient.sendMessage("discard_cards", [discards]);
   }
 
