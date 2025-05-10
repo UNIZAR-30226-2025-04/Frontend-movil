@@ -198,23 +198,7 @@ class GameScreenState extends State<GameScreen> {
 
       debugPrint("🟩 Total messages: ${chatMessages.length}");
     });
-    // Listen for lobby info
-    /*
-    wsClient.addEventListener("lobby_info", (data) {
-      debugPrint("📡 Received lobby info: $data");
 
-      final players = data['players'] as List<dynamic>;
-      setState(() {
-        lobbyUsers =
-            players.map<Map<String, dynamic>>((player) {
-              return {
-                'username': player['username'] ?? 'Unknown',
-                'avatarImage': player['user_icon'] ?? 0,
-              };
-            }).toList();
-      });
-    });
-    */
     // Listen for starting shop phase
     wsClient.addEventListener("starting_shop", (data) async {
       debugPrint("🏪 Received starting shop phase: $data");
@@ -312,6 +296,19 @@ class GameScreenState extends State<GameScreen> {
       final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
       final now = DateTime.now();
       final timeout = data['timeout'];
+      final users = data['users_in_lobby'] as List<dynamic>;
+      List<Map<String, dynamic>> players = [];
+      players =
+          users.map<Map<String, dynamic>>((player) {
+            return {
+              'username': player['username'] ?? 'Unknown',
+              'avatarImage': player['icon'] ?? 0,
+            };
+          }).toList();
+      debugPrint("List of players in voucher phase is $players");
+
+      lobbyUsers = players;
+
       debugPrint("timeoutStart: $timeoutStart, now: $now");
       debugPrint("Difference: ${timeoutStart.difference(now)}");
       // Calculate how many seconds are left from now until that date

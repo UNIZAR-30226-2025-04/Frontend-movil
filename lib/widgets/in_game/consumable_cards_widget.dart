@@ -87,8 +87,8 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
 
     wsClient.addEventListener("modifiers_sended", (data) {
       debugPrint("📡 Received modifiers_sended info: $data");
+
       setState(() {
-        _consumableOwned = [];
         for (var mod in data['modifiers']['Modificadores']) {
           int aux = mod['value'];
           _consumableOwned.add(
