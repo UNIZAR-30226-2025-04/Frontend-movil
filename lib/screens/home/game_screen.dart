@@ -49,6 +49,7 @@ class GameScreen extends StatefulWidget {
     required this.shopPackages,
     required this.currentPot,
     required this.priceReroll,
+    required this.lobbyUsers,
   });
   final int round;
   final String hostName;
@@ -74,6 +75,7 @@ class GameScreen extends StatefulWidget {
   final List<PurchasableItemInfo> shopPackages;
   final int currentPot;
   final int priceReroll;
+  final List<Map<String, dynamic>> lobbyUsers;
   @override
   GameScreenState createState() => GameScreenState();
 }
@@ -143,7 +145,6 @@ class GameScreenState extends State<GameScreen> {
   int _gold = 400;
   int _currentPot = 0;
   int _blind = 0;
-  int _myBlind = 0;
   int _minBlind = 0;
   int _round = 0;
   int _maxRounds = 0;
@@ -155,6 +156,7 @@ class GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    lobbyUsers = widget.lobbyUsers;
     _priceReroll = widget.priceReroll;
     _currentPot = widget.currentPot;
     _shopConsumables = widget.shopConsumables;
@@ -166,7 +168,6 @@ class GameScreenState extends State<GameScreen> {
     _handCards = widget.handCards;
     _blind = widget.baseBlind;
     _minBlind = widget.baseBlind;
-    _myBlind = widget.myBlind;
     _currentDeckSize = widget.currentDeckSize;
     _updatePhaseWidgets(widget.phase);
     _timeout = widget.timeout;
@@ -198,6 +199,7 @@ class GameScreenState extends State<GameScreen> {
       debugPrint("🟩 Total messages: ${chatMessages.length}");
     });
     // Listen for lobby info
+    /*
     wsClient.addEventListener("lobby_info", (data) {
       debugPrint("📡 Received lobby info: $data");
 
@@ -212,6 +214,7 @@ class GameScreenState extends State<GameScreen> {
             }).toList();
       });
     });
+    */
     // Listen for starting shop phase
     wsClient.addEventListener("starting_shop", (data) async {
       debugPrint("🏪 Received starting shop phase: $data");
@@ -359,19 +362,6 @@ class GameScreenState extends State<GameScreen> {
       });
     });
 
-    // Listen for a blind
-    wsClient.addEventListener("blind_updated", (data) async {
-      if (_myBlind > _minBlind) {
-        setState(() {
-          _blind = data['new_blind'] as int;
-        });
-      } else {
-        setState(() {
-          _blind = _minBlind;
-        });
-      }
-    });
-
     // Listen for the next round
     wsClient.addEventListener("starting_next_blind", (data) async {
       debugPrint("📡 Next round: $data");
@@ -416,12 +406,13 @@ class GameScreenState extends State<GameScreen> {
       final bool isWinner = winners.any((winnerData) {
         return winnerData['winner_username'] == widget.hostName;
       });
+      final int points = data['winners']['points'];
 
       final time = _playedCards.where((card) => card.isScored).length + 1;
       await Future.delayed(Duration(seconds: time));
       wsClient.disconnect();
       if (!mounted) return;
-      useWinLoseDialog(context, isWinner);
+      useWinLoseDialog(context, isWinner, points);
     });
 
     /// Listen for players eliminated
@@ -431,12 +422,13 @@ class GameScreenState extends State<GameScreen> {
       final eliminatedPlayers = List<String>.from(data['eliminated_players']);
       bool isWinner = false;
       isWinner = !eliminatedPlayers.contains(widget.hostName);
+      final int points = data['high_blind_value'];
       if (!isWinner) {
         final time = _playedCards.where((card) => card.isScored).length + 1;
         await Future.delayed(Duration(seconds: time));
         wsClient.disconnect();
         if (!mounted) return;
-        useWinLoseDialog(context, isWinner);
+        useWinLoseDialog(context, isWinner, points);
       }
     });
   }
@@ -668,15 +660,7 @@ class GameScreenState extends State<GameScreen> {
                               child: ChooseBlindFaseWidget(
                                 lobbyCode: widget.lobbyCode,
                                 minBlind: _minBlind,
-                                onBlind: (value) {
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    setState(() {
-                                      _myBlind = value;
-                                    });
-                                  });
-                                },
+                                onBlind: (value) {},
                               ),
                             ),
                           )
@@ -924,6 +908,7 @@ class GameScreenState extends State<GameScreen> {
 
                     SettingsButton(
                       onPressed: () {
+                        wsClient.sendMessage('exit_lobby', widget.lobbyCode);
                         wsClient.disconnect();
                       },
                     ),

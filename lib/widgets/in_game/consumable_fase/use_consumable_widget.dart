@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/dialogs/game_dialogs.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 
@@ -22,16 +23,7 @@ class UseConsumableWidget extends StatefulWidget {
 }
 
 class UseConsumableWidgetState extends State<UseConsumableWidget> {
-  final List<Map<String, dynamic>> _lobbyUsers = [
-    {'username': "hola", 'avatarImage': 1},
-    {'username': "adios", 'avatarImage': 3},
-    {'username': "borge", 'avatarImage': 6},
-    {'username': "victor", 'avatarImage': 4},
-    {'username': "nico", 'avatarImage': 5},
-    {'username': "jotemi", 'avatarImage': 1},
-    {'username': "jotemi", 'avatarImage': 1},
-    {'username': "jotemi", 'avatarImage': 1},
-  ];
+  final WebSocketClient wsClient = WebSocketClient();
 
   // Initialized because the compiler is mad
   PurchasableItemInfo draggedItem = PurchasableItemInfo(
@@ -67,19 +59,28 @@ class UseConsumableWidgetState extends State<UseConsumableWidget> {
         onAcceptWithDetails: (DragTargetDetails<PurchasableItemInfo> dragged) {
           switch (dragged.data.type) {
             case "owned consumable":
-              if (dragged.data.subtype == 1) {
-                widget.ownedConsumableCardsKey.currentState
-                    ?.removeConsumableOwned(dragged.data);
-                widget.usedConsumableCardsKey.currentState?.addConsumableUsed(
-                  dragged.data,
-                );
-              } else {
+
+              // Use consumable for your own
+              if (consumablesMap[dragged.data.subtype]['consumableTargets'] ==
+                  "0") {
+                List<int> voucher = [];
+                voucher.add(dragged.data.subtype);
+                debugPrint("voucher activated is ${dragged.data.subtype}");
+                wsClient.sendMessage("activate_modifiers", {
+                  [voucher],
+                });
+              }
+              // Use consumable to molest others
+              else {
                 showUseConsumableDialog(
                   context,
                   dragged.data,
-                  3, //TODO, incluir el número máximo de elecciones
+                  int.parse(
+                    consumablesMap[dragged.data.subtype]['consumableTargets'] ??
+                        "-1",
+                  ),
                   widget.ownKey,
-                  _lobbyUsers,
+                  widget.lobbyUsers,
                   () {
                     widget.ownedConsumableCardsKey.currentState
                         ?.removeConsumableOwned(dragged.data);

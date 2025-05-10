@@ -13,8 +13,8 @@ class PlayerBoxConsumables extends StatefulWidget {
 
   final String playerName;
   final int playerIcon;
-  final bool Function() onTap;
-  final void Function() onTapAgain;
+  final bool Function(String) onTap;
+  final void Function(String) onTapAgain;
 
   @override
   PlayerBoxConsumablesState createState() => PlayerBoxConsumablesState();
@@ -62,11 +62,11 @@ class PlayerBoxConsumablesState extends State<PlayerBoxConsumables>
         return GestureDetector(
           onTap: () {
             if (_colorAnimation.value == Colors.blueAccent) {
-              if (widget.onTap()) {
+              if (widget.onTap(widget.playerName)) {
                 _toggleAnimation();
               }
             } else {
-              widget.onTapAgain();
+              widget.onTapAgain(widget.playerName);
               _toggleAnimation();
             }
           },
@@ -96,7 +96,9 @@ class PlayerBoxConsumablesState extends State<PlayerBoxConsumables>
 
                     // Player name
                     Text(
-                      widget.playerName,
+                      (widget.playerName.length > 8)
+                          ? "${widget.playerName.substring(0, 7)}..."
+                          : widget.playerName,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/consumable_fase_widget.dart';
 import 'package:nogler/widgets/in_game/consumable_fase/use_consumable_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
@@ -39,11 +40,12 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
   // List of Joker cards to be displayed
   List<PurchasableItemInfo> _consumableOwned = [];
 
+  final WebSocketClient wsClient = WebSocketClient();
+
   /// This function checks if the list is full (5 elements)
   /// if it isn't, we add the consumable to the list and remove it from the shop
   /// if it is we do nothing
   ///   this function is called from "buy_widget"
-  //TODO, comprobar dinero tambien del usuario
   Future<void> addConsumableOwned(
     PurchasableItemInfo consumableInfo,
     bool isPackage,
@@ -82,6 +84,28 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
   void initState() {
     super.initState();
     _consumableOwned = widget.consumableOwned;
+
+    wsClient.addEventListener("modifiers_sended", (data) {
+      debugPrint("📡 Received modifiers_sended info: $data");
+      setState(() {
+        _consumableOwned = [];
+        for (var mod in data['modifiers']['Modificadores']) {
+          int aux = mod['value'];
+          _consumableOwned.add(
+            PurchasableItemInfo(
+              price: 0,
+              id: -1,
+              index: -1,
+              type: "owned consumable",
+              subtype: aux,
+              rank: "",
+              suit: "",
+              overlay: 0,
+            ),
+          );
+        }
+      });
+    });
   }
 
   @override
@@ -166,6 +190,8 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
   // List of Joker cards to be displayed
   List<PurchasableItemInfo> consumableUsed = [];
 
+  final WebSocketClient wsClient = WebSocketClient();
+
   /// Adds the used consumable to the consumableUsed list
   Future<void> addConsumableUsed(PurchasableItemInfo jokerInfo) async {
     setState(() {
@@ -201,6 +227,53 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
   void initState() {
     super.initState();
     consumableUsed = widget.consumableUsed;
+    // Listener to receive the modifiers activated by yourself
+    wsClient.addEventListener("modifiers_activated", (data) {
+      debugPrint("📡 Received modifiers_activated info: $data");
+      List<PurchasableItemInfo> newConsumableUsed = [];
+      for (var item in data['activated']['Modificadores']) {
+        newConsumableUsed.add(
+          PurchasableItemInfo(
+            price: 0,
+            id: 0,
+            index: -1,
+            type: "owned consumable",
+            subtype: item['value'],
+            rank: "",
+            suit: "",
+            overlay: 0,
+          ),
+        );
+      }
+      debugPrint(
+        "💽 Changing old consumables $consumableUsed with the recived ones $newConsumableUsed",
+      );
+      setState(() {
+        consumableUsed = newConsumableUsed;
+      });
+    });
+
+    // Listener to receive the modifiers activated by other users in the lobby
+    wsClient.addEventListener("modifiers_received", (data) {
+      debugPrint("📡 Received modifiers_received info: $data");
+      setState(() {
+        for (var item in data['modifiers']['modifiers']) {
+          int aux = item['modifier']['value'];
+          consumableUsed.add(
+            PurchasableItemInfo(
+              price: 0,
+              id: -1,
+              index: -1,
+              type: "owned consumable",
+              subtype: aux,
+              rank: "",
+              suit: "",
+              overlay: 0,
+            ),
+          );
+        }
+      });
+    });
   }
 
   @override
