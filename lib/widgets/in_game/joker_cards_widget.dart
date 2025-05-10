@@ -85,7 +85,7 @@ class JokerCardsState extends State<JokerCards> {
     SelectableCard currentCardPlayed,
     List<bool> jokersTriggered,
   ) async {
-    int showJoker = 400;
+    int showJoker = 200;
     // Trigger the joker effects after cards are played
     if (lastCard) {
       for (int i = 0; i < jokersOwned.length; i++) {
