@@ -116,13 +116,13 @@ class MainCardsState extends State<MainCards> {
               handCards.add(card);
             });
 
-            await Future.delayed(const Duration(milliseconds: 200));
+            await Future.delayed(const Duration(milliseconds: 100));
 
             setState(() {
               card.isNew = false;
             });
 
-            await Future.delayed(const Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 150));
           }
         } else {
           // No animation needed if no cards
@@ -151,7 +151,7 @@ class MainCardsState extends State<MainCards> {
       });
 
       // Simulate a delay for the animation effect
-      await Future.delayed(const Duration(milliseconds: 350));
+      await Future.delayed(const Duration(milliseconds: 175));
 
       // Notify the parent widget about the discarded cards
       setState(() {
@@ -159,7 +159,7 @@ class MainCardsState extends State<MainCards> {
       });
 
       // Simulate a delay for the animation effect
-      await Future.delayed(const Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 150));
 
       try {
         // Parse the data received from the server
@@ -201,13 +201,13 @@ class MainCardsState extends State<MainCards> {
               handCards.add(card);
             });
 
-            await Future.delayed(const Duration(milliseconds: 200));
+            await Future.delayed(const Duration(milliseconds: 100));
 
             setState(() {
               card.isNew = false;
             });
 
-            await Future.delayed(const Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 150));
           }
         } else {
           // No animation needed if no cards
@@ -285,7 +285,7 @@ class MainCardsState extends State<MainCards> {
       });
 
       // Simulate a delay for the animation effect
-      await Future.delayed(const Duration(milliseconds: 350));
+      await Future.delayed(const Duration(milliseconds: 175));
 
       // Notify the parent widget about the discarded cards
       setState(() {
@@ -347,13 +347,13 @@ class MainCardsState extends State<MainCards> {
               handCards.add(card);
             });
 
-            await Future.delayed(const Duration(milliseconds: 200));
+            await Future.delayed(const Duration(milliseconds: 100));
 
             setState(() {
               card.isNew = false;
             });
 
-            await Future.delayed(const Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 150));
           }
         } else {
           // No animation needed if no cards
@@ -579,7 +579,7 @@ class MainCardsState extends State<MainCards> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(handCards.length, (index) {
                   return AnimatedContainer(
-                    duration: const Duration(milliseconds: 100),
+                    duration: const Duration(milliseconds: 10),
                     curve: Curves.easeInOut,
                     width: 65,
                     margin: const EdgeInsets.symmetric(horizontal: 2),
@@ -670,7 +670,7 @@ class MainCardsState extends State<MainCards> {
 
       child: AnimatedOpacity(
         opacity: selectable.isDiscarding ? 0.0 : 1.0,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 150),
         child: AnimatedSlide(
           offset:
               selectable.isDiscarding
@@ -680,11 +680,11 @@ class MainCardsState extends State<MainCards> {
                   : (selectable.isSelected
                       ? const Offset(0, -0.1)
                       : Offset.zero),
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 100),
           curve: Curves.easeInOut,
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: selectable.isNew ? 0.8 : 1.0, end: 1.0),
-            duration: const Duration(milliseconds: 400),
+            duration: const Duration(milliseconds: 200),
             curve: Curves.easeOutBack,
             builder: (context, scale, child) {
               return Transform.scale(scale: scale, child: child);

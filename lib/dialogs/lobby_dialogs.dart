@@ -272,7 +272,7 @@ Future<void> showCreateLobbyButton(
                 children: [
                   //Text explaining creating the lobby
                   Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ',
+                    "Create a lobby in private (non invited people or without code can't join) or public",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 18,

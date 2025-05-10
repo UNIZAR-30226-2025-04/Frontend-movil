@@ -406,7 +406,7 @@ class GameScreenState extends State<GameScreen> {
       final bool isWinner = winners.any((winnerData) {
         return winnerData['winner_username'] == widget.hostName;
       });
-      final int points = data['winners']['points'];
+      final int points = winners[0]['points'];
 
       final time = _playedCards.where((card) => card.isScored).length + 1;
       await Future.delayed(Duration(seconds: time));
