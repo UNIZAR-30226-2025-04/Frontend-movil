@@ -596,7 +596,7 @@ List<Map<String, String>> consumablesMap = [
   },
   {
     // 8. Diamond Eyes consumable
-    'consumable': 'images/consumables/voucher deftones.png',
+    'consumable': 'images/consumables/vouchers deftones.png',
     'consumableName': 'Diamond Eyes',
     'consumableDescription': 'Subtracts from their mult the money they have.',
     'consumableTargets': '3',
