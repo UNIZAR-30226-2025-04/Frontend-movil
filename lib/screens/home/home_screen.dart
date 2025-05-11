@@ -441,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   lobbyCode: result["lobby_id"],
                   timeout: timeUntilTimeout,
                   phase: data['phase'],
-                  baseBlind: data['current_base_blind'] ?? 0,
+                  baseBlind: data['current_high_blind'] ?? 0,
                   discardingCards: discardsLeft,
                   playingCards: playsLeft,
                   handCards: handCards,
