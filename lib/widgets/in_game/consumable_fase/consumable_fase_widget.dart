@@ -15,6 +15,7 @@ class ConsumableFaseWidget extends StatefulWidget {
     required this.consumableOwned,
     required this.onAddConsumableOwned,
     required this.onRemoveConsumableOwned,
+    required this.onRemoveAllConsumableOwned,
     required this.shopWidgetKey,
     required this.buyWidgetKey,
     required this.ownedConsumableCardsKey,
@@ -29,6 +30,7 @@ class ConsumableFaseWidget extends StatefulWidget {
   final List<PurchasableItemInfo> consumableOwned;
   final Function(PurchasableItemInfo)? onAddConsumableOwned;
   final Function(PurchasableItemInfo)? onRemoveConsumableOwned;
+  final void Function() onRemoveAllConsumableOwned;
   final GlobalKey<OwnedConsumableCardsState> ownedConsumableCardsKey;
   final GlobalKey<UsedConsumableCardsState> usedConsumableCardsKey;
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -96,6 +98,7 @@ class ConsumableFaseWidgetState extends State<ConsumableFaseWidget> {
               consumableOwned: widget.consumableOwned,
               onAddConsumableOwned: widget.onAddConsumableOwned,
               onRemoveConsumableOwned: widget.onRemoveConsumableOwned,
+              onRemoveAllConsumableOwned: widget.onRemoveAllConsumableOwned,
               shopFaseWidgetKey: widget.shopFaseWidgetKey,
               consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
               shopWidgetKey: widget.shopWidgetKey,

@@ -494,6 +494,11 @@ class GameScreenState extends State<GameScreen> {
     }
   }
 
+  /// Removes all consumables owned
+  void onRemoveAllConsumableOwned() {
+    consumablesOwned = [];
+  }
+
   /// Adds a consumable to the used list.
   void onAddConsumableUsed(PurchasableItemInfo jokerInfo) {
     consumablesUsed.add(jokerInfo);
@@ -572,6 +577,7 @@ class GameScreenState extends State<GameScreen> {
                         });
                       });
                     },
+                    onRemoveAllConsumableOwned: onRemoveAllConsumableOwned,
                     consumableUsed: consumablesUsed,
                     onAddConsumableUsed: (value) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -867,6 +873,8 @@ class GameScreenState extends State<GameScreen> {
                                     });
                                   });
                                 },
+                                onRemoveAllConsumableOwned:
+                                    onRemoveAllConsumableOwned,
                                 ownedConsumableCardsKey:
                                     _ownedConsumableCardsKey,
                                 usedConsumableCardsKey: _usedConsumableCardsKey,
@@ -886,7 +894,7 @@ class GameScreenState extends State<GameScreen> {
                   ),
                 ],
               ),
-              
+
               Positioned(
                 top: 20,
                 right: 20,
@@ -898,7 +906,8 @@ class GameScreenState extends State<GameScreen> {
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        ElevatedButton( // Button to open the chat
+                        ElevatedButton(
+                          // Button to open the chat
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             padding: const EdgeInsets.all(12),
