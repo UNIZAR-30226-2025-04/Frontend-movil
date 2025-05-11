@@ -25,6 +25,7 @@ class Sidebar extends StatefulWidget {
     required this.consumableOwned,
     required this.onAddConsumableOwned,
     required this.onRemoveConsumableOwned,
+    required this.onRemoveAllConsumableOwned,
     required this.consumableUsed,
     required this.onAddConsumableUsed,
     required this.onRemoveConsumableUsed,
@@ -54,6 +55,7 @@ class Sidebar extends StatefulWidget {
   final List<PurchasableItemInfo> consumableOwned;
   final Function(PurchasableItemInfo)? onAddConsumableOwned;
   final Function(PurchasableItemInfo)? onRemoveConsumableOwned;
+  final void Function() onRemoveAllConsumableOwned;
   final List<PurchasableItemInfo> consumableUsed;
   final Function(PurchasableItemInfo)? onAddConsumableUsed;
   final Function(PurchasableItemInfo)? onRemoveConsumableUsed;
@@ -213,6 +215,7 @@ class SidebarState extends State<Sidebar> {
             consumableOwned: widget.consumableOwned,
             onAddConsumableOwned: widget.onAddConsumableOwned,
             onRemoveConsumableOwned: widget.onRemoveConsumableOwned,
+            onRemoveAllConsumableOwned: widget.onRemoveAllConsumableOwned,
             shopFaseWidgetKey: widget.shopFaseWidgetKey,
             consumableFaseWidgetKey: widget.consumableFaseWidgetKey,
             shopWidgetKey: widget.shopWidgetKey,

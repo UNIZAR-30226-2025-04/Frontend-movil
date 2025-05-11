@@ -16,6 +16,7 @@ class OwnedConsumableCards extends StatefulWidget {
     required this.consumableOwned,
     required this.onAddConsumableOwned,
     required this.onRemoveConsumableOwned,
+    required this.onRemoveAllConsumableOwned,
     required this.shopFaseWidgetKey,
     required this.consumableFaseWidgetKey,
     required this.shopWidgetKey,
@@ -26,6 +27,7 @@ class OwnedConsumableCards extends StatefulWidget {
   final List<PurchasableItemInfo> consumableOwned;
   final Function(PurchasableItemInfo)? onAddConsumableOwned;
   final Function(PurchasableItemInfo)? onRemoveConsumableOwned;
+  final void Function() onRemoveAllConsumableOwned;
   final GlobalKey<ShopFaseWidgetState> shopFaseWidgetKey;
   final GlobalKey<ConsumableFaseWidgetState> consumableFaseWidgetKey;
   final GlobalKey<ShopWidgetState> shopWidgetKey;
@@ -73,6 +75,7 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
       if (_consumableOwned.isNotEmpty) {
         // Remove the consumable from the owned list
         _consumableOwned.remove(jokerInfo);
+        //widget.onRemoveConsumableOwned!(jokerInfo);
         debugPrint("Consumible eliminado de la lista");
       } else {
         debugPrint("No hay consumibles para eliminar");
@@ -89,21 +92,22 @@ class OwnedConsumableCardsState extends State<OwnedConsumableCards> {
       debugPrint("📡 Received modifiers_sended info: $data");
 
       setState(() {
+        widget.onRemoveAllConsumableOwned();
         _consumableOwned = [];
         for (var mod in data['modifiers']['Modificadores']) {
           int aux = mod['value'];
-          _consumableOwned.add(
-            PurchasableItemInfo(
-              price: 0,
-              id: -1,
-              index: -1,
-              type: "owned consumable",
-              subtype: aux,
-              rank: "",
-              suit: "",
-              overlay: 0,
-            ),
+          PurchasableItemInfo auxPurchasable = PurchasableItemInfo(
+            price: 0,
+            id: -1,
+            index: -1,
+            type: "owned consumable",
+            subtype: aux,
+            rank: "",
+            suit: "",
+            overlay: 0,
           );
+          _consumableOwned.add(auxPurchasable);
+          widget.onAddConsumableOwned!(auxPurchasable);
         }
       });
     });
@@ -211,12 +215,13 @@ class UsedConsumableCardsState extends State<UsedConsuambleCards> {
     });
   }
 
-  /// This function removes the consumable from the owned list
-  Future<void> removeConsumableOwned(PurchasableItemInfo jokerInfo) async {
+  /// This function removes the consumable from the used list
+  Future<void> removeConsumableUsed(PurchasableItemInfo jokerInfo) async {
     setState(() {
       if (consumableUsed.isNotEmpty) {
         // Remove the consumable from the owned list
         consumableUsed.remove(jokerInfo);
+        widget.onRemoveConsumableUsed!(jokerInfo);
         debugPrint("Consumible eliminado de la lista");
       } else {
         debugPrint("No hay consumibles para eliminar");

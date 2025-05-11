@@ -239,12 +239,12 @@ Future<List<PurchasableItemInfo>?> showVoucherPackDialog(
         // Buffoon Normal
         case 2:
           title = "Mystery Pack";
-          subtitle = "BUFFOON";
+          subtitle = "Choose up to $maxSelected";
           break;
         // Spectral Jumbo
         case 3:
           title = "Voucher Pack";
-          subtitle = "SPECTRAL";
+          subtitle = "Choose up to $maxSelected";
           break;
         default:
           title = "Unknown Pack";
@@ -305,24 +305,45 @@ Future<List<PurchasableItemInfo>?> showVoucherPackDialog(
               content,
               const SizedBox(height: 5),
 
-              // Display the selected items
-              ElevatedButton(
-                onPressed: () {
-                  if (selectedIndexes.isNotEmpty) {
-                    final selectedItems =
-                        selectedIndexes.map((i) => availableItems[i]).toList();
-                    Navigator.of(context).pop(selectedItems);
-                  }
-                },
+              // Buttons to select or exit package
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      if (selectedIndexes.isNotEmpty) {
+                        final selectedItems =
+                            selectedIndexes
+                                .map((i) => availableItems[i])
+                                .toList();
+                        Navigator.of(context).pop(selectedItems);
+                      }
+                    },
 
-                child: Text(
-                  "Choose",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
+                    child: Text(
+                      "Choose",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
                   ),
-                ),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      "Skip",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
