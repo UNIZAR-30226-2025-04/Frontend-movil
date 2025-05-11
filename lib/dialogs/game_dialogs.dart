@@ -409,7 +409,7 @@ Future<void> showUseConsumableDialog(
                     SizedBox(height: 35),
                     // Name of the consumable chosen
                     Text(
-                      "Nombre del voucher",
+                      "${consumablesMap[consumable.subtype]['consumableName']}",
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     SizedBox(height: 40),
