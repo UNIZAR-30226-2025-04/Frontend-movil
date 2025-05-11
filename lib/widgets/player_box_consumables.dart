@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 
+/// A widget that represents a player box in a game lobby, specifically for consumables.
 class PlayerBoxConsumables extends StatefulWidget {
   const PlayerBoxConsumables({
     super.key,

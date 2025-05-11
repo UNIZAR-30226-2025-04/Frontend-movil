@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
     "blind": 20,
     "play_round": 120,
     "shop": 60,
-    "vouchers": 30,
+    "vouchers": 60,
   };
 
   // Method to check if the user is in a lobby and initialize WebSocket if true
@@ -145,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final result = await checkIfInLobby();
     if (result["in_lobby"] == true) {
       if (!mounted) return;
+      // Show loading screen while connecting to the lobby
       Navigator.push(
         context,
         PageTransition(
@@ -154,11 +155,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       );
-
+      // Store the code in secure storage
       await wsClient.initialize();
+      // Auto-connect when screen loads
       wsClient.addEventListener("game_phase_player_info", (data) {
         wsClient.removeEventListener("error");
         debugPrint("👤 New user joined: $data");
+        // Parse the data received from the server
         final round = data['current_round'] as int? ?? 0;
         final users = data['players'] as List<dynamic>;
         List<Map<String, dynamic>> players = [];
@@ -178,9 +181,11 @@ class _HomeScreenState extends State<HomeScreen> {
         final playedCards = playerData['played_cards'] ?? 0;
         final unplayedCards = playerData['unplayed_cards'] ?? 0;
 
+        // If the player is in phase none, we need to get the lobby info
         if (data['phase'] == 'none') {
           wsClient.sendMessage("get_lobby_info", result["lobby_id"]);
           if (context.mounted) {
+            // Go to the lobby screen
             Navigator.pushReplacement(
               context,
               PageTransition(
@@ -195,7 +200,9 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
         } else {
+          // If the player is in a game, we need to get the game phase
           if (context.mounted) {
+            // Parse the data received from the server
             List<PurchasableItemInfo> jokersOwned = [];
             List<PurchasableItemInfo> shopJokers = [];
             List<PurchasableItemInfo> consumablesOwned = [];
@@ -205,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
             final currentPot = data['current_pot'];
             final priceReroll = data['player_data']['next_reroll_price'] ?? 0;
             if (data['phase'] == 'shop') {
+              // If the player is in the shop phase
               // Parse owned jokers with correct id from shop items
               final rerollableItems =
                   (data['shop_items']['rerolled_items'] as List<dynamic>? ?? [])
@@ -328,6 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }
             } else {
+              // Parse owned jokers with correct id from shop items
               jokersOwned =
                   (data['player_data']['current_jokers'] as List<dynamic>?)?.map((
                     jokerData,
@@ -345,6 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }).toList() ??
                   [];
+              // Parse owned consumables with correct id from shop items
               consumablesOwned =
                   (data['player_data']['vouchers']?['Modificadores']
                           as List<dynamic>?)
@@ -363,6 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       .toList() ??
                   [];
             }
+            // Parse the consumables used
             consumablesUsed =
                 (data['player_data']['active_vouchers']?['Modificadores']
                         as List<dynamic>?)
@@ -380,6 +391,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     })
                     .toList() ??
                 [];
+
+            // Parse the consumables received
+            final received =
+                playerData['received_vouchers']?['modifiers'] ?? [];
+            for (var item in received) {
+              final modifier = item['modifier'];
+              consumablesUsed.add(
+                PurchasableItemInfo(
+                  price: 0,
+                  id: 0,
+                  index: -1,
+                  type: "owned consumable",
+                  subtype: modifier['value'],
+                  rank: '',
+                  suit: '',
+                  overlay: 0,
+                ),
+              );
+            }
+
+            // Parse the hand cards
             final handCards =
                 parsedList.map((cardData) {
                   final card = MainCardsState().createCardFromServerData(
@@ -387,6 +419,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                   return card;
                 }).toList();
+
+            // Parse the timeout
             final timeoutStart = DateTime.parse(data['timeout']).toLocal();
             final now = DateTime.now();
             debugPrint("timeoutStart: $timeoutStart, now: $now");
@@ -396,6 +430,7 @@ class _HomeScreenState extends State<HomeScreen> {
             final timeUntilTimeout =
                 (gameTimeouts[data['phase']] ?? 0) -
                 (now.difference(timeoutStart).inSeconds).abs();
+            // Go to the game screen
             Navigator.of(context).pushReplacement(
               PageTransition(
                 type: PageTransitionType.fade,
@@ -431,6 +466,8 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
       });
+
+      // Listen for error events
       wsClient.addEventListener("error", (data) {
         if (mounted) {
           Navigator.of(context).pop(); // Close loading screen
@@ -449,6 +486,8 @@ class _HomeScreenState extends State<HomeScreen> {
           wsClient.disconnect();
         }
       });
+
+      // Listen for lobby info events and send a request for game phase player info
       wsClient.addEventListener("lobby_info", (data) {
         wsClient.sendMessage(
           "request_game_phase_player_info",

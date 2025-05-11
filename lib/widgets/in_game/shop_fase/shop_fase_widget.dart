@@ -8,6 +8,8 @@ import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
+/// This widget represents the shop phase in the game.
+/// It contains the shop widget, buy widget, and sell widget.
 class ShopFaseWidget extends StatefulWidget {
   const ShopFaseWidget({
     super.key,

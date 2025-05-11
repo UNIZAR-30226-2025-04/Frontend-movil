@@ -4,6 +4,7 @@ import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/buy_widget.dart';
 
+/// This widget is used to display the shop in the game
 class ShopWidget extends StatefulWidget {
   const ShopWidget({
     super.key,

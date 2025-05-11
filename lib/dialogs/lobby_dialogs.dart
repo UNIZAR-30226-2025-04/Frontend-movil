@@ -9,6 +9,7 @@ import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 import 'package:page_transition/page_transition.dart';
 
+/// Function to create the pop-up in home_screen in order to create a lobby
 Future<void> showInvitationLists(BuildContext context, String lobbyCode) async {
   List<Map<String, dynamic>> nonInvitedFriends = [];
   List<Map<String, dynamic>> invitedFriends = [];

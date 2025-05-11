@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/chat_message_widget.dart';
 
+/// A widget that represents a chat interface in a game lobby.
 class ChatWidget extends StatefulWidget {
   const ChatWidget({
     super.key,

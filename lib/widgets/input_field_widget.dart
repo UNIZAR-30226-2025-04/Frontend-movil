@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// A widget that represents an input field with a label.
 class InputFieldWidget extends StatelessWidget {
   const InputFieldWidget({
     super.key,

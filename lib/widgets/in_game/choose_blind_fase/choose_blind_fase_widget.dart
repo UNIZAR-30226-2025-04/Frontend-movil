@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/websocket/websocket_client.dart';
 
+/// This widget allows the user to choose a blind phase in a game.
 class ChooseBlindFaseWidget extends StatefulWidget {
   const ChooseBlindFaseWidget({
     super.key,

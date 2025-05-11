@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 
-/// Poker card class
+/// This widget is used to display a playing card with an overlay effect.
 class SelectableCard {
   final String rank;
   final String suit;

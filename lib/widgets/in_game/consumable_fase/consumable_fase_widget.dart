@@ -8,6 +8,7 @@ import 'package:nogler/widgets/in_game/shop_fase/sell_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_fase_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
+//// This widget allows the user to manage consumables in a game.
 class ConsumableFaseWidget extends StatefulWidget {
   const ConsumableFaseWidget({
     super.key,

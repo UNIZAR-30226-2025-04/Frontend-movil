@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// A widget that represents a player box in a game lobby.
 class PlayerBox extends StatelessWidget {
   const PlayerBox({
     super.key,

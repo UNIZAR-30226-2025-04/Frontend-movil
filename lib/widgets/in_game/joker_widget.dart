@@ -35,6 +35,7 @@ class PurchasableItemInfo {
   int overlay = 0;
 }
 
+/// This widget is used to display a joker card with an overlay effect.
 class Joker extends StatefulWidget {
   const Joker({
     super.key,

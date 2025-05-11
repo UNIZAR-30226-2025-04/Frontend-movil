@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// A widget that represents a background image.
 class BackgroundWidget extends StatelessWidget {
   final Widget child;
 

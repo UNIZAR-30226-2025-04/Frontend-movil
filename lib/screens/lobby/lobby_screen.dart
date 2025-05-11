@@ -10,6 +10,7 @@ import 'package:nogler/widgets/chat_widget.dart';
 import 'package:nogler/widgets/player_box.dart';
 import 'package:page_transition/page_transition.dart';
 
+/// Shows a screen for the lobby
 class LobbyScreen extends StatefulWidget {
   const LobbyScreen({
     super.key,

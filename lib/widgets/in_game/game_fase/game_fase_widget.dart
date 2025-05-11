@@ -6,6 +6,8 @@ import 'package:nogler/widgets/in_game/game_fase/selected_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/main_cards_widget.dart';
 
+/// This widget represents the game phase in a card game.
+/// It includes the main cards, selected cards, and action buttons.
 class GameFaseWidget extends StatelessWidget {
   const GameFaseWidget({
     super.key,

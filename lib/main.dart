@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screens/welcome/welcome_screen.dart';
 
-// Main entry point of the application
+/// Main entry point of the application
 void main() {
   WidgetsFlutterBinding.ensureInitialized(); // Initializes the Flutter binding
   // Hide the status bar and navigation bar
@@ -14,7 +14,7 @@ void main() {
   runApp(const NoglerApp()); // Runs the NoglerApp widget
 }
 
-// Main application widget
+/// Main application widget
 class NoglerApp extends StatelessWidget {
   const NoglerApp({super.key}); // Constructor for the class
 

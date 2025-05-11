@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// A widget that represents the background of the game.
 class GameBackgroundWidget extends StatelessWidget {
   final Widget child;
 

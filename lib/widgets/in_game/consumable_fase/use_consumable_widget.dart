@@ -4,6 +4,7 @@ import 'package:nogler/websocket/websocket_client.dart';
 import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 
+/// This widget allows the user to use consumables in a game.
 class UseConsumableWidget extends StatefulWidget {
   const UseConsumableWidget({
     super.key,

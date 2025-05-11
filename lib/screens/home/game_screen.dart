@@ -124,6 +124,7 @@ class GameScreenState extends State<GameScreen> {
 
   bool _newChatMessage = false;
 
+  // Variables to manage the various game phases
   List<SelectableCard> _handCards = [];
   List<PurchasableItemInfo> _jokersOwned = [];
 
@@ -156,6 +157,7 @@ class GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize the variables with the values passed from the widget
     lobbyUsers = widget.lobbyUsers;
     _priceReroll = widget.priceReroll;
     _currentPot = widget.currentPot;
@@ -181,16 +183,19 @@ class GameScreenState extends State<GameScreen> {
     wsClient.removeEventListener("new_lobby_message");
     wsClient.removeEventListener("lobby_info");
     wsClient.removeEventListener("starting_next_blind");
+
     // Listen for new lobby messages
     wsClient.addEventListener("new_lobby_message", (data) {
       debugPrint("🟨 Message received");
       setState(() {
+        // Add the new message to the chat messages list
         chatMessages.add({
           'username': data["username"] ?? "Unknown",
           'avatarImage': data["user_icon"] ?? 0,
           'message': data["message"] ?? "",
           'time': TimeOfDay.now().format(context),
         });
+        // Mark the message as new if it's not from the host
         if (chatMessages.last["username"] != widget.hostName) {
           _newChatMessage = true;
         }
@@ -272,14 +277,13 @@ class GameScreenState extends State<GameScreen> {
         }
 
         // Extracting consumables from the event data if necessary
-        // Assuming there are consumables in the event data (it wasn't in the sample response)
         if (data['shop']['fixed_modifiers'] != null) {
           for (var modifier in data['shop']['fixed_modifiers']) {
             _shopConsumables.add(
               PurchasableItemInfo(
                 price: modifier['price'],
                 id: modifier['id'],
-                index: 0, // Assuming index is not available in the event data
+                index: 0,
                 type: "consumable",
                 subtype: modifier['modifier_id'],
                 rank: '',
@@ -291,9 +295,12 @@ class GameScreenState extends State<GameScreen> {
         }
       });
     });
+
+    // Listen for starting voucher phase
     wsClient.addEventListener("starting_vouchers", (data) {
       debugPrint("🎴 Received starting voucher phase: $data");
       consumablesUsed = [];
+      // Parse the info from the voucher phase
       final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
       final now = DateTime.now();
       final timeout = data['timeout'];
@@ -331,6 +338,7 @@ class GameScreenState extends State<GameScreen> {
     // Listen for round start event
     wsClient.addEventListener("starting_round", (data) async {
       debugPrint("📡 Starting round: $data");
+      // Parse the info from the round start event
       final timeoutStart = DateTime.parse(data['timeout_start_date']).toLocal();
       final now = DateTime.now();
       final timeout = data['timeout'];
@@ -343,7 +351,7 @@ class GameScreenState extends State<GameScreen> {
       final currentPot = data['current_pot'] as int;
       final round = data['round_number'] as int;
       setState(() {
-        // Init game fase
+        // Switch to the game phase and parse the data
         _showChooseBlindFaseWidget = !_showChooseBlindFaseWidget;
         _showGameFaseWidget = !_showGameFaseWidget;
         _animateShowGameFaseWidgets = !_animateShowGameFaseWidgets;
@@ -474,26 +482,31 @@ class GameScreenState extends State<GameScreen> {
     });
   }
 
+  /// Updates the chat messages list with new messages.
   void onAddConsumableOwned(PurchasableItemInfo jokerInfo) {
     consumablesOwned.add(jokerInfo);
   }
 
+  /// Removes a consumable from the owned list.
   void onRemoveConsumableOwned(PurchasableItemInfo jokerInfo) {
     if (consumablesOwned.isNotEmpty) {
       consumablesOwned.remove(jokerInfo);
     }
   }
 
+  /// Adds a consumable to the used list.
   void onAddConsumableUsed(PurchasableItemInfo jokerInfo) {
     consumablesUsed.add(jokerInfo);
   }
 
+  /// Removes a consumable from the used list.
   void onRemoveConsumableUsed(PurchasableItemInfo jokerInfo) {
     if (consumablesUsed.isNotEmpty) {
       consumablesUsed.remove(jokerInfo);
     }
   }
 
+  /// Updates the score when a joker is triggered.
   void onScore(int index) {
     debugPrint("Inicio Animacion game_screen $index ");
     setState(() {
@@ -823,6 +836,7 @@ class GameScreenState extends State<GameScreen> {
                             ),
                           )
                         else if (_showConsumableFaseWidget)
+                          // Change this to the consumable phase widget
                           Visibility(
                             visible: _showConsumableFaseWidget,
                             child: AnimatedSlide(
@@ -872,18 +886,19 @@ class GameScreenState extends State<GameScreen> {
                   ),
                 ],
               ),
-
+              
               Positioned(
                 top: 20,
                 right: 20,
                 child: Row(
                   children: [
+                    // Timer widget to show the remaining time
                     TimerWidget(timeout: _timeout),
                     const SizedBox(width: 8),
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        ElevatedButton(
+                        ElevatedButton( // Button to open the chat
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             padding: const EdgeInsets.all(12),
@@ -912,7 +927,7 @@ class GameScreenState extends State<GameScreen> {
                       ],
                     ),
                     const SizedBox(width: 8),
-
+                    // Button to leave the game and go back to the main menu
                     SettingsButton(
                       onPressed: () async {
                         wsClient.sendMessage('exit_lobby', widget.lobbyCode);

@@ -90,7 +90,7 @@ Future<void> showCodeDialog(
               children: [
                 Expanded(
                   // Ensures both buttons take the same width
-                  child: ElevatedButton(
+                  child: ElevatedButton( // Button to join the lobby
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 12),
@@ -128,7 +128,7 @@ Future<void> showCodeDialog(
                 ),
                 SizedBox(width: 10), // Space between buttons
                 Expanded(
-                  child: ElevatedButton(
+                  child: ElevatedButton( // Button to paste code
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 12),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nogler/widgets/build_avatar_image.dart';
 
+/// A widget that represents a chat message in a game lobby.
 class ChatMessageWidget extends StatelessWidget {
   const ChatMessageWidget({
     super.key,

@@ -7,6 +7,7 @@ import 'package:nogler/widgets/background_widget.dart';
 import 'package:nogler/widgets/lobbie_box.dart';
 import 'package:page_transition/page_transition.dart';
 
+/// Shows a screen for joining a lobby.
 class JoinLobbyScreen extends StatefulWidget {
   const JoinLobbyScreen({
     super.key,

@@ -4,6 +4,7 @@ import 'package:nogler/widgets/in_game/consumable_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 
+/// This widget allows the user to sell items in a game.
 class SellWidget extends StatefulWidget {
   const SellWidget({
     super.key,

@@ -6,6 +6,7 @@ import 'package:nogler/widgets/in_game/joker_cards_widget.dart';
 import 'package:nogler/widgets/in_game/joker_widget.dart';
 import 'package:nogler/widgets/in_game/shop_fase/shop_widget.dart';
 
+/// This widget allows the user to buy items in a game.
 class BuyWidget extends StatefulWidget {
   const BuyWidget({
     super.key,
