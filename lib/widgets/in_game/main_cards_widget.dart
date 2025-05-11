@@ -466,7 +466,11 @@ class MainCardsState extends State<MainCards> {
   /// Discards selected cards and replaces them with new ones from the deck.
   void discardSelectedCards() async {
     // If there are no more discards or the player has reached the blind, do nothing
-    if (discardingCards == 0 || isReached) return;
+    if (discardingCards == 0 ||
+        isReached ||
+        handCards.where((c) => c.isSelected).isEmpty) {
+      return;
+    }
     final selected = handCards.where((c) => c.isSelected).toList();
     final discards =
         selected
