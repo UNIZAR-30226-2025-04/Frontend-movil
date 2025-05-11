@@ -494,19 +494,20 @@ class JokerState extends State<Joker> {
       // Standard Normal
       'package': 'images/packages/Standard_Normal_1.png',
       'packageName': 'Standard Normal',
-      'packageDescription': '',
+      'packageDescription':
+          'Choose between random poker cards with different effects',
     },
     {
       // Buffon Normal
       'package': 'images/packages/Buffoon_Normal_2.png',
       'packageName': 'Buffoon Normal',
-      'packageDescription': '',
+      'packageDescription': 'Choose between random jokers',
     },
     {
       // Spectral Jumbo
       'package': 'images/packages/Spectral_Jumbo_1.png',
       'packageName': 'Spectral Jumbo',
-      'packageDescription': '',
+      'packageDescription': 'Choose between random consumables',
     },
   ];
 
